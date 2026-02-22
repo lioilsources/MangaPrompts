@@ -1,0 +1,92 @@
+category: hair
+label: "Vlasy"
+icon: content_cut
+required: false
+blocks:
+  # Long styles
+  - id: hair_long_silky_black
+    label: "Dlouhé hedvábné černé"
+    tags: [long, silky, black, straight]
+    value: "long flowing hair, silky straight hair, natural black with blue undertone, hair shining in sunlight"
+    mood: [sweet, dark, nostalgic]
+    incompatible: []
+
+  - id: hair_long_flowing_blonde
+    label: "Dlouhé vlající blond"
+    tags: [long, flowing, blonde, platinum]
+    value: "long flowing hair, silky straight hair, platinum blonde with ash tone, hair shining in sunlight"
+    mood: [sweet, surreal]
+    incompatible: []
+
+  - id: hair_long_curls_ombre
+    label: "Dlouhé kudrny ombré"
+    tags: [long, curls, ombre, purple, pink]
+    value: "long flowing hair, soft voluminous curls, ombre purple to pink gradient, strands framing face"
+    mood: [sweet, surreal]
+    incompatible: []
+
+  - id: hair_long_windswept_neon
+    label: "Dlouhé rozcuchané neonové"
+    tags: [long, windswept, neon, blue]
+    value: "long flowing hair, messy windswept hair, neon blue highlights, dynamic movement"
+    mood: [surreal, dark]
+    incompatible: []
+
+  # Medium styles
+  - id: hair_bob_layered_black
+    label: "Bob vrstvený černý"
+    tags: [bob, layered, black, medium]
+    value: "shoulder length layered bob, silky straight hair, natural black with blue undertone"
+    mood: [sweet, dark, technical]
+    incompatible: []
+
+  - id: hair_bob_wet_look
+    label: "Bob mokrý look"
+    tags: [bob, wet, sleek, medium]
+    value: "shoulder length layered bob, wet look hair, strands framing face, glossy sheen"
+    mood: [dark, surreal]
+    incompatible: []
+
+  - id: hair_half_updo_loose
+    label: "Napůl vyčesané s prameny"
+    tags: [half_updo, loose, elegant]
+    value: "half updo with loose strands, soft voluminous styling, strands framing face"
+    mood: [sweet, nostalgic]
+    incompatible: []
+
+  # Short styles
+  - id: hair_pixie_tousled
+    label: "Pixie rozcuchaný"
+    tags: [pixie, short, tousled]
+    value: "short tousled pixie cut, messy windswept hair, natural black with blue undertone"
+    mood: [dark, technical]
+    incompatible: []
+
+  - id: hair_pixie_blonde
+    label: "Pixie blond"
+    tags: [pixie, short, blonde]
+    value: "short tousled pixie cut, platinum blonde with ash tone, textured layers"
+    mood: [sweet, technical]
+    incompatible: []
+
+  # Specialty styles
+  - id: hair_twin_tails
+    label: "Culíky (twin tails)"
+    tags: [twin_tails, pigtails, anime]
+    value: "twin tails pigtails, silky straight hair, strands framing face, anime-inspired hairstyle"
+    mood: [sweet, surreal]
+    incompatible: []
+
+  - id: hair_asymmetrical_bangs
+    label: "Asymetrická ofina"
+    tags: [asymmetrical, bangs, edgy]
+    value: "asymmetrical bangs, edgy hair styling, strands framing face, neon blue highlights"
+    mood: [dark, surreal]
+    incompatible: []
+
+  - id: hair_wet_strands
+    label: "Mokré prameny"
+    tags: [wet, strands, sensual]
+    value: "wet look hair, strands framing face, glistening wet strands clinging to skin"
+    mood: [dark, sweet]
+    incompatible: []

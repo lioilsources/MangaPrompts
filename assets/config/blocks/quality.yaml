@@ -1,0 +1,39 @@
+category: quality
+label: "Kvalita"
+icon: high_quality
+required: true
+blocks:
+  - id: quality_8k_hyper
+    label: "8K hyperdetailní"
+    tags: [8k, hyperdetailed, pores]
+    value: "hyperdetailed, 8k resolution, skin pores visible, ultra high definition, sharp focus"
+    mood: [dark, technical, surreal]
+    incompatible: [quality_film]
+
+  - id: quality_photo
+    label: "Fotorealistická"
+    tags: [photorealistic, skin_texture, realistic]
+    value: "photorealistic, realistic skin texture, natural imperfections, subsurface scattering on skin"
+    mood: [sweet, dark, technical, nostalgic]
+    incompatible: []
+
+  - id: quality_film
+    label: "Filmová / analogová"
+    tags: [film, grain, analog]
+    value: "film grain, analog photo aesthetic, subtle noise texture, organic film quality, grainy film look"
+    mood: [nostalgic, sweet]
+    incompatible: [quality_8k_hyper]
+
+  - id: quality_4k_detailed
+    label: "4K detailní"
+    tags: [4k, detailed, sharp]
+    value: "4k resolution, highly detailed, sharp focus throughout, professional quality"
+    mood: [sweet, dark, technical, nostalgic, surreal]
+    incompatible: []
+
+  - id: quality_sweaty_skin
+    label: "Zpocená kůže"
+    tags: [sweaty, skin, texture, gritty]
+    value: "sweaty skin texture, moisture on skin surface, glistening sweat sheen, realistic skin detail"
+    mood: [dark, technical]
+    incompatible: []

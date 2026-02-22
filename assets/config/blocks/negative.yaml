@@ -1,0 +1,32 @@
+category: negative
+label: "Negativní prompt"
+icon: block
+required: true
+blocks:
+  - id: negative_standard
+    label: "Standardní negativní"
+    tags: [standard, general, safe]
+    value: "no cartoon, no 3D render, no illustration, no painting, no deformed hands"
+    mood: [sweet, dark, surreal, technical, nostalgic]
+    incompatible: []
+
+  - id: negative_quality
+    label: "Kvalita - negativní"
+    tags: [quality, artifacts, blur]
+    value: "no low quality, no blurry, no artifacts, no watermark, no text overlay, no cropped"
+    mood: [sweet, dark, surreal, technical, nostalgic]
+    incompatible: []
+
+  - id: negative_anatomy
+    label: "Anatomie - negativní"
+    tags: [anatomy, deformed, extra]
+    value: "no deformed anatomy, no extra fingers, no extra limbs, no distorted face, no bad proportions"
+    mood: [sweet, dark, surreal, technical, nostalgic]
+    incompatible: []
+
+  - id: negative_style_guard
+    label: "Styl - negativní"
+    tags: [style, anime, drawing]
+    value: "no anime drawing style, no flat shading, no cel shading, no vector art, no CGI render"
+    mood: [sweet, dark, technical, nostalgic]
+    incompatible: []

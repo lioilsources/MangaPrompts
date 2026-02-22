@@ -1,0 +1,53 @@
+category: subject
+label: "Postava"
+icon: person
+required: true
+blocks:
+  - id: subject_woman_20s
+    label: "Mladá žena (20s)"
+    tags: [woman, young, japanese]
+    value: "photorealistic Japanese woman in her 20s, realistic facial features, detailed skin texture"
+    mood: [sweet, dark, surreal, technical, nostalgic]
+    incompatible: []
+
+  - id: subject_woman_30s
+    label: "Žena (30s)"
+    tags: [woman, mature, photorealistic]
+    value: "photorealistic woman late 20s, realistic facial features, natural beauty, detailed skin texture"
+    mood: [sweet, dark, surreal, technical, nostalgic]
+    incompatible: []
+
+  - id: subject_man_20s
+    label: "Mladý muž (20s)"
+    tags: [man, young, japanese]
+    value: "photorealistic Japanese man early 20s, realistic facial features, detailed skin texture"
+    mood: [sweet, dark, surreal, technical, nostalgic]
+    incompatible: []
+
+  - id: subject_man_30s
+    label: "Muž (30s)"
+    tags: [man, mature, japanese]
+    value: "photorealistic Japanese man early 30s, realistic facial features, detailed skin texture"
+    mood: [sweet, dark, surreal, technical, nostalgic]
+    incompatible: []
+
+  - id: subject_couple
+    label: "Pár"
+    tags: [couple, romantic, two_people]
+    value: "photorealistic romantic couple, realistic facial features, natural chemistry, detailed skin texture"
+    mood: [sweet, nostalgic]
+    incompatible: []
+
+  - id: subject_two_women
+    label: "Dvě ženy"
+    tags: [two_women, yuri, intimate]
+    value: "two photorealistic women, realistic facial features, intimate composition, detailed skin texture"
+    mood: [sweet, dark, surreal]
+    incompatible: []
+
+  - id: subject_pilot
+    label: "Pilot mechy"
+    tags: [pilot, mecha, technical]
+    value: "realistic pilot in mecha cockpit, detailed skin pores, gritty texture"
+    mood: [technical, dark]
+    incompatible: []

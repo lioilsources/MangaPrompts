@@ -1,0 +1,67 @@
+category: palette
+label: "Barevná paleta"
+icon: palette
+required: false
+blocks:
+  - id: palette_pink_peach
+    label: "Růžová a broskvová"
+    tags: [pink, peach, warm, sweet]
+    value: "pink and peach color palette, warm rosy tones, soft blush color grading"
+    mood: [sweet]
+    incompatible: [palette_black_red, palette_high_contrast_bw_red]
+
+  - id: palette_black_red
+    label: "Černá a červená"
+    tags: [black, red, dark, dramatic]
+    value: "black and red color palette, deep crimson accents on dark base, dramatic dark color grading"
+    mood: [dark]
+    incompatible: [palette_pink_peach, palette_pastel_pink_blue]
+
+  - id: palette_neon_rainbow
+    label: "Neonová duha"
+    tags: [neon, rainbow, vibrant, surreal]
+    value: "neon rainbow color palette, vibrant saturated neon hues, psychedelic color explosion"
+    mood: [surreal]
+    incompatible: [palette_sepia_faded, palette_high_contrast_bw_red]
+
+  - id: palette_blue_white
+    label: "Modrá a bílá"
+    tags: [blue, white, clean, technical]
+    value: "blue and white color palette, clean cool tones, technical precision blue color grading"
+    mood: [technical]
+    incompatible: []
+
+  - id: palette_sepia_faded
+    label: "Sépiová vybledlá"
+    tags: [sepia, faded, retro, nostalgic]
+    value: "sepia and faded color palette, retro desaturated tones, vintage yellowed color grading, aged film look"
+    mood: [nostalgic]
+    incompatible: [palette_neon_rainbow, palette_magenta_cyan]
+
+  - id: palette_magenta_cyan
+    label: "Magenta a azurová"
+    tags: [magenta, cyan, cyberpunk, neon]
+    value: "magenta and cyan color palette, cyberpunk dual-tone color grading, complementary neon hues"
+    mood: [dark, surreal]
+    incompatible: [palette_sepia_faded, palette_pink_peach]
+
+  - id: palette_pastel_pink_blue
+    label: "Pastelová růžová a modrá"
+    tags: [pastel, pink, blue, soft]
+    value: "pastel pink and blue color palette, soft muted pastels, gentle dreamy color grading"
+    mood: [sweet]
+    incompatible: [palette_black_red, palette_high_contrast_bw_red]
+
+  - id: palette_high_contrast_bw_red
+    label: "Vysoký kontrast ČB + červená"
+    tags: [black_white, red_accent, noir, contrast]
+    value: "high contrast black and white with red accent, noir selective color, monochrome with crimson highlight"
+    mood: [dark]
+    incompatible: [palette_pink_peach, palette_neon_rainbow, palette_pastel_pink_blue]
+
+  - id: palette_retro_manga_tones
+    label: "Retro manga tóny"
+    tags: [retro, manga, 90s, faded]
+    value: "retro manga color tones, 90s anime color grading, slightly faded warm palette, nostalgic cel animation colors"
+    mood: [nostalgic]
+    incompatible: [palette_neon_rainbow]

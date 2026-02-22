@@ -1,0 +1,32 @@
+category: eyebrows
+label: "Obočí"
+icon: face_retouching_natural
+required: false
+blocks:
+  - id: eyebrows_thin_arched
+    label: "Tenké klenuté"
+    tags: [thin, arched, elegant]
+    value: "thin arched eyebrows, elegant brow shape"
+    mood: [sweet, surreal]
+    incompatible: []
+
+  - id: eyebrows_straight_thick
+    label: "Rovné silné"
+    tags: [straight, thick, bold]
+    value: "straight thick brows, bold defined eyebrows"
+    mood: [dark, technical]
+    incompatible: []
+
+  - id: eyebrows_slightly_furrowed
+    label: "Mírně svraštěné"
+    tags: [furrowed, concerned, tense]
+    value: "slightly furrowed brows, tense concerned expression"
+    mood: [dark, technical]
+    incompatible: []
+
+  - id: eyebrows_one_raised
+    label: "Jedno zvednuté"
+    tags: [raised, skeptical, expressive]
+    value: "one raised eyebrow, skeptical questioning expression"
+    mood: [sweet, surreal]
+    incompatible: []

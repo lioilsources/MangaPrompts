@@ -1,0 +1,39 @@
+category: face
+label: "Tvar obličeje"
+icon: face
+required: false
+blocks:
+  - id: face_oval
+    label: "Oválný obličej"
+    tags: [oval, classic, balanced]
+    value: "oval face shape, balanced proportions, smooth jawline"
+    mood: [sweet, nostalgic]
+    incompatible: []
+
+  - id: face_strong_jaw
+    label: "Silná čelist"
+    tags: [strong, jawline, masculine]
+    value: "strong jawline, defined chin, angular face structure"
+    mood: [dark, technical]
+    incompatible: []
+
+  - id: face_heart
+    label: "Srdcovitý obličej"
+    tags: [heart, feminine, pointed_chin]
+    value: "heart shaped face, wider forehead tapering to pointed chin"
+    mood: [sweet, surreal]
+    incompatible: []
+
+  - id: face_round_soft
+    label: "Kulatý měkký obličej"
+    tags: [round, soft, youthful]
+    value: "round soft face, youthful full cheeks, gentle contours"
+    mood: [sweet, nostalgic]
+    incompatible: []
+
+  - id: face_angular_cheekbones
+    label: "Výrazné lícní kosti"
+    tags: [angular, cheekbones, defined]
+    value: "angular high cheekbones, sculpted face, defined bone structure"
+    mood: [dark, technical, surreal]
+    incompatible: []

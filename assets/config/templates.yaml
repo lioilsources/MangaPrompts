@@ -1,0 +1,74 @@
+templates:
+  - id: template_portrait
+    label: "Portrét"
+    description: "Standardní portrétní šablona pro jednu postavu"
+    slot_order:
+      - subject
+      - style
+      - face
+      - eyes
+      - eyebrows
+      - hair
+      - expression
+      - pose
+      - clothing
+      - lighting
+      - effects
+      - background
+      - camera
+      - palette
+      - quality
+    negative_slot: negative
+    separator: ", "
+    required_slots:
+      - subject
+      - style
+      - quality
+    optional_slots:
+      - face
+      - eyes
+      - eyebrows
+      - hair
+      - expression
+      - pose
+      - clothing
+      - lighting
+      - effects
+      - background
+      - camera
+      - palette
+
+  - id: template_action_scene
+    label: "Akční scéna"
+    description: "Dynamická akční šablona s důrazem na pohyb a efekty"
+    slot_order:
+      - subject
+      - style
+      - expression
+      - pose
+      - clothing
+      - effects
+      - lighting
+      - background
+      - camera
+      - palette
+      - quality
+    negative_slot: negative
+    separator: ", "
+    required_slots:
+      - subject
+      - style
+      - pose
+      - quality
+    optional_slots:
+      - face
+      - eyes
+      - eyebrows
+      - hair
+      - expression
+      - clothing
+      - effects
+      - lighting
+      - background
+      - camera
+      - palette

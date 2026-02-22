@@ -1,0 +1,89 @@
+category: eyes
+label: "Oči"
+icon: visibility
+required: false
+blocks:
+  # Shape + Color combinations
+  - id: eyes_large_round_blue_green
+    label: "Velké kulaté modro-zelené"
+    tags: [large, round, gradient, blue, green]
+    value: "large round eyes, gradient blue to green irises, sparkle in eyes, visible lower eyelashes"
+    mood: [sweet, surreal]
+    incompatible: []
+
+  - id: eyes_almond_hazel_heterochromia
+    label: "Mandlové s heterochromií"
+    tags: [almond, hazel, heterochromia]
+    value: "almond shaped eyes, hazel with central heterochromia, glint catchlight in eyes"
+    mood: [sweet, surreal, nostalgic]
+    incompatible: []
+
+  - id: eyes_sharp_narrow_crimson
+    label: "Ostré úzké karmínové"
+    tags: [sharp, narrow, crimson, red]
+    value: "sharp narrow eyes, deep crimson red irises, intense gaze, shadowed eyes"
+    mood: [dark, surreal]
+    incompatible: []
+
+  - id: eyes_downturned_pale_gray
+    label: "Skloněné bledě šedé"
+    tags: [downturned, gray, limbal_ring]
+    value: "downturned eyes, pale gray irises with dark limbal ring, teary eyes, melancholic gaze"
+    mood: [sweet, nostalgic, dark]
+    incompatible: []
+
+  - id: eyes_upturned_sparkle
+    label: "Vzhůru obrácené s jiskrou"
+    tags: [upturned, sparkle, bright]
+    value: "upturned eyes, bright sparkle in eyes, prominent catchlight, visible lower eyelashes"
+    mood: [sweet, surreal]
+    incompatible: []
+
+  - id: eyes_heavy_lidded_shadowed
+    label: "Těžká víčka, stínované"
+    tags: [heavy_lidded, shadowed, seductive]
+    value: "heavy lidded eyes, shadowed eyes, smoky eyelid, seductive gaze"
+    mood: [dark, nostalgic]
+    incompatible: []
+
+  - id: eyes_large_round_teary
+    label: "Velké kulaté uslzené"
+    tags: [large, round, teary, emotional]
+    value: "large round eyes, teary eyes, glistening with unshed tears, sparkle in eyes"
+    mood: [sweet, nostalgic]
+    incompatible: []
+
+  - id: eyes_sharp_narrow_glint
+    label: "Ostré úzké s odleskem"
+    tags: [sharp, narrow, glint, intense]
+    value: "sharp narrow eyes, intense glint catchlight, focused piercing stare"
+    mood: [dark, technical]
+    incompatible: []
+
+  - id: eyes_almond_green_gradient
+    label: "Mandlové zelené s přechodem"
+    tags: [almond, green, gradient]
+    value: "almond shaped eyes, gradient green irises, natural sparkle, visible lower eyelashes"
+    mood: [sweet, nostalgic]
+    incompatible: []
+
+  - id: eyes_large_round_crimson
+    label: "Velké kulaté karmínové"
+    tags: [large, round, crimson, anime]
+    value: "large round eyes, deep crimson red irises, anime sparkle eyes, prominent catchlight"
+    mood: [dark, surreal]
+    incompatible: []
+
+  - id: eyes_downturned_blue
+    label: "Skloněné modré"
+    tags: [downturned, blue, gentle]
+    value: "downturned eyes, soft blue irises, gentle sad expression, visible lower eyelashes"
+    mood: [sweet, nostalgic]
+    incompatible: []
+
+  - id: eyes_upturned_hazel
+    label: "Vzhůru obrácené lískové"
+    tags: [upturned, hazel, bright]
+    value: "upturned eyes, warm hazel irises, bright catchlight, playful gaze"
+    mood: [sweet]
+    incompatible: []

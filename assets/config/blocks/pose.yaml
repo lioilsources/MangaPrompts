@@ -1,0 +1,74 @@
+category: pose
+label: "Póza"
+icon: accessibility_new
+required: false
+blocks:
+  - id: pose_dynamic_action
+    label: "Dynamická akční"
+    tags: [dynamic, action, movement]
+    value: "dynamic action pose, mid-motion stance, powerful body language"
+    mood: [dark, technical]
+    incompatible: [pose_restrained, pose_intimate_moment]
+
+  - id: pose_intimate_moment
+    label: "Intimní moment"
+    tags: [intimate, close, gentle]
+    value: "intimate moment pose, close personal distance, gentle body language, tender composition"
+    mood: [sweet, nostalgic]
+    incompatible: [pose_dynamic_action, pose_mecha_cockpit]
+
+  - id: pose_magical_girl
+    label: "Kouzelná dívka transformace"
+    tags: [magical_girl, transformation, sparkle]
+    value: "anime magical girl transformation pose, outstretched arms, dynamic energy radiating, graceful stance"
+    mood: [sweet, surreal]
+    incompatible: [pose_restrained, pose_mecha_cockpit]
+
+  - id: pose_restrained
+    label: "Spoutaná póza"
+    tags: [restrained, bondage, suggestion]
+    value: "restrained pose suggestion, hands behind back, constrained body language, tension in posture"
+    mood: [dark]
+    incompatible: [pose_dynamic_action, pose_magical_girl, pose_comical_surprised]
+
+  - id: pose_mecha_cockpit
+    label: "V kokpitu mechy"
+    tags: [mecha, cockpit, seated, technical]
+    value: "seated in mecha cockpit, hands on controls, surrounded by holographic displays, pilot stance"
+    mood: [technical]
+    incompatible: [pose_intimate_moment, pose_magical_girl]
+
+  - id: pose_comical_surprised
+    label: "Komicky překvapená"
+    tags: [comical, surprised, chibi, exaggerated]
+    value: "comical surprised pose, exaggerated body reaction, chibi-style overreaction, arms flailing"
+    mood: [sweet]
+    incompatible: [pose_restrained, pose_mecha_cockpit]
+
+  - id: pose_elegant_standing
+    label: "Elegantní stojící"
+    tags: [elegant, standing, composed]
+    value: "elegant standing pose, graceful posture, one hand near face, composed body language"
+    mood: [sweet, dark, nostalgic]
+    incompatible: []
+
+  - id: pose_combat_ready
+    label: "Bojová připravenost"
+    tags: [combat, ready, martial]
+    value: "combat ready stance, feet planted, fists raised, intense body tension, martial arts pose"
+    mood: [dark, technical]
+    incompatible: [pose_intimate_moment, pose_comical_surprised]
+
+  - id: pose_reclining
+    label: "Ležící"
+    tags: [reclining, lying, relaxed]
+    value: "reclining pose, lying down, relaxed body position, draped fabric beneath"
+    mood: [sweet, dark, nostalgic]
+    incompatible: [pose_dynamic_action, pose_mecha_cockpit, pose_combat_ready]
+
+  - id: pose_close_up_portrait
+    label: "Detail portrét"
+    tags: [close_up, portrait, face]
+    value: "close up portrait composition, face and shoulders framing, direct viewer engagement"
+    mood: [sweet, dark, surreal, technical, nostalgic]
+    incompatible: []

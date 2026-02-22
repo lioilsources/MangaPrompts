@@ -1,0 +1,81 @@
+category: background
+label: "Pozadí"
+icon: landscape
+required: false
+blocks:
+  - id: background_cyberpunk_street
+    label: "Kyberpunková ulice"
+    tags: [cyberpunk, street, rainy, neon]
+    value: "rainy cyberpunk street background, neon signs reflecting in wet pavement, urban dystopia atmosphere"
+    mood: [dark, surreal]
+    incompatible: [background_cherry_blossom, background_studio_backdrop]
+
+  - id: background_motion_blur
+    label: "Rozmazané pozadí pohybem"
+    tags: [motion_blur, speed, dynamic]
+    value: "motion blur background, speed blur effect, dynamic rushing environment"
+    mood: [dark, technical]
+    incompatible: [background_studio_backdrop]
+
+  - id: background_mecha_cockpit
+    label: "Kokpit mechy"
+    tags: [mecha, cockpit, technical, interior]
+    value: "mecha cockpit interior background, holographic control panels, technical readouts, mechanical detail surroundings"
+    mood: [technical]
+    incompatible: [background_cherry_blossom, background_cyberpunk_street, background_sunset_sky]
+
+  - id: background_cherry_blossom
+    label: "Třešňový sad"
+    tags: [cherry_blossom, sakura, nature, romantic]
+    value: "cherry blossom garden background, sakura trees in full bloom, petals drifting in breeze, soft pink canopy"
+    mood: [sweet, nostalgic]
+    incompatible: [background_cyberpunk_street, background_mecha_cockpit, background_abstract_dark]
+
+  - id: background_abstract_dark
+    label: "Abstraktní tmavé"
+    tags: [abstract, dark, minimal]
+    value: "abstract dark background, deep black with subtle texture, minimal atmospheric haze"
+    mood: [dark]
+    incompatible: [background_cherry_blossom, background_sunset_sky]
+
+  - id: background_studio_backdrop
+    label: "Studiové pozadí"
+    tags: [studio, clean, professional]
+    value: "clean studio backdrop, professional photography background, seamless neutral tone"
+    mood: [technical, sweet]
+    incompatible: [background_cyberpunk_street, background_motion_blur, background_mecha_cockpit]
+
+  - id: background_sunset_sky
+    label: "Západ slunce"
+    tags: [sunset, sky, warm, romantic]
+    value: "dramatic sunset sky background, warm orange and pink clouds, golden horizon light"
+    mood: [sweet, nostalgic]
+    incompatible: [background_abstract_dark, background_mecha_cockpit]
+
+  - id: background_school_rooftop
+    label: "Střecha školy"
+    tags: [school, rooftop, anime, urban]
+    value: "anime school rooftop background, chain link fence, overlooking city skyline, afternoon atmosphere"
+    mood: [sweet, nostalgic]
+    incompatible: [background_cyberpunk_street, background_mecha_cockpit]
+
+  - id: background_neon_alley
+    label: "Neonová ulička"
+    tags: [neon, alley, urban, night]
+    value: "narrow neon-lit alley background, glowing signs, steam rising from vents, urban night scene"
+    mood: [dark, surreal]
+    incompatible: [background_cherry_blossom, background_studio_backdrop, background_sunset_sky]
+
+  - id: background_traditional_room
+    label: "Tradiční japonský pokoj"
+    tags: [traditional, japanese, interior, tatami]
+    value: "traditional Japanese room background, tatami mats, sliding shoji doors, warm interior lighting"
+    mood: [sweet, nostalgic]
+    incompatible: [background_cyberpunk_street, background_mecha_cockpit]
+
+  - id: background_starfield
+    label: "Hvězdné pole"
+    tags: [space, stars, cosmic]
+    value: "cosmic starfield background, deep space nebula colors, floating in vast cosmos"
+    mood: [surreal, dark]
+    incompatible: [background_studio_backdrop, background_school_rooftop]

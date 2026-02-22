@@ -1,0 +1,102 @@
+category: effects
+label: "Efekty"
+icon: auto_awesome
+required: false
+blocks:
+  - id: effects_manga_speed_lines
+    label: "Manga speed lines"
+    tags: [manga, speed_lines, motion]
+    value: "dramatic manga speed lines, radial motion lines, action emphasis"
+    mood: [dark, technical]
+    incompatible: [effects_cherry_blossom, effects_sparkle]
+
+  - id: effects_sparkle
+    label: "Třpytivé efekty"
+    tags: [sparkle, shimmer, magical]
+    value: "sparkling shimmer effects, anime sparkle overlay, magical particle effects, glittering highlights"
+    mood: [sweet, surreal]
+    incompatible: [effects_manga_speed_lines, effects_glitch_art]
+
+  - id: effects_glitch_art
+    label: "Glitch art"
+    tags: [glitch, digital, distortion]
+    value: "glitch art distortion, digital corruption effect, scan line artifacts, pixel displacement"
+    mood: [surreal, dark]
+    incompatible: [effects_sparkle, effects_cherry_blossom]
+
+  - id: effects_holographic
+    label: "Holografické odrazy"
+    tags: [holographic, reflections, iridescent]
+    value: "holographic reflections, iridescent light effects, prismatic color shifts on surfaces"
+    mood: [surreal, technical]
+    incompatible: []
+
+  - id: effects_cherry_blossom
+    label: "Třešňové květy"
+    tags: [cherry_blossom, petals, romantic]
+    value: "cherry blossom petals falling, sakura petals floating in air, delicate petal particles"
+    mood: [sweet, nostalgic]
+    incompatible: [effects_manga_speed_lines, effects_glitch_art]
+
+  - id: effects_screentones
+    label: "Screentóny"
+    tags: [screentones, manga, halftone]
+    value: "manga screentone overlay, halftone dot pattern, traditional manga print effect"
+    mood: [nostalgic, technical]
+    incompatible: []
+
+  - id: effects_sweat_drop
+    label: "Kapka potu"
+    tags: [sweat_drop, comedy, anime]
+    value: "anime sweat drop effect, comical stress indicator, cartoon emphasis"
+    mood: [sweet]
+    incompatible: [effects_glitch_art]
+
+  - id: effects_motion_lines
+    label: "Pohybové čáry"
+    tags: [motion_lines, movement, dynamic]
+    value: "cartoon motion lines, dynamic movement indicators, whoosh effect lines"
+    mood: [sweet, technical]
+    incompatible: []
+
+  - id: effects_bokeh
+    label: "Bokeh"
+    tags: [bokeh, blur, depth]
+    value: "gentle pink and purple bokeh, creamy out of focus highlights, shallow depth of field bokeh orbs"
+    mood: [sweet, nostalgic]
+    incompatible: []
+
+  - id: effects_double_exposure
+    label: "Dvojitá expozice"
+    tags: [double_exposure, overlay, artistic]
+    value: "double exposure effect, overlapping imagery, transparent layered composition"
+    mood: [surreal, nostalgic]
+    incompatible: []
+
+  - id: effects_prism
+    label: "Prizma"
+    tags: [prism, rainbow, light]
+    value: "prism light effect, rainbow light refraction, chromatic aberration, light spectrum dispersion"
+    mood: [surreal]
+    incompatible: []
+
+  - id: effects_floating_elements
+    label: "Vznášející se prvky"
+    tags: [floating, surreal, gravity]
+    value: "floating elements defying gravity, surreal suspended objects, dreamlike levitation"
+    mood: [surreal]
+    incompatible: []
+
+  - id: effects_shadow_aura
+    label: "Stínová aura"
+    tags: [shadow, aura, dark_energy]
+    value: "dark shadow aura surrounding figure, ominous energy emanation, dark smoky tendrils"
+    mood: [dark]
+    incompatible: [effects_sparkle, effects_cherry_blossom]
+
+  - id: effects_schematic_overlays
+    label: "Schématické overlaye"
+    tags: [schematic, hud, technical]
+    value: "schematic holographic UI overlays, technical HUD elements, blueprint line annotations"
+    mood: [technical]
+    incompatible: [effects_cherry_blossom]

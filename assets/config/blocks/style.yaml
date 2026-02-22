@@ -1,0 +1,102 @@
+category: style
+label: "Styl"
+icon: brush
+required: true
+blocks:
+  - id: style_shonen_action
+    label: "Shonen akce"
+    tags: [shonen, action, dynamic]
+    value: "Shonen jump style, dramatic manga aesthetic, cinematic composition"
+    mood: [dark, technical]
+    incompatible: [style_shojo_romantic, style_chibi_comedy]
+
+  - id: style_shojo_romantic
+    label: "Shojo romantický"
+    tags: [shojo, romantic, soft]
+    value: "soft romantic portrait style, sparkling shimmer effects, anime sparkle aesthetic, love confession atmosphere"
+    mood: [sweet, nostalgic]
+    incompatible: [style_shonen_action, style_bdsm_dramatic, style_mecha_technical]
+
+  - id: style_cyberpunk_fetish
+    label: "Cyberpunk fetiš"
+    tags: [cyberpunk, fetish, neon]
+    value: "cyberpunk aesthetic, glitch art distortion, holographic reflections, Blade Runner aesthetic, anime-inspired"
+    mood: [dark, surreal]
+    incompatible: [style_chibi_comedy, style_shojo_romantic]
+
+  - id: style_chibi_comedy
+    label: "Chibi komedie"
+    tags: [chibi, comedy, exaggerated]
+    value: "exaggerated chibi face proportions, comical expression, cartoon motion lines, candid snapshot style, humor atmosphere, Instagram photo aesthetic"
+    mood: [sweet]
+    incompatible: [style_bdsm_dramatic, style_cyberpunk_fetish, style_shonen_action]
+
+  - id: style_mecha_technical
+    label: "Mecha technický"
+    tags: [mecha, technical, military]
+    value: "schematic holographic UI overlays, mechanical detail, military aesthetic, blueprint style accents"
+    mood: [technical, dark]
+    incompatible: [style_shojo_romantic, style_chibi_comedy]
+
+  - id: style_yuri_gentle
+    label: "Yuri jemný"
+    tags: [yuri, gentle, intimate]
+    value: "soft focus aesthetic, pastel color grading, elegant composition, whisper dynamics"
+    mood: [sweet, nostalgic]
+    incompatible: [style_shonen_action, style_mecha_technical]
+
+  - id: style_bdsm_dramatic
+    label: "BDSM dramatický"
+    tags: [bdsm, dramatic, noir]
+    value: "chiaroscuro lighting style, cinematic noir aesthetic, high contrast, dramatic atmosphere"
+    mood: [dark]
+    incompatible: [style_chibi_comedy, style_shojo_romantic]
+
+  - id: style_seinen
+    label: "Seinen"
+    tags: [seinen, mature, detailed]
+    value: "seinen manga aesthetic, mature detailed composition, realistic proportions, grounded atmosphere"
+    mood: [dark, technical, nostalgic]
+    incompatible: [style_chibi_comedy]
+
+  - id: style_kodomo
+    label: "Kodomo"
+    tags: [kodomo, cute, simple]
+    value: "kodomo style, cute simplified aesthetic, bright cheerful composition, clean lines"
+    mood: [sweet]
+    incompatible: [style_bdsm_dramatic, style_cyberpunk_fetish]
+
+  - id: style_webtoon
+    label: "Webtoon"
+    tags: [webtoon, modern, digital]
+    value: "modern webtoon aesthetic, clean digital style, vibrant colors, vertical composition influence"
+    mood: [sweet, dark, surreal]
+    incompatible: []
+
+  - id: style_magical_girl
+    label: "Kouzelná dívka"
+    tags: [magical_girl, sparkle, transformation]
+    value: "magical girl anime aesthetic, sparkle and ribbon motifs, transformation pose energy, luminous effects"
+    mood: [sweet, surreal]
+    incompatible: [style_mecha_technical, style_bdsm_dramatic]
+
+  - id: style_realistic
+    label: "Realistický"
+    tags: [realistic, visual, photorealistic]
+    value: "photorealistic visual style, realistic proportions and anatomy, natural skin texture"
+    mood: [sweet, dark, technical, nostalgic]
+    incompatible: [style_chibi_comedy]
+
+  - id: style_stylized
+    label: "Stylizovaný"
+    tags: [stylized, artistic, exaggerated]
+    value: "stylized artistic rendering, exaggerated features, artistic color choices"
+    mood: [sweet, dark, surreal]
+    incompatible: []
+
+  - id: style_minimalist
+    label: "Minimalistický"
+    tags: [minimalist, clean, simple]
+    value: "minimalist visual composition, clean negative space, reduced detail, elegant simplicity"
+    mood: [sweet, technical]
+    incompatible: [style_cyberpunk_fetish, style_mecha_technical]

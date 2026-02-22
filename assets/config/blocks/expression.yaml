@@ -1,0 +1,106 @@
+category: expression
+label: "Výraz"
+icon: mood
+required: false
+blocks:
+  # Positive / gentle expressions
+  - id: expression_gentle_smile
+    label: "Jemný úsměv"
+    tags: [gentle, smile, soft]
+    value: "gentle half smile, warm soft expression, relaxed face"
+    mood: [sweet, nostalgic]
+    incompatible: [expression_angry_glare, expression_maniacal_grin, expression_ahegao]
+
+  - id: expression_shy_gaze
+    label: "Stydlivý pohled"
+    tags: [shy, downward, bashful]
+    value: "shy downward gaze, bashful expression, lowered eyelids"
+    mood: [sweet, nostalgic]
+    incompatible: [expression_angry_glare, expression_maniacal_grin]
+
+  - id: expression_blushing
+    label: "Červenání"
+    tags: [blush, cheeks, embarrassed]
+    value: "blushing cheeks, flushed rosy cheeks, embarrassed expression"
+    mood: [sweet]
+    incompatible: [expression_stoic_neutral, expression_angry_glare]
+
+  # Surprised / open expressions
+  - id: expression_surprised
+    label: "Překvapení"
+    tags: [surprised, open_mouth, shock]
+    value: "surprised parted lips, wide eyes, shocked expression"
+    mood: [sweet, surreal]
+    incompatible: [expression_stoic_neutral, expression_angry_glare]
+
+  - id: expression_biting_lip
+    label: "Kousání rtu"
+    tags: [biting, lip, teasing]
+    value: "biting lower lip, teasing expression, playful tension"
+    mood: [sweet, dark]
+    incompatible: [expression_angry_glare, expression_maniacal_grin]
+
+  # Negative / intense expressions
+  - id: expression_angry_glare
+    label: "Zuřivý pohled"
+    tags: [angry, glare, furrowed]
+    value: "angry glare with furrowed brows, intense fierce expression, clenched jaw"
+    mood: [dark, technical]
+    incompatible: [expression_gentle_smile, expression_shy_gaze, expression_blushing]
+
+  - id: expression_sad_trembling
+    label: "Smutné chvění rtů"
+    tags: [sad, trembling, emotional]
+    value: "sad trembling lip, sorrowful expression, on the verge of tears"
+    mood: [dark, nostalgic]
+    incompatible: [expression_gentle_smile, expression_maniacal_grin]
+
+  - id: expression_maniacal_grin
+    label: "Šílený úšklebek"
+    tags: [maniacal, grin, wide, crazy]
+    value: "maniacal wide grin, unhinged expression, wild eyes, unsettling smile"
+    mood: [dark, surreal]
+    incompatible: [expression_gentle_smile, expression_shy_gaze, expression_sad_trembling]
+
+  - id: expression_stoic_neutral
+    label: "Stoický neutrální"
+    tags: [stoic, neutral, calm]
+    value: "stoic neutral expression, emotionless calm face, composed demeanor"
+    mood: [dark, technical, nostalgic]
+    incompatible: [expression_surprised, expression_blushing, expression_maniacal_grin]
+
+  - id: expression_tears
+    label: "Slzy"
+    tags: [tears, crying, emotional]
+    value: "tears streaming down cheeks, crying expression, glistening tear tracks on skin"
+    mood: [dark, nostalgic, sweet]
+    incompatible: [expression_maniacal_grin, expression_gentle_smile]
+
+  # NSFW expressions
+  - id: expression_ahegao
+    label: "Ahegao"
+    tags: [ahegao, exaggerated, nsfw]
+    value: "ahegao expression, rolled back eyes, tongue out, exaggerated pleasure face"
+    mood: [surreal]
+    incompatible: [expression_gentle_smile, expression_stoic_neutral, expression_angry_glare]
+
+  - id: expression_dazed
+    label: "Omámený pohled"
+    tags: [dazed, half_lidded, dreamy]
+    value: "dazed half lidded eyes, dreamy unfocused gaze, relaxed parted lips"
+    mood: [sweet, dark, surreal]
+    incompatible: [expression_angry_glare, expression_stoic_neutral]
+
+  - id: expression_flushed
+    label: "Zrudlý obličej"
+    tags: [flushed, heated, neck]
+    value: "flushed face and neck, heated expression, visible redness spreading across skin"
+    mood: [sweet, dark]
+    incompatible: [expression_stoic_neutral]
+
+  - id: expression_messy_drool
+    label: "Nepořádný výraz"
+    tags: [drool, messy, nsfw]
+    value: "messy drool at corner of mouth, disheveled expression, smeared lipstick"
+    mood: [dark, surreal]
+    incompatible: [expression_gentle_smile, expression_stoic_neutral]

@@ -1,0 +1,74 @@
+category: lighting
+label: "Osvětlení"
+icon: light_mode
+required: false
+blocks:
+  - id: lighting_cinematic
+    label: "Filmové osvětlení"
+    tags: [cinematic, dramatic, professional]
+    value: "cinematic lighting, professional studio quality light, dramatic light and shadow interplay"
+    mood: [dark, technical]
+    incompatible: []
+
+  - id: lighting_chiaroscuro
+    label: "Šerosvit (chiaroscuro)"
+    tags: [chiaroscuro, contrast, noir]
+    value: "chiaroscuro lighting, extreme contrast between light and dark, dramatic shadow patterns across face"
+    mood: [dark]
+    incompatible: [lighting_golden_hour, lighting_soft_natural, lighting_morning_light]
+
+  - id: lighting_warm_sunset
+    label: "Teplý západ slunce"
+    tags: [sunset, warm, orange]
+    value: "warm sunset lighting, orange and golden tones, long shadows, romantic atmosphere"
+    mood: [sweet, nostalgic]
+    incompatible: [lighting_neon_lit, lighting_chiaroscuro]
+
+  - id: lighting_golden_hour
+    label: "Zlatá hodinka"
+    tags: [golden_hour, soft, warm]
+    value: "golden hour lighting, soft warm directional light, gentle skin glow, lens flare accents"
+    mood: [sweet, nostalgic]
+    incompatible: [lighting_chiaroscuro, lighting_neon_lit, lighting_low_key_harsh]
+
+  - id: lighting_neon_lit
+    label: "Neonové osvětlení"
+    tags: [neon, cyberpunk, colorful]
+    value: "neon-lit environment, colorful neon reflections on skin, magenta and cyan light sources"
+    mood: [dark, surreal]
+    incompatible: [lighting_golden_hour, lighting_warm_sunset, lighting_morning_light]
+
+  - id: lighting_dramatic_side
+    label: "Dramatické boční"
+    tags: [side, dramatic, split]
+    value: "dramatic side lighting, half face illuminated, strong directional light source, deep shadows"
+    mood: [dark, technical]
+    incompatible: []
+
+  - id: lighting_morning_light
+    label: "Ranní světlo"
+    tags: [morning, gentle, fresh]
+    value: "morning light, soft diffused daylight, gentle illumination, fresh clean atmosphere"
+    mood: [sweet, nostalgic]
+    incompatible: [lighting_neon_lit, lighting_chiaroscuro, lighting_low_key_harsh]
+
+  - id: lighting_low_key_harsh
+    label: "Nízký klíč, tvrdé stíny"
+    tags: [low_key, harsh, shadows]
+    value: "low key lighting, harsh shadows, minimal fill light, deep black shadows, stark contrast"
+    mood: [dark]
+    incompatible: [lighting_golden_hour, lighting_morning_light, lighting_soft_natural]
+
+  - id: lighting_soft_natural
+    label: "Měkké přirozené"
+    tags: [soft, natural, diffused]
+    value: "soft natural lighting, diffused ambient light, gentle even illumination"
+    mood: [sweet, nostalgic]
+    incompatible: [lighting_chiaroscuro, lighting_low_key_harsh]
+
+  - id: lighting_high_contrast_bw_red
+    label: "Vysoký kontrast ČB s červenou"
+    tags: [high_contrast, black_white, red_accent]
+    value: "high contrast black and white lighting with red accent light, noir atmosphere, selective color"
+    mood: [dark]
+    incompatible: [lighting_golden_hour, lighting_warm_sunset]

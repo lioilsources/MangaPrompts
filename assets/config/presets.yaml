@@ -1,0 +1,88 @@
+presets:
+  - id: preset_shojo_heroine
+    label: "Shojo hrdinka"
+    description: "Romantická shojo hrdinka se třpytivými efekty a měkkým osvětlením"
+    template: template_portrait
+    blocks:
+      subject: subject_woman_20s
+      style: style_shojo_romantic
+      face: face_heart
+      eyes: eyes_large_round_blue_green
+      eyebrows: eyebrows_thin_arched
+      hair: hair_long_flowing_blonde
+      expression: expression_shy_gaze
+      pose: pose_elegant_standing
+      clothing: clothing_school_uniform
+      lighting: lighting_warm_sunset
+      effects: effects_sparkle
+      background: background_cherry_blossom
+      camera: camera_canon_r5
+      palette: palette_pink_peach
+      quality: quality_photo
+      negative: negative_standard
+
+  - id: preset_cyberpunk_dark
+    label: "Cyberpunk temný"
+    description: "Temná kyberpunková postava v neonové uličce"
+    template: template_portrait
+    blocks:
+      subject: subject_woman_20s
+      style: style_cyberpunk_fetish
+      face: face_angular_cheekbones
+      eyes: eyes_sharp_narrow_crimson
+      eyebrows: eyebrows_straight_thick
+      hair: hair_asymmetrical_bangs
+      expression: expression_stoic_neutral
+      pose: pose_elegant_standing
+      clothing: clothing_cyberpunk_wear
+      lighting: lighting_neon_lit
+      effects: effects_glitch_art
+      background: background_neon_alley
+      camera: camera_leica_m6
+      palette: palette_magenta_cyan
+      quality: quality_8k_hyper
+      negative: negative_standard
+
+  - id: preset_shonen_hero
+    label: "Shonen hrdina"
+    description: "Dynamický akční shonen hrdina s pohybovými efekty"
+    template: template_action_scene
+    blocks:
+      subject: subject_man_20s
+      style: style_shonen_action
+      face: face_strong_jaw
+      eyes: eyes_sharp_narrow_glint
+      eyebrows: eyebrows_slightly_furrowed
+      hair: hair_pixie_tousled
+      expression: expression_angry_glare
+      pose: pose_dynamic_action
+      clothing: clothing_casual_modern
+      lighting: lighting_cinematic
+      effects: effects_manga_speed_lines
+      background: background_motion_blur
+      camera: camera_sony_a7iii
+      palette: palette_black_red
+      quality: quality_8k_hyper
+      negative: negative_standard
+
+  - id: preset_magical_girl
+    label: "Kouzelná dívka"
+    description: "Třpytivá transformační scéna kouzelné dívky"
+    template: template_portrait
+    blocks:
+      subject: subject_woman_20s
+      style: style_magical_girl
+      face: face_round_soft
+      eyes: eyes_upturned_sparkle
+      eyebrows: eyebrows_thin_arched
+      hair: hair_twin_tails
+      expression: expression_surprised
+      pose: pose_magical_girl
+      clothing: clothing_magical_outfit
+      lighting: lighting_golden_hour
+      effects: effects_sparkle
+      background: background_starfield
+      camera: camera_fujifilm_gfx100
+      palette: palette_pastel_pink_blue
+      quality: quality_photo
+      negative: negative_standard
