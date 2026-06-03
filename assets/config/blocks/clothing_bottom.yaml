@@ -1,0 +1,68 @@
+category: clothing_bottom
+label: "Oblečení – spodek"
+icon: checkroom
+required: false
+# Layerable bottom garment. Multi-select friendly. Medium-agnostic.
+blocks:
+  - id: bottom_miniskirt
+    label: "Krátká minisukně"
+    tags: [skirt, short, mini]
+    value: "a short pleated miniskirt"
+    mood: [sweet, dark, nostalgic]
+    incompatible: []
+
+  - id: bottom_short_skirt
+    label: "Krátká áčková sukně"
+    tags: [skirt, short]
+    value: "a short A-line skirt"
+    mood: [sweet, nostalgic]
+    incompatible: []
+
+  - id: bottom_long_skirt
+    label: "Dlouhá sukně"
+    tags: [skirt, long]
+    value: "a flowing long skirt"
+    mood: [sweet, nostalgic, dark]
+    incompatible: []
+
+  - id: bottom_shorts
+    label: "Kraťasy"
+    tags: [shorts, short]
+    value: "casual short shorts"
+    mood: [sweet, nostalgic, technical]
+    incompatible: []
+
+  - id: bottom_denim_shorts
+    label: "Džínové kraťasy (hot pants)"
+    tags: [shorts, denim, hotpants]
+    value: "frayed denim hot pants"
+    mood: [sweet, dark, nostalgic]
+    incompatible: []
+
+  - id: bottom_jeans
+    label: "Džíny"
+    tags: [jeans, denim]
+    value: "fitted blue jeans"
+    mood: [sweet, nostalgic, technical]
+    incompatible: []
+
+  - id: bottom_leggings
+    label: "Legíny"
+    tags: [leggings, athletic]
+    value: "tight athletic leggings"
+    mood: [sweet, technical]
+    incompatible: []
+
+  - id: bottom_trousers
+    label: "Kalhoty"
+    tags: [trousers, formal]
+    value: "tailored trousers"
+    mood: [dark, technical, nostalgic]
+    incompatible: []
+
+  - id: bottom_sweatpants
+    label: "Tepláky"
+    tags: [sweatpants, casual]
+    value: "relaxed sweatpants"
+    mood: [sweet, nostalgic]
+    incompatible: []

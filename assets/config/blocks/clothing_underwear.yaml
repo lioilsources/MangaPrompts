@@ -1,0 +1,47 @@
+category: clothing_underwear
+label: "Oblečení – spodní prádlo"
+icon: checkroom
+required: false
+# Innermost layer. Multi-select friendly. Medium-agnostic, kept tasteful.
+blocks:
+  - id: underwear_panties
+    label: "Kalhotky (bavlna)"
+    tags: [panties, cotton]
+    value: "simple cotton panties"
+    mood: [sweet, nostalgic]
+    incompatible: []
+
+  - id: underwear_lace_panties
+    label: "Krajkové kalhotky"
+    tags: [panties, lace]
+    value: "delicate lace panties"
+    mood: [sweet, dark, nostalgic]
+    incompatible: []
+
+  - id: underwear_briefs
+    label: "Sportovní kalhotky"
+    tags: [briefs, sport]
+    value: "sporty briefs"
+    mood: [sweet, technical]
+    incompatible: []
+
+  - id: underwear_boxers
+    label: "Boxerky (pánské)"
+    tags: [boxers, male]
+    value: "men's boxer shorts"
+    mood: [sweet, technical, nostalgic]
+    incompatible: []
+
+  - id: underwear_bra
+    label: "Podprsenka"
+    tags: [bra]
+    value: "a matching bra"
+    mood: [sweet, dark, nostalgic]
+    incompatible: []
+
+  - id: underwear_sports_bra
+    label: "Sportovní podprsenka"
+    tags: [bra, sport]
+    value: "a sports bra"
+    mood: [sweet, technical]
+    incompatible: []

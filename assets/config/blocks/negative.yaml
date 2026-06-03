@@ -1,32 +1,35 @@
 category: negative
 label: "Negativní prompt"
 icon: block
-required: true
+required: false
+# Negatives are passed as a separate API field. Medium-specific guards are tagged
+# so the engine can drop the one that would fight the chosen medium (e.g. the
+# "no anime drawing" guard is photo_only and is dropped for illustration media).
 blocks:
-  - id: negative_standard
-    label: "Standardní negativní"
-    tags: [standard, general, safe]
-    value: "no cartoon, no 3D render, no illustration, no painting, no deformed hands"
-    mood: [sweet, dark, surreal, technical, nostalgic]
-    incompatible: []
-
   - id: negative_quality
-    label: "Kvalita - negativní"
+    label: "Kvalita – negativní"
     tags: [quality, artifacts, blur]
-    value: "no low quality, no blurry, no artifacts, no watermark, no text overlay, no cropped"
+    value: "low quality, blurry, jpeg artifacts, watermark, text overlay, cropped"
     mood: [sweet, dark, surreal, technical, nostalgic]
     incompatible: []
 
   - id: negative_anatomy
-    label: "Anatomie - negativní"
+    label: "Anatomie – negativní"
     tags: [anatomy, deformed, extra]
-    value: "no deformed anatomy, no extra fingers, no extra limbs, no distorted face, no bad proportions"
+    value: "deformed anatomy, extra fingers, extra limbs, distorted face, bad proportions"
     mood: [sweet, dark, surreal, technical, nostalgic]
     incompatible: []
 
-  - id: negative_style_guard
-    label: "Styl - negativní"
-    tags: [style, anime, drawing]
-    value: "no anime drawing style, no flat shading, no cel shading, no vector art, no CGI render"
+  - id: negative_photo_guard
+    label: "Foto guard (drž fotorealismus)"
+    tags: [style, photo_only]
+    value: "anime, cartoon, illustration, drawing, cel shading, flat shading, vector art, 3d render, cgi"
     mood: [sweet, dark, technical, nostalgic]
+    incompatible: []
+
+  - id: negative_illustration_guard
+    label: "Ilustrace guard (drž kresbu)"
+    tags: [style, illustration_only]
+    value: "photograph, photorealistic, real photo, dslr, film grain, skin pores"
+    mood: [sweet, dark, surreal, technical, nostalgic]
     incompatible: []

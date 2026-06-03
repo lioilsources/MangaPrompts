@@ -1,74 +1,77 @@
 category: camera
-label: "Kamera"
+label: "Kamera (jen foto)"
 icon: camera_alt
 required: false
+# Real-camera descriptors. The engine only injects these when the medium is
+# photoreal, so there is no need for camera-vs-illustration incompatibility
+# matrices anymore — they are gated out automatically.
 blocks:
   - id: camera_sony_a7iii
     label: "Sony A7III"
     tags: [sony, mirrorless, versatile]
-    value: "shot on Sony A7III, 85mm lens, f/1.4, shallow depth of field"
+    value: "shot on a Sony A7III, 85mm lens, f/1.4, shallow depth of field"
     mood: [sweet, dark, technical, nostalgic]
-    incompatible: [style_manga, style_comic_book, style_chibi_comedy, style_ai_aesthetic, style_magical_girl, style_kodomo, style_shonen_action, style_shojo_romantic, style_mecha_technical, style_seinen, style_webtoon, effects_manga_speed_lines, effects_screentones, effects_sweat_drop, effects_motion_lines]
+    incompatible: []
 
   - id: camera_canon_r5
     label: "Canon R5"
     tags: [canon, mirrorless, high_res]
-    value: "shot on Canon R5, 85mm f/1.2 lens, creamy bokeh, high resolution sensor"
+    value: "shot on a Canon R5, 85mm f/1.2 lens, creamy bokeh, high-resolution sensor"
     mood: [sweet, nostalgic]
-    incompatible: [style_manga, style_comic_book, style_chibi_comedy, style_ai_aesthetic, style_magical_girl, style_kodomo, style_shonen_action, style_shojo_romantic, style_mecha_technical, style_seinen, style_webtoon, effects_manga_speed_lines, effects_screentones, effects_sweat_drop, effects_motion_lines]
+    incompatible: []
 
   - id: camera_leica_m6
     label: "Leica M6"
     tags: [leica, rangefinder, street]
-    value: "shot on Leica M6, 50mm Summilux lens, f/1.4, street photography aesthetic"
+    value: "shot on a Leica M6, 50mm Summilux lens, f/1.4, street-photography aesthetic"
     mood: [dark, surreal, nostalgic]
-    incompatible: [style_manga, style_comic_book, style_chibi_comedy, style_ai_aesthetic, style_magical_girl, style_kodomo, style_shonen_action, style_shojo_romantic, style_mecha_technical, style_seinen, style_webtoon, effects_manga_speed_lines, effects_screentones, effects_sweat_drop, effects_motion_lines]
+    incompatible: []
 
   - id: camera_hasselblad
     label: "Hasselblad"
     tags: [hasselblad, medium_format, detail]
-    value: "shot on Hasselblad, medium format sensor, extreme detail resolution, smooth tonal gradations"
+    value: "shot on a Hasselblad, medium-format sensor, extreme detail, smooth tonal gradations"
     mood: [technical, dark]
-    incompatible: [style_manga, style_comic_book, style_chibi_comedy, style_ai_aesthetic, style_magical_girl, style_kodomo, style_shonen_action, style_shojo_romantic, style_mecha_technical, style_seinen, style_webtoon, effects_manga_speed_lines, effects_screentones, effects_sweat_drop, effects_motion_lines]
+    incompatible: []
 
   - id: camera_red_komodo
     label: "RED Komodo"
     tags: [red, cinema, video]
-    value: "shot on RED Komodo, cinematic 6K sensor, film-like color science, cinema lens"
+    value: "shot on a RED Komodo, cinematic 6K sensor, film-like color science"
     mood: [dark]
-    incompatible: [style_manga, style_comic_book, style_chibi_comedy, style_ai_aesthetic, style_magical_girl, style_kodomo, style_shonen_action, style_shojo_romantic, style_mecha_technical, style_seinen, style_webtoon, effects_manga_speed_lines, effects_screentones, effects_sweat_drop, effects_motion_lines]
+    incompatible: []
 
   - id: camera_fujifilm_gfx100
     label: "Fujifilm GFX 100"
     tags: [fujifilm, medium_format, color]
-    value: "shot on Fujifilm GFX 100, medium format, Fujifilm color science, 100 megapixel detail"
+    value: "shot on a Fujifilm GFX 100, medium format, Fujifilm color science, 100-megapixel detail"
     mood: [sweet, technical, nostalgic]
-    incompatible: [style_manga, style_comic_book, style_chibi_comedy, style_ai_aesthetic, style_magical_girl, style_kodomo, style_shonen_action, style_shojo_romantic, style_mecha_technical, style_seinen, style_webtoon, effects_manga_speed_lines, effects_screentones, effects_sweat_drop, effects_motion_lines]
+    incompatible: []
 
   - id: camera_phase_one_xf
     label: "Phase One XF"
     tags: [phase_one, large_format, studio]
-    value: "shot on Phase One XF, 150 megapixel, ISO 100, ultimate detail resolution, studio precision"
+    value: "shot on a Phase One XF, 150 megapixels, ISO 100, studio-grade detail"
     mood: [technical]
-    incompatible: [style_manga, style_comic_book, style_chibi_comedy, style_ai_aesthetic, style_magical_girl, style_kodomo, style_shonen_action, style_shojo_romantic, style_mecha_technical, style_seinen, style_webtoon, effects_manga_speed_lines, effects_screentones, effects_sweat_drop, effects_motion_lines]
+    incompatible: []
 
   - id: camera_portra_400
     label: "Portra 400 film"
     tags: [film, portra, analog, warm]
-    value: "shot on Portra 400 film, warm film tones, natural grain, analog photo aesthetic, soft skin rendering"
+    value: "shot on Portra 400 film, warm film tones, natural grain, soft skin rendering"
     mood: [sweet, nostalgic]
-    incompatible: [style_manga, style_comic_book, style_chibi_comedy, style_ai_aesthetic, style_magical_girl, style_kodomo, style_shonen_action, style_shojo_romantic, style_mecha_technical, style_seinen, style_webtoon, effects_manga_speed_lines, effects_screentones, effects_sweat_drop, effects_motion_lines]
+    incompatible: []
 
   - id: camera_35mm_candid
     label: "35mm momentka"
     tags: [35mm, candid, snapshot]
-    value: "35mm photograph, candid snapshot style, natural perspective, photojournalistic feel"
+    value: "a 35mm photograph, candid snapshot style, natural perspective"
     mood: [sweet, nostalgic]
-    incompatible: [style_manga, style_comic_book, style_chibi_comedy, style_ai_aesthetic, style_magical_girl, style_kodomo, style_shonen_action, style_shojo_romantic, style_mecha_technical, style_seinen, style_webtoon, effects_manga_speed_lines, effects_screentones, effects_sweat_drop, effects_motion_lines]
+    incompatible: []
 
   - id: camera_macro_sharp
     label: "Makro ostrý"
     tags: [macro, sharp, close_up]
-    value: "macro lens, razor sharp focus, extreme close-up detail, visible skin texture and pores"
+    value: "macro lens, razor-sharp focus, visible skin texture and pores"
     mood: [technical, dark]
-    incompatible: [style_manga, style_comic_book, style_chibi_comedy, style_ai_aesthetic, style_magical_girl, style_kodomo, style_shonen_action, style_shojo_romantic, style_mecha_technical, style_seinen, style_webtoon, effects_manga_speed_lines, effects_screentones, effects_sweat_drop, effects_motion_lines]
+    incompatible: []

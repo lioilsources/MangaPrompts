@@ -1,0 +1,34 @@
+category: framing
+label: "Záběr / Rámování"
+icon: crop
+required: true
+# Single source of truth for how much of the figure is in frame.
+# Poses no longer carry framing words, so this never gets duplicated or contradicted.
+blocks:
+  - id: framing_portrait
+    label: "Portrét (do půli těla)"
+    tags: [portrait, upper_body]
+    value: "upper-body portrait, framed from the waist up, head and torso clearly visible, facing the camera"
+    mood: [sweet, dark, surreal, technical, nostalgic]
+    incompatible: [framing_full_body, framing_cowboy, framing_closeup]
+
+  - id: framing_full_body
+    label: "Celá postava"
+    tags: [full_body]
+    value: "full-body shot, the entire figure visible from head to toe, complete body within the frame, generous headroom and space at the feet"
+    mood: [sweet, dark, surreal, technical, nostalgic]
+    incompatible: [framing_portrait, framing_cowboy, framing_closeup]
+
+  - id: framing_cowboy
+    label: "Cowboy (od stehen)"
+    tags: [cowboy, three_quarter]
+    value: "cowboy shot, framed from mid-thigh up, three-quarter body view, classic cinematic framing"
+    mood: [sweet, dark, surreal, technical, nostalgic]
+    incompatible: [framing_portrait, framing_full_body, framing_closeup]
+
+  - id: framing_closeup
+    label: "Detail (obličej)"
+    tags: [closeup, face]
+    value: "close-up shot, head and shoulders only, intimate framing of the face"
+    mood: [sweet, dark, surreal, technical, nostalgic]
+    incompatible: [framing_portrait, framing_full_body, framing_cowboy]

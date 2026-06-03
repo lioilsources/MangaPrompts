@@ -2,67 +2,70 @@ category: effects
 label: "Efekty"
 icon: auto_awesome
 required: false
+# Ink/manga drawing effects are tagged `manga_fx`; the engine drops them when
+# the medium is photoreal so they can't fight a photograph. No more camera
+# incompatibility matrices.
 blocks:
   - id: effects_manga_speed_lines
     label: "Manga speed lines"
-    tags: [manga, speed_lines, motion]
+    tags: [manga, speed_lines, motion, manga_fx]
     value: "dramatic manga speed lines, radial motion lines, action emphasis"
     mood: [dark, technical]
-    incompatible: [effects_cherry_blossom, effects_sparkle, camera_sony_a7iii, camera_canon_r5, camera_leica_m6, camera_hasselblad, camera_red_komodo, camera_fujifilm_gfx100, camera_phase_one_xf, camera_portra_400, camera_35mm_candid, camera_macro_sharp]
+    incompatible: [effects_cherry_blossom]
 
   - id: effects_sparkle
     label: "Třpytivé efekty"
     tags: [sparkle, shimmer, magical]
-    value: "sparkling shimmer effects, anime sparkle overlay, magical particle effects, glittering highlights"
+    value: "sparkling shimmer effects, magical particle highlights, glittering accents"
     mood: [sweet, surreal]
-    incompatible: [effects_manga_speed_lines, effects_glitch_art]
+    incompatible: [effects_glitch_art]
 
   - id: effects_glitch_art
     label: "Glitch art"
     tags: [glitch, digital, distortion]
-    value: "glitch art distortion, digital corruption effect, scan line artifacts, pixel displacement"
+    value: "glitch art distortion, digital corruption effect, scan-line artifacts, pixel displacement"
     mood: [surreal, dark]
     incompatible: [effects_sparkle, effects_cherry_blossom]
 
   - id: effects_holographic
     label: "Holografické odrazy"
     tags: [holographic, reflections, iridescent]
-    value: "holographic reflections, iridescent light effects, prismatic color shifts on surfaces"
+    value: "holographic reflections, iridescent light effects, prismatic color shifts"
     mood: [surreal, technical]
     incompatible: []
 
   - id: effects_cherry_blossom
     label: "Třešňové květy"
     tags: [cherry_blossom, petals, romantic]
-    value: "cherry blossom petals falling, sakura petals floating in air, delicate petal particles"
+    value: "cherry blossom petals falling, sakura petals floating in the air"
     mood: [sweet, nostalgic]
     incompatible: [effects_manga_speed_lines, effects_glitch_art]
 
   - id: effects_screentones
     label: "Screentóny"
-    tags: [screentones, manga, halftone]
+    tags: [screentones, manga, halftone, manga_fx]
     value: "manga screentone overlay, halftone dot pattern, traditional manga print effect"
     mood: [nostalgic, technical]
-    incompatible: [camera_sony_a7iii, camera_canon_r5, camera_leica_m6, camera_hasselblad, camera_red_komodo, camera_fujifilm_gfx100, camera_phase_one_xf, camera_portra_400, camera_35mm_candid, camera_macro_sharp]
+    incompatible: []
 
   - id: effects_sweat_drop
-    label: "Kapka potu"
-    tags: [sweat_drop, comedy, anime]
-    value: "anime sweat drop effect, comical stress indicator, cartoon emphasis"
+    label: "Kapka potu (anime)"
+    tags: [sweat_drop, comedy, anime, manga_fx]
+    value: "anime sweat-drop effect, comical stress indicator, cartoon emphasis"
     mood: [sweet]
-    incompatible: [effects_glitch_art, camera_sony_a7iii, camera_canon_r5, camera_leica_m6, camera_hasselblad, camera_red_komodo, camera_fujifilm_gfx100, camera_phase_one_xf, camera_portra_400, camera_35mm_candid, camera_macro_sharp]
+    incompatible: [effects_glitch_art]
 
   - id: effects_motion_lines
     label: "Pohybové čáry"
-    tags: [motion_lines, movement, dynamic]
+    tags: [motion_lines, movement, dynamic, manga_fx]
     value: "cartoon motion lines, dynamic movement indicators, whoosh effect lines"
     mood: [sweet, technical]
-    incompatible: [camera_sony_a7iii, camera_canon_r5, camera_leica_m6, camera_hasselblad, camera_red_komodo, camera_fujifilm_gfx100, camera_phase_one_xf, camera_portra_400, camera_35mm_candid, camera_macro_sharp]
+    incompatible: []
 
   - id: effects_bokeh
     label: "Bokeh"
     tags: [bokeh, blur, depth]
-    value: "gentle pink and purple bokeh, creamy out of focus highlights, shallow depth of field bokeh orbs"
+    value: "gentle bokeh, creamy out-of-focus highlights, shallow depth of field"
     mood: [sweet, nostalgic]
     incompatible: []
 
@@ -76,7 +79,7 @@ blocks:
   - id: effects_prism
     label: "Prizma"
     tags: [prism, rainbow, light]
-    value: "prism light effect, rainbow light refraction, chromatic aberration, light spectrum dispersion"
+    value: "prism light effect, rainbow refraction, chromatic aberration"
     mood: [surreal]
     incompatible: []
 
@@ -90,13 +93,13 @@ blocks:
   - id: effects_shadow_aura
     label: "Stínová aura"
     tags: [shadow, aura, dark_energy]
-    value: "dark shadow aura surrounding figure, ominous energy emanation, dark smoky tendrils"
+    value: "dark shadow aura surrounding the figure, ominous energy emanation, smoky tendrils"
     mood: [dark]
     incompatible: [effects_sparkle, effects_cherry_blossom]
 
   - id: effects_schematic_overlays
     label: "Schématické overlaye"
     tags: [schematic, hud, technical]
-    value: "schematic holographic UI overlays, technical HUD elements, blueprint line annotations"
+    value: "schematic holographic UI overlays, technical HUD elements, blueprint annotations"
     mood: [technical]
     incompatible: [effects_cherry_blossom]

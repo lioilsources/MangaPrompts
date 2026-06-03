@@ -2,73 +2,123 @@ category: subject
 label: "Postava"
 icon: person
 required: true
+# Subjects describe ONLY count, gender and arrangement — never the render medium.
+# The `group` tag tells the engine to drop single-person detail slots
+# (face/eyes/eyebrows/hair/body_type) so they don't fight the group composition.
 blocks:
-  - id: subject_woman_20s
-    label: "Mladá žena (20s)"
-    tags: [woman, young, japanese]
-    value: "photorealistic woman in her 20s, natural beauty, realistic proportions"
+  # --- Single ---
+  - id: subject_woman
+    label: "Žena (20s)"
+    tags: [solo, female, young, adult]
+    value: "a young woman in her early 20s, natural beauty, balanced realistic proportions"
     mood: [sweet, dark, surreal, technical, nostalgic]
     incompatible: []
 
   - id: subject_woman_30s
     label: "Žena (30s)"
-    tags: [woman, mature, photorealistic]
-    value: "photorealistic woman late 20s, natural beauty, realistic proportions"
+    tags: [solo, female, mature, adult]
+    value: "a woman in her early 30s, natural beauty, balanced realistic proportions"
     mood: [sweet, dark, surreal, technical, nostalgic]
     incompatible: []
 
-  - id: subject_man_20s
-    label: "Mladý muž (20s)"
-    tags: [man, young, japanese]
-    value: "photorealistic man early 20s, natural appearance, realistic proportions"
+  - id: subject_man
+    label: "Muž (20s)"
+    tags: [solo, male, young, adult]
+    value: "a young man in his early 20s, natural appearance, balanced realistic proportions"
     mood: [sweet, dark, surreal, technical, nostalgic]
     incompatible: []
 
   - id: subject_man_30s
     label: "Muž (30s)"
-    tags: [man, mature, japanese]
-    value: "photorealistic man early 30s, natural appearance, realistic proportions"
+    tags: [solo, male, mature, adult]
+    value: "a man in his early 30s, natural appearance, balanced realistic proportions"
     mood: [sweet, dark, surreal, technical, nostalgic]
     incompatible: []
 
+  # --- Pair ---
   - id: subject_couple
-    label: "Pár"
-    tags: [couple, romantic, two_people]
-    value: "photorealistic romantic couple, natural chemistry, realistic proportions"
-    mood: [sweet, nostalgic]
+    label: "Pár (muž + žena)"
+    tags: [pair, mixed, group, adult]
+    value: "a couple, a young man and a young woman together, natural chemistry, two people"
+    mood: [sweet, nostalgic, dark]
     incompatible: []
 
   - id: subject_two_women
     label: "Dvě ženy"
-    tags: [two_women, yuri, intimate]
-    value: "two photorealistic women, intimate composition, realistic proportions"
-    mood: [sweet, dark, surreal]
+    tags: [pair, female, group, adult]
+    value: "two young women together, side by side, two people"
+    mood: [sweet, dark, surreal, nostalgic]
     incompatible: []
 
-  - id: subject_pilot
-    label: "Pilot mechy"
-    tags: [pilot, mecha, technical]
-    value: "realistic pilot in mecha cockpit, gritty appearance"
-    mood: [technical, dark]
+  - id: subject_two_men
+    label: "Dva muži"
+    tags: [pair, male, group, adult]
+    value: "two young men together, side by side, two people"
+    mood: [sweet, dark, surreal, nostalgic]
     incompatible: []
 
+  # --- Trio ---
   - id: subject_three_women
-    label: "Tři dívky"
-    tags: [three_women, group, yuri]
-    value: "three photorealistic women, group composition, realistic proportions"
-    mood: [sweet, dark, surreal]
-    incompatible: [pose_frontal_nude, pose_intimate_moment, pose_intimate_full_body, pose_magical_girl, pose_close_up_portrait, pose_bust_shot, pose_selfie, pose_mecha_cockpit]
+    label: "Tři ženy"
+    tags: [trio, female, group, adult]
+    value: "three young women together as a group, ensemble of three people"
+    mood: [sweet, dark, surreal, nostalgic]
+    incompatible: []
 
+  - id: subject_three_men
+    label: "Tři muži"
+    tags: [trio, male, group, adult]
+    value: "three young men together as a group, ensemble of three people"
+    mood: [sweet, dark, surreal, nostalgic]
+    incompatible: []
+
+  - id: subject_three_mixed
+    label: "Trojice (mix)"
+    tags: [trio, mixed, group, adult]
+    value: "a group of three young people, a mix of men and women, ensemble of three"
+    mood: [sweet, dark, surreal, nostalgic]
+    incompatible: []
+
+  # --- Quad ---
   - id: subject_four_women
-    label: "Čtyři dívky"
-    tags: [four_women, group]
-    value: "four photorealistic women, group composition, ensemble cast, realistic proportions"
-    mood: [sweet, dark, surreal]
-    incompatible: [pose_frontal_nude, pose_intimate_moment, pose_intimate_full_body, pose_magical_girl, pose_close_up_portrait, pose_bust_shot, pose_selfie, pose_mecha_cockpit]
+    label: "Čtyři ženy"
+    tags: [quad, female, group, adult]
+    value: "four young women together as a group, ensemble of four people"
+    mood: [sweet, dark, surreal, nostalgic]
+    incompatible: []
 
-  - id: subject_group_large
-    label: "Skupina 5+ osob"
-    tags: [group, large, ensemble, crowd]
-    value: "large group of five or more people, ensemble composition, crowd scene, realistic proportions"
+  - id: subject_four_men
+    label: "Čtyři muži"
+    tags: [quad, male, group, adult]
+    value: "four young men together as a group, ensemble of four people"
+    mood: [sweet, dark, surreal, nostalgic]
+    incompatible: []
+
+  - id: subject_four_mixed
+    label: "Čtveřice (mix)"
+    tags: [quad, mixed, group, adult]
+    value: "a group of four young people, a mix of men and women, ensemble of four"
+    mood: [sweet, dark, surreal, nostalgic]
+    incompatible: []
+
+  # --- Large group (5+) ---
+  - id: subject_group_women
+    label: "Skupina žen (5+)"
+    tags: [group, female, large, crowd, adult]
+    value: "a large group of five or more young women, ensemble crowd composition"
     mood: [sweet, nostalgic, dark]
-    incompatible: [pose_frontal_nude, pose_intimate_moment, pose_intimate_full_body, pose_magical_girl, pose_close_up_portrait, pose_bust_shot, pose_selfie, pose_mecha_cockpit]
+    incompatible: []
+
+  - id: subject_group_men
+    label: "Skupina mužů (5+)"
+    tags: [group, male, large, crowd, adult]
+    value: "a large group of five or more young men, ensemble crowd composition"
+    mood: [sweet, nostalgic, dark]
+    incompatible: []
+
+  - id: subject_group_mixed
+    label: "Skupina (5+, mix)"
+    tags: [group, mixed, large, crowd, adult]
+    value: "a large group of five or more people, a mixed crowd of men and women, ensemble cast"
+    mood: [sweet, nostalgic, dark]
+    incompatible: []

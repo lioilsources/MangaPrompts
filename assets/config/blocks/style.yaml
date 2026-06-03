@@ -1,123 +1,77 @@
 category: style
-label: "Styl"
+label: "Styl / Nálada"
 icon: brush
-required: true
+required: false
+# Style is now a pure genre/mood flavour layered on top of any medium.
+# No render-medium words, no camera incompatibility matrices — those moved to
+# the `medium` axis and engine-level gating.
 blocks:
   - id: style_shonen_action
     label: "Shonen akce"
-    tags: [shonen, action, dynamic]
-    value: "Shonen jump style, dramatic manga aesthetic, cinematic composition"
+    tags: [shonen, action]
+    value: "dynamic shonen action mood, dramatic high-energy composition, intense atmosphere"
     mood: [dark, technical]
-    incompatible: [style_shojo_romantic, style_chibi_comedy, camera_sony_a7iii, camera_canon_r5, camera_leica_m6, camera_hasselblad, camera_red_komodo, camera_fujifilm_gfx100, camera_phase_one_xf, camera_portra_400, camera_35mm_candid, camera_macro_sharp]
+    incompatible: []
 
   - id: style_shojo_romantic
     label: "Shojo romantický"
-    tags: [shojo, romantic, soft]
-    value: "soft romantic art style, sparkling shimmer effects, anime sparkle aesthetic, love confession atmosphere"
+    tags: [shojo, romantic]
+    value: "soft romantic shojo mood, dreamy tender atmosphere, gentle delicate feel"
     mood: [sweet, nostalgic]
-    incompatible: [style_shonen_action, style_bdsm_dramatic, style_mecha_technical, camera_sony_a7iii, camera_canon_r5, camera_leica_m6, camera_hasselblad, camera_red_komodo, camera_fujifilm_gfx100, camera_phase_one_xf, camera_portra_400, camera_35mm_candid, camera_macro_sharp]
-
-  - id: style_cyberpunk_fetish
-    label: "Cyberpunk fetiš"
-    tags: [cyberpunk, fetish, neon]
-    value: "cyberpunk aesthetic, glitch art distortion, holographic reflections, Blade Runner aesthetic, anime-inspired"
-    mood: [dark, surreal]
-    incompatible: [style_chibi_comedy, style_shojo_romantic]
-
-  - id: style_chibi_comedy
-    label: "Chibi komedie"
-    tags: [chibi, comedy, exaggerated]
-    value: "exaggerated chibi face proportions, comical expression, cartoon motion lines, candid snapshot style, humor atmosphere, Instagram photo aesthetic"
-    mood: [sweet]
-    incompatible: [style_bdsm_dramatic, style_cyberpunk_fetish, style_shonen_action, camera_sony_a7iii, camera_canon_r5, camera_leica_m6, camera_hasselblad, camera_red_komodo, camera_fujifilm_gfx100, camera_phase_one_xf, camera_portra_400, camera_35mm_candid, camera_macro_sharp]
-
-  - id: style_mecha_technical
-    label: "Mecha technický"
-    tags: [mecha, technical, military]
-    value: "schematic holographic UI overlays, mechanical detail, military aesthetic, blueprint style accents"
-    mood: [technical, dark]
-    incompatible: [style_shojo_romantic, style_chibi_comedy, camera_sony_a7iii, camera_canon_r5, camera_leica_m6, camera_hasselblad, camera_red_komodo, camera_fujifilm_gfx100, camera_phase_one_xf, camera_portra_400, camera_35mm_candid, camera_macro_sharp]
-
-  - id: style_yuri_gentle
-    label: "Yuri jemný"
-    tags: [yuri, gentle, intimate]
-    value: "soft focus aesthetic, pastel color grading, elegant composition, whisper dynamics"
-    mood: [sweet, nostalgic]
-    incompatible: [style_shonen_action, style_mecha_technical]
-
-  - id: style_bdsm_dramatic
-    label: "BDSM dramatický"
-    tags: [bdsm, dramatic, noir]
-    value: "chiaroscuro lighting style, cinematic noir aesthetic, high contrast, dramatic atmosphere"
-    mood: [dark]
-    incompatible: [style_chibi_comedy, style_shojo_romantic]
+    incompatible: []
 
   - id: style_seinen
-    label: "Seinen"
-    tags: [seinen, mature, detailed]
-    value: "seinen manga aesthetic, mature detailed composition, realistic proportions, grounded atmosphere"
+    label: "Seinen (vážný)"
+    tags: [seinen, mature]
+    value: "mature seinen tone, grounded serious atmosphere, detailed restrained composition"
     mood: [dark, technical, nostalgic]
-    incompatible: [style_chibi_comedy, camera_sony_a7iii, camera_canon_r5, camera_leica_m6, camera_hasselblad, camera_red_komodo, camera_fujifilm_gfx100, camera_phase_one_xf, camera_portra_400, camera_35mm_candid, camera_macro_sharp]
+    incompatible: []
 
-  - id: style_kodomo
-    label: "Kodomo"
-    tags: [kodomo, cute, simple]
-    value: "kodomo style, cute simplified aesthetic, bright cheerful composition, clean lines"
-    mood: [sweet]
-    incompatible: [style_bdsm_dramatic, style_cyberpunk_fetish, camera_sony_a7iii, camera_canon_r5, camera_leica_m6, camera_hasselblad, camera_red_komodo, camera_fujifilm_gfx100, camera_phase_one_xf, camera_portra_400, camera_35mm_candid, camera_macro_sharp]
+  - id: style_slice_of_life
+    label: "Slice of life"
+    tags: [slice_of_life, casual]
+    value: "warm slice-of-life mood, casual everyday atmosphere, candid relaxed feel"
+    mood: [sweet, nostalgic]
+    incompatible: []
 
-  - id: style_webtoon
-    label: "Webtoon"
-    tags: [webtoon, modern, digital]
-    value: "modern webtoon aesthetic, clean digital style, vibrant colors, vertical composition influence"
-    mood: [sweet, dark, surreal]
-    incompatible: [camera_sony_a7iii, camera_canon_r5, camera_leica_m6, camera_hasselblad, camera_red_komodo, camera_fujifilm_gfx100, camera_phase_one_xf, camera_portra_400, camera_35mm_candid, camera_macro_sharp]
+  - id: style_cyberpunk
+    label: "Cyberpunk"
+    tags: [cyberpunk, neon]
+    value: "cyberpunk aesthetic, neon-soaked dystopian mood, high-tech night atmosphere"
+    mood: [dark, surreal]
+    incompatible: [style_minimalist, style_slice_of_life]
+
+  - id: style_noir_dramatic
+    label: "Noir / dramatický"
+    tags: [noir, dramatic]
+    value: "dramatic noir mood, high-contrast chiaroscuro, cinematic tension"
+    mood: [dark]
+    incompatible: [style_chibi]
 
   - id: style_magical_girl
     label: "Kouzelná dívka"
-    tags: [magical_girl, sparkle, transformation]
-    value: "magical girl anime aesthetic, sparkle and ribbon motifs, transformation pose energy, luminous effects"
+    tags: [magical_girl, sparkle]
+    value: "magical-girl theme, sparkle and ribbon motifs, luminous whimsical energy"
     mood: [sweet, surreal]
-    incompatible: [style_mecha_technical, style_bdsm_dramatic, camera_sony_a7iii, camera_canon_r5, camera_leica_m6, camera_hasselblad, camera_red_komodo, camera_fujifilm_gfx100, camera_phase_one_xf, camera_portra_400, camera_35mm_candid, camera_macro_sharp]
+    incompatible: [style_noir_dramatic, style_seinen]
 
-  - id: style_realistic
-    label: "Realistický"
-    tags: [realistic, visual, photorealistic]
-    value: "photorealistic visual style, realistic proportions and anatomy, natural skin texture"
-    mood: [sweet, dark, technical, nostalgic]
-    incompatible: [style_chibi_comedy]
-
-  - id: style_stylized
-    label: "Stylizovaný"
-    tags: [stylized, artistic, exaggerated]
-    value: "stylized artistic rendering, exaggerated features, artistic color choices"
+  - id: style_fantasy
+    label: "Fantasy"
+    tags: [fantasy, ethereal]
+    value: "fantasy theme, ethereal otherworldly atmosphere, mythical mood"
     mood: [sweet, dark, surreal]
     incompatible: []
 
   - id: style_minimalist
     label: "Minimalistický"
-    tags: [minimalist, clean, simple]
-    value: "minimalist visual composition, clean negative space, reduced detail, elegant simplicity"
+    tags: [minimalist, clean]
+    value: "minimalist composition, clean negative space, restrained elegant aesthetic"
     mood: [sweet, technical]
-    incompatible: [style_cyberpunk_fetish, style_mecha_technical, quality_8k_hyper]
+    incompatible: [style_cyberpunk, style_shonen_action]
 
-  - id: style_manga
-    label: "Manga"
-    tags: [manga, ink, screentone, classic]
-    value: "classic manga art style, bold ink lines, screentone shading, expressive eyes, dynamic paneling aesthetic"
-    mood: [sweet, dark, technical]
-    incompatible: [style_chibi_comedy, camera_sony_a7iii, camera_canon_r5, camera_leica_m6, camera_hasselblad, camera_red_komodo, camera_fujifilm_gfx100, camera_phase_one_xf, camera_portra_400, camera_35mm_candid, camera_macro_sharp]
-
-  - id: style_comic_book
-    label: "Komix"
-    tags: [comic, western, halftone, bold]
-    value: "western comic book style, bold outlines, flat cel shading, halftone dot patterns, superhero comic aesthetic"
-    mood: [dark, technical]
-    incompatible: [style_chibi_comedy, style_shojo_romantic, camera_sony_a7iii, camera_canon_r5, camera_leica_m6, camera_hasselblad, camera_red_komodo, camera_fujifilm_gfx100, camera_phase_one_xf, camera_portra_400, camera_35mm_candid, camera_macro_sharp]
-
-  - id: style_ai_aesthetic
-    label: "AI generovaný"
-    tags: [ai, dreamlike, hyperdetail, surreal]
-    value: "AI art aesthetic, dreamlike hyperdetail, surreal color harmony, digitally synthesized atmosphere, latent diffusion style"
-    mood: [sweet, dark, surreal]
-    incompatible: [camera_sony_a7iii, camera_canon_r5, camera_leica_m6, camera_hasselblad, camera_red_komodo, camera_fujifilm_gfx100, camera_phase_one_xf, camera_portra_400, camera_35mm_candid, camera_macro_sharp]
+  - id: style_chibi
+    label: "Chibi komedie"
+    tags: [chibi, comedy]
+    value: "chibi comedy mood, exaggerated cute proportions, playful comical energy"
+    mood: [sweet]
+    incompatible: [style_noir_dramatic, style_seinen]
