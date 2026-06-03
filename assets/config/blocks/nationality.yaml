@@ -1,0 +1,95 @@
+category: nationality
+label: "Národnost / Původ"
+icon: public
+required: false
+blocks:
+  - id: nationality_japanese
+    label: "Japonský/á"
+    tags: [japanese, east_asian, porcelain]
+    value: "Japanese, East Asian features, fair porcelain skin, refined delicate facial features"
+    mood: [sweet, dark, surreal, technical, nostalgic]
+    incompatible: []
+
+  - id: nationality_asian
+    label: "Asijský/á"
+    tags: [asian, east_asian, almond_eyes]
+    value: "East Asian, Asian features, fair to medium skin tone, almond-shaped eyes, dark straight hair"
+    mood: [sweet, dark, surreal, technical, nostalgic]
+    incompatible: []
+
+  - id: nationality_thai
+    label: "Thajský/á"
+    tags: [thai, southeast_asian, golden]
+    value: "Thai, Southeast Asian features, golden warm brown skin tone, almond-shaped eyes, delicate refined features"
+    mood: [sweet, dark, nostalgic]
+    incompatible: []
+
+  - id: nationality_russian
+    label: "Ruský/á"
+    tags: [russian, slavic, fair, eastern_european]
+    value: "Russian, Eastern European Slavic features, fair pale skin, high pronounced cheekbones, light eyes"
+    mood: [sweet, dark, nostalgic]
+    incompatible: []
+
+  - id: nationality_czech
+    label: "Český/á"
+    tags: [czech, slavic, central_european]
+    value: "Czech, Central European Slavic features, fair skin, light eyes, natural Slavic bone structure"
+    mood: [sweet, nostalgic]
+    incompatible: []
+
+  - id: nationality_nordic
+    label: "Severský typ"
+    tags: [nordic, scandinavian, blonde, blue_eyes]
+    value: "Nordic Scandinavian, fair to light skin, naturally light blonde hair, blue or green eyes, tall statuesque build"
+    mood: [sweet, dark, nostalgic]
+    incompatible: []
+
+  - id: nationality_afro_american
+    label: "Afroamerický/á"
+    tags: [african_american, dark_skin, natural_hair]
+    value: "African American, rich dark melanin skin tone, strong expressive facial features, natural textured hair"
+    mood: [sweet, dark, surreal, nostalgic]
+    incompatible: []
+
+  - id: nationality_ghanaian
+    label: "Ghana"
+    tags: [ghanaian, west_african, dark_skin]
+    value: "Ghanaian, West African features, deep dark skin tone, strong high cheekbones, natural textured hair"
+    mood: [sweet, dark, nostalgic]
+    incompatible: []
+
+  - id: nationality_angolan
+    label: "Angola"
+    tags: [angolan, central_african, dark_skin]
+    value: "Angolan, Central African features, rich dark skin tone, strong facial bone structure, textured natural hair"
+    mood: [sweet, dark, nostalgic]
+    incompatible: []
+
+  - id: nationality_egyptian
+    label: "Egyptský/á"
+    tags: [egyptian, north_african, olive_skin]
+    value: "Egyptian, North African features, warm olive to tan skin tone, dark almond-shaped eyes, strong defined features"
+    mood: [sweet, dark, nostalgic, surreal]
+    incompatible: []
+
+  - id: nationality_native_american
+    label: "Native American"
+    tags: [native_american, indigenous, warm_brown]
+    value: "Native American, indigenous features, warm brown skin tone, high prominent cheekbones, dark hair"
+    mood: [sweet, dark, nostalgic]
+    incompatible: []
+
+  - id: nationality_brazilian
+    label: "Brazilský/á"
+    tags: [brazilian, latin, mixed, warm]
+    value: "Brazilian, Latin mixed heritage, warm olive to brown skin, dark expressive eyes, natural full curves"
+    mood: [sweet, dark, surreal, nostalgic]
+    incompatible: []
+
+  - id: nationality_colombian
+    label: "Kolumbijský/á"
+    tags: [colombian, latina, warm, expressive]
+    value: "Colombian Latina, warm tan olive skin tone, dark hair, expressive dark eyes, vibrant Latin features"
+    mood: [sweet, dark, nostalgic]
+    incompatible: []

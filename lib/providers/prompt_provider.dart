@@ -28,7 +28,27 @@ final allPermutationsProvider = Provider<List<Map<String, String>>>((ref) {
   return PromptEngine.generatePermutations(selections);
 });
 
-/// Current prompt text for the active permutation index
+Map<String, Block> _resolveBlocks(
+  List<Map<String, String>> permutations,
+  int index,
+  List categories,
+) {
+  final safeIndex = index.clamp(0, permutations.length - 1);
+  final perm = permutations[safeIndex];
+  final blockMap = <String, Block>{};
+  for (final entry in perm.entries) {
+    for (final cat in categories) {
+      for (final block in cat.blocks) {
+        if (block.id == entry.value) {
+          blockMap[entry.key] = block;
+        }
+      }
+    }
+  }
+  return blockMap;
+}
+
+/// Current positive prompt text for the active permutation index.
 final currentPromptProvider = Provider<String>((ref) {
   final templateAsync = ref.watch(activeTemplateProvider);
   final categoriesAsync = ref.watch(categoriesProvider);
@@ -36,36 +56,39 @@ final currentPromptProvider = Provider<String>((ref) {
   final index = ref.watch(permutationIndexProvider);
 
   return templateAsync.when(
-    data: (template) {
-      return categoriesAsync.when(
-        data: (categories) {
-          if (permutations.isEmpty) return '';
-
-          final safeIndex = index.clamp(0, permutations.length - 1);
-          final perm = permutations[safeIndex];
-
-          // Resolve block IDs to Block objects
-          final blockMap = <String, Block>{};
-          for (final entry in perm.entries) {
-            for (final cat in categories) {
-              for (final block in cat.blocks) {
-                if (block.id == entry.value) {
-                  blockMap[entry.key] = block;
-                }
-              }
-            }
-          }
-
-          return PromptEngine.buildPrompt(
-            template: template,
-            selections: blockMap,
-          );
-        },
-        loading: () => '',
-        error: (_, __) => '',
-      );
-    },
+    data: (template) => categoriesAsync.when(
+      data: (categories) {
+        if (permutations.isEmpty) return '';
+        final blockMap = _resolveBlocks(permutations, index, categories);
+        return PromptEngine.buildPrompt(template: template, selections: blockMap);
+      },
+      loading: () => '',
+      error: (_, _) => '',
+    ),
     loading: () => '',
-    error: (_, __) => '',
+    error: (_, _) => '',
+  );
+});
+
+/// Negative prompt text for the active permutation — passed as a separate API
+/// field, NOT appended to the positive prompt.
+final currentNegativePromptProvider = Provider<String>((ref) {
+  final templateAsync = ref.watch(activeTemplateProvider);
+  final categoriesAsync = ref.watch(categoriesProvider);
+  final permutations = ref.watch(allPermutationsProvider);
+  final index = ref.watch(permutationIndexProvider);
+
+  return templateAsync.when(
+    data: (template) => categoriesAsync.when(
+      data: (categories) {
+        if (permutations.isEmpty) return '';
+        final blockMap = _resolveBlocks(permutations, index, categories);
+        return PromptEngine.buildNegativePrompt(template: template, selections: blockMap);
+      },
+      loading: () => '',
+      error: (_, _) => '',
+    ),
+    loading: () => '',
+    error: (_, _) => '',
   );
 });

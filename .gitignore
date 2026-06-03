@@ -30,6 +30,7 @@ ios/Flutter/ephemeral/
 
 # Secrets
 .env
+.env.json
 
 # Misc
 *.log

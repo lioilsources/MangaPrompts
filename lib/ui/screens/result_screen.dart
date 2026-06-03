@@ -122,16 +122,21 @@ class _ResultScreenState extends ConsumerState<ResultScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            // Generated image — prefer local file, fallback to network
+            // Generated image — prefer local file, fallback to network URL
             AspectRatio(
               aspectRatio: 1,
               child: _localPath != null
                   ? Image.file(
                       File(_localPath!),
                       fit: BoxFit.contain,
-                      errorBuilder: (_, error, __) => _networkImage(),
+                      errorBuilder: (_, error, __) =>
+                          widget.imageUrl.isNotEmpty
+                              ? _networkImage()
+                              : _errorWidget('$error'),
                     )
-                  : _networkImage(),
+                  : widget.imageUrl.isNotEmpty
+                      ? _networkImage()
+                      : _errorWidget('Obrázek není k dispozici'),
             ),
             if (_isDownloading)
               const Padding(
@@ -211,15 +216,20 @@ class _ResultScreenState extends ConsumerState<ResultScreen> {
           ),
         );
       },
-      errorBuilder: (_, error, __) => Center(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const Icon(Icons.error_outline, size: 48),
-            const SizedBox(height: 8),
-            Text('Nepodařilo se načíst: $error'),
-          ],
-        ),
+      errorBuilder: (_, error, __) =>
+          _errorWidget('Nepodařilo se načíst: $error'),
+    );
+  }
+
+  Widget _errorWidget(String message) {
+    return Center(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          const Icon(Icons.error_outline, size: 48),
+          const SizedBox(height: 8),
+          Text(message),
+        ],
       ),
     );
   }

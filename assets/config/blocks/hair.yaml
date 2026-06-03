@@ -90,3 +90,62 @@ blocks:
     value: "wet look hair, strands framing face, glistening wet strands clinging to skin"
     mood: [dark, sweet]
     incompatible: []
+
+  # Blonde variations
+  - id: hair_blonde_medium
+    label: "Střední blond"
+    tags: [medium, blonde, natural]
+    value: "medium length hair, natural blonde color, soft natural waves, strands framing face"
+    mood: [sweet, nostalgic]
+    incompatible: []
+
+  - id: hair_blonde_short
+    label: "Krátké blond"
+    tags: [short, blonde, clean]
+    value: "short blonde hair, clean neat cut, bright golden blonde tone, natural texture"
+    mood: [sweet, technical]
+    incompatible: []
+
+  # Short styles
+  - id: hair_short_straight
+    label: "Krátké rovné"
+    tags: [short, straight, clean]
+    value: "short straight hair, clean neat cut, natural dark tone, smooth texture"
+    mood: [sweet, dark, technical]
+    incompatible: []
+
+  - id: hair_short_curly
+    label: "Krátké kudrnaté"
+    tags: [short, curly, voluminous]
+    value: "short curly hair, voluminous natural curls, lively texture, full rounded shape"
+    mood: [sweet, surreal]
+    incompatible: []
+
+  # Updo styles
+  - id: hair_ponytail
+    label: "Ocásek (culík)"
+    tags: [ponytail, tied, clean]
+    value: "high ponytail, hair tied back, clean sleek pulled-back style, tail falling naturally"
+    mood: [sweet, dark, technical, nostalgic]
+    incompatible: []
+
+  - id: hair_bun_high
+    label: "Drdol"
+    tags: [bun, updo, elegant]
+    value: "high bun updo, hair gathered and pinned up, elegant neat updo, loose strands framing face"
+    mood: [sweet, nostalgic, technical]
+    incompatible: []
+
+  - id: hair_braid
+    label: "Cop / Pletenec"
+    tags: [braid, plait, classic]
+    value: "braided hair, classic braid plait, hair woven in neat braid, falling over shoulder"
+    mood: [sweet, nostalgic]
+    incompatible: []
+
+  - id: hair_side_swept
+    label: "Přes rameno (side-swept)"
+    tags: [side, swept, elegant, asymmetric]
+    value: "side-swept hair, hair draped over one shoulder, elegant asymmetric styling, soft natural flow"
+    mood: [sweet, dark, nostalgic]
+    incompatible: []

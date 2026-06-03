@@ -8,7 +8,7 @@ blocks:
     tags: [manga, speed_lines, motion]
     value: "dramatic manga speed lines, radial motion lines, action emphasis"
     mood: [dark, technical]
-    incompatible: [effects_cherry_blossom, effects_sparkle]
+    incompatible: [effects_cherry_blossom, effects_sparkle, camera_sony_a7iii, camera_canon_r5, camera_leica_m6, camera_hasselblad, camera_red_komodo, camera_fujifilm_gfx100, camera_phase_one_xf, camera_portra_400, camera_35mm_candid, camera_macro_sharp]
 
   - id: effects_sparkle
     label: "Třpytivé efekty"
@@ -43,21 +43,21 @@ blocks:
     tags: [screentones, manga, halftone]
     value: "manga screentone overlay, halftone dot pattern, traditional manga print effect"
     mood: [nostalgic, technical]
-    incompatible: []
+    incompatible: [camera_sony_a7iii, camera_canon_r5, camera_leica_m6, camera_hasselblad, camera_red_komodo, camera_fujifilm_gfx100, camera_phase_one_xf, camera_portra_400, camera_35mm_candid, camera_macro_sharp]
 
   - id: effects_sweat_drop
     label: "Kapka potu"
     tags: [sweat_drop, comedy, anime]
     value: "anime sweat drop effect, comical stress indicator, cartoon emphasis"
     mood: [sweet]
-    incompatible: [effects_glitch_art]
+    incompatible: [effects_glitch_art, camera_sony_a7iii, camera_canon_r5, camera_leica_m6, camera_hasselblad, camera_red_komodo, camera_fujifilm_gfx100, camera_phase_one_xf, camera_portra_400, camera_35mm_candid, camera_macro_sharp]
 
   - id: effects_motion_lines
     label: "Pohybové čáry"
     tags: [motion_lines, movement, dynamic]
     value: "cartoon motion lines, dynamic movement indicators, whoosh effect lines"
     mood: [sweet, technical]
-    incompatible: []
+    incompatible: [camera_sony_a7iii, camera_canon_r5, camera_leica_m6, camera_hasselblad, camera_red_komodo, camera_fujifilm_gfx100, camera_phase_one_xf, camera_portra_400, camera_35mm_candid, camera_macro_sharp]
 
   - id: effects_bokeh
     label: "Bokeh"

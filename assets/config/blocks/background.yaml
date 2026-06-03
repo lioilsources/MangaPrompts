@@ -79,3 +79,73 @@ blocks:
     value: "cosmic starfield background, deep space nebula colors, floating in vast cosmos"
     mood: [surreal, dark]
     incompatible: [background_studio_backdrop, background_school_rooftop]
+
+  - id: background_bedroom
+    label: "Ložnice"
+    tags: [bedroom, interior, intimate, cozy]
+    value: "cozy bedroom interior background, soft bed with pillows, warm ambient lighting, intimate private atmosphere"
+    mood: [sweet, dark, nostalgic]
+    incompatible: [background_cyberpunk_street, background_motion_blur, background_mecha_cockpit, background_starfield]
+
+  - id: background_living_room
+    label: "Obývací pokoj"
+    tags: [living_room, interior, home, casual]
+    value: "modern living room background, comfortable sofa, warm home interior, casual domestic setting, soft natural light"
+    mood: [sweet, nostalgic]
+    incompatible: [background_cyberpunk_street, background_motion_blur, background_mecha_cockpit, background_starfield]
+
+  - id: background_kitchen
+    label: "Kuchyně"
+    tags: [kitchen, interior, home, domestic]
+    value: "bright kitchen interior background, cooking counter and cabinets, domestic home atmosphere, natural window light"
+    mood: [sweet, nostalgic]
+    incompatible: [background_cyberpunk_street, background_mecha_cockpit, background_starfield, background_abstract_dark]
+
+  - id: background_bathroom
+    label: "Koupelna"
+    tags: [bathroom, interior, tiles, steam]
+    value: "clean bathroom interior background, tiled walls, mirror reflection, soft steam, warm intimate lighting"
+    mood: [sweet, dark]
+    incompatible: [background_cyberpunk_street, background_mecha_cockpit, background_starfield, background_motion_blur]
+
+  - id: background_toilet
+    label: "Záchod"
+    tags: [toilet, bathroom, interior, minimal]
+    value: "small bathroom background, toilet interior, clean tiled walls, minimal private space, overhead light"
+    mood: [sweet, dark]
+    incompatible: [background_cyberpunk_street, background_mecha_cockpit, background_starfield, background_motion_blur]
+
+  - id: background_forest
+    label: "Les"
+    tags: [forest, nature, trees, outdoor]
+    value: "dense forest background, tall trees, dappled sunlight filtering through leaves, natural woodland atmosphere"
+    mood: [sweet, dark, surreal, nostalgic]
+    incompatible: [background_cyberpunk_street, background_mecha_cockpit, background_studio_backdrop]
+
+  - id: background_rock_cliff
+    label: "Skála / útesy"
+    tags: [rock, cliff, outdoor, dramatic]
+    value: "rocky cliff background, rugged stone terrain, dramatic height perspective, open sky behind, wild natural scenery"
+    mood: [dark, technical, nostalgic]
+    incompatible: [background_studio_backdrop, background_mecha_cockpit]
+
+  - id: background_meadow
+    label: "Louka"
+    tags: [meadow, grass, flowers, outdoor]
+    value: "open meadow background, lush green grass, scattered wildflowers, soft natural light, peaceful countryside atmosphere"
+    mood: [sweet, nostalgic]
+    incompatible: [background_cyberpunk_street, background_mecha_cockpit, background_abstract_dark]
+
+  - id: background_swimming_pool
+    label: "Plovárna / bazén"
+    tags: [pool, swimming, outdoor, summer]
+    value: "outdoor swimming pool area background, clear blue water, poolside sunloungers, bright summer atmosphere, sunlight reflections"
+    mood: [sweet, nostalgic]
+    incompatible: [background_cyberpunk_street, background_mecha_cockpit, background_abstract_dark, background_starfield]
+
+  - id: background_disco
+    label: "Diskotéka"
+    tags: [disco, nightclub, lights, dance]
+    value: "nightclub dance floor background, colorful strobe lights, disco ball reflections, energetic crowd atmosphere, neon glow"
+    mood: [dark, surreal]
+    incompatible: [background_cherry_blossom, background_studio_backdrop, background_mecha_cockpit]

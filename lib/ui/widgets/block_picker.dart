@@ -17,97 +17,103 @@ class BlockPicker extends ConsumerWidget {
     final allSelections = ref.watch(selectionProvider);
     final categoryMapAsync = ref.watch(categoryMapProvider);
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-          child: Row(
-            children: [
-              Icon(
-                _getIcon(category.icon),
-                size: 18,
-                color: category.isRequired
-                    ? Theme.of(context).colorScheme.primary
-                    : Theme.of(context).colorScheme.onSurfaceVariant,
-              ),
-              const SizedBox(width: 8),
-              Text(
-                category.label,
-                style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                  color: category.isRequired
-                      ? Theme.of(context).colorScheme.primary
-                      : null,
-                ),
-              ),
-              if (category.isRequired)
-                Text(
-                  ' *',
-                  style: TextStyle(
-                    color: Theme.of(context).colorScheme.error,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              const Spacer(),
-              if (selectedIds.isNotEmpty)
-                GestureDetector(
-                  onTap: () => ref
-                      .read(selectionProvider.notifier)
-                      .clearCategory(category.category),
-                  child: Icon(
-                    Icons.clear,
-                    size: 18,
-                    color: Theme.of(context).colorScheme.onSurfaceVariant,
-                  ),
-                ),
-            ],
-          ),
-        ),
-        SizedBox(
-          height: 42,
-          child: ListView.builder(
-            scrollDirection: Axis.horizontal,
-            padding: const EdgeInsets.symmetric(horizontal: 12),
-            itemCount: category.blocks.length,
-            itemBuilder: (context, index) {
-              final block = category.blocks[index];
-              final isSelected = selectedIds.contains(block.id);
+    final selectedLabels = category.blocks
+        .where((b) => selectedIds.contains(b.id))
+        .map((b) => b.label)
+        .join(', ');
 
-              // Check incompatibility
-              final categoryMap = categoryMapAsync.whenOrNull(
-                data: (map) => map,
-              );
+    return ExpansionTile(
+      leading: Icon(
+        _getIcon(category.icon),
+        size: 20,
+        color: selectedIds.isNotEmpty
+            ? Theme.of(context).colorScheme.primary
+            : category.isRequired
+                ? Theme.of(context).colorScheme.primary
+                : Theme.of(context).colorScheme.onSurfaceVariant,
+      ),
+      title: Row(
+        children: [
+          Text(
+            category.label,
+            style: Theme.of(context).textTheme.titleSmall?.copyWith(
+              color: category.isRequired
+                  ? Theme.of(context).colorScheme.primary
+                  : null,
+            ),
+          ),
+          if (category.isRequired)
+            Text(
+              ' *',
+              style: TextStyle(
+                color: Theme.of(context).colorScheme.error,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          if (selectedIds.isNotEmpty) ...[
+            const SizedBox(width: 8),
+            GestureDetector(
+              onTap: () => ref
+                  .read(selectionProvider.notifier)
+                  .clearCategory(category.category),
+              child: Icon(
+                Icons.clear,
+                size: 16,
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
+              ),
+            ),
+          ],
+        ],
+      ),
+      subtitle: selectedLabels.isNotEmpty
+          ? Text(
+              selectedLabels,
+              style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                color: Theme.of(context).colorScheme.primary,
+              ),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            )
+          : null,
+      initiallyExpanded: category.isRequired,
+      tilePadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 0),
+      childrenPadding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
+      children: [
+        Align(
+          alignment: Alignment.centerLeft,
+          child: Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            children: category.blocks.map((block) {
+              final isSelected = selectedIds.contains(block.id);
+              final categoryMap = categoryMapAsync.whenOrNull(data: (map) => map);
               final conflicts = categoryMap != null
                   ? PromptEngine.getIncompatibleBlocks(
                       block, allSelections, categoryMap)
                   : <String>[];
               final hasConflict = conflicts.isNotEmpty;
 
-              return Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 4),
-                child: FilterChip(
-                  label: Text(
-                    block.label,
-                    style: TextStyle(
-                      fontSize: 13,
-                      decoration:
-                          hasConflict ? TextDecoration.lineThrough : null,
-                    ),
+              return FilterChip(
+                label: Text(
+                  block.label,
+                  style: TextStyle(
+                    fontSize: 13,
+                    decoration: hasConflict ? TextDecoration.lineThrough : null,
                   ),
-                  selected: isSelected,
-                  onSelected: (_) {
-                    ref
-                        .read(selectionProvider.notifier)
-                        .toggleBlock(category.category, block.id);
-                    // Reset permutation index on change
-                    ref.read(permutationIndexProvider.notifier).state = 0;
-                  },
-                  showCheckmark: false,
-                  visualDensity: VisualDensity.compact,
-                  tooltip: block.value,
                 ),
+                selected: isSelected,
+                onSelected: (_) {
+                  ref
+                      .read(selectionProvider.notifier)
+                      .toggleBlock(category.category, block.id);
+                  ref.read(permutationIndexProvider.notifier).state = 0;
+                },
+                showCheckmark: false,
+                visualDensity: VisualDensity.compact,
+                tooltip: block.value,
+                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 6),
               );
-            },
+            }).toList(),
           ),
         ),
       ],
@@ -118,6 +124,10 @@ class BlockPicker extends ConsumerWidget {
     switch (iconName) {
       case 'person':
         return Icons.person;
+      case 'public':
+        return Icons.public;
+      case 'accessibility':
+        return Icons.accessibility;
       case 'palette':
       case 'brush':
         return Icons.palette;
@@ -153,6 +163,8 @@ class BlockPicker extends ConsumerWidget {
       case 'block':
       case 'do_not_disturb':
         return Icons.block;
+      case 'face_retouching_natural':
+        return Icons.face_retouching_natural;
       default:
         return Icons.category;
     }

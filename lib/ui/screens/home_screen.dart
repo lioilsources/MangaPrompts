@@ -5,7 +5,7 @@ import '../../providers/blocks_provider.dart';
 import '../../providers/selection_provider.dart';
 import '../../providers/prompt_provider.dart';
 import '../../providers/api_provider.dart';
-import '../../services/xai_api_service.dart';
+import '../../services/image_generation_service.dart';
 import '../widgets/block_picker.dart';
 import '../widgets/prompt_preview.dart';
 import '../widgets/image_base_picker.dart';
@@ -30,7 +30,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     final activeTemplateAsync = ref.watch(activeTemplateProvider);
     final activeTemplateId = ref.watch(activeTemplateIdProvider);
     final prompt = ref.watch(currentPromptProvider);
-    final apiService = ref.watch(xaiApiServiceProvider);
+    final apiService = ref.watch(activeImageServiceProvider);
 
     return Scaffold(
       appBar: AppBar(
@@ -95,7 +95,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             Expanded(
               child: activeTemplateAsync.when(
                 data: (template) {
-                  // Show categories in template slot order
                   final orderedCategories = <dynamic>[];
                   for (final slot in template.slotOrder) {
                     final cat = categories
@@ -103,7 +102,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                         .firstOrNull;
                     if (cat != null) orderedCategories.add(cat);
                   }
-                  // Also add negative slot
                   final negCat = categories
                       .where((c) => c.category == template.negativeSlot)
                       .firstOrNull;
@@ -130,7 +128,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           ],
         ),
       ),
-      // Generate button
       floatingActionButton: FloatingActionButton.extended(
         onPressed: (prompt.isEmpty || _isGenerating)
             ? null
@@ -152,12 +149,12 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     BuildContext context,
     WidgetRef ref,
     String prompt,
-    XaiApiService? apiService,
+    ImageGenerationService? apiService,
   ) async {
     if (apiService == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: const Text('Nastav API klíč v nastavení'),
+          content: const Text('Nastav API klíč nebo přihlašovací údaje v nastavení'),
           action: SnackBarAction(
             label: 'Nastavení',
             onPressed: () => Navigator.push(
@@ -174,33 +171,37 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
     try {
       final baseImagePath = ref.read(baseImagePathProvider);
+      final negativePrompt = ref.read(currentNegativePromptProvider);
       GeneratedImage result;
 
       if (baseImagePath != null) {
-        // Image-to-image
         final file = File(baseImagePath);
         final imageService = ref.read(imageServiceProvider);
         final base64 = await imageService.imageToBase64(file);
         final mimeType = imageService.getMimeType(file);
         result = await apiService.editImage(
           prompt: prompt,
+          negativePrompt: negativePrompt,
           base64Image: base64,
           mimeType: mimeType,
         );
       } else {
-        // Text-to-image
-        result = await apiService.generateImage(prompt: prompt);
+        result = await apiService.generateImage(
+          prompt: prompt,
+          negativePrompt: negativePrompt,
+        );
       }
 
-      // Download to temp file as backup against URL expiration
-      String? localPath;
-      try {
-        final imgService = ref.read(imageServiceProvider);
-        final file = await imgService.downloadImage(result.url);
-        localPath = file.path;
-      } catch (e, stack) {
-        print('[Generate] Download to temp failed: $e');
-        print('[Generate] Stack: $stack');
+      // ol1n service downloads directly to a temp file; xAI returns a URL.
+      String? localPath = result.localPath;
+      if (localPath == null && result.url.isNotEmpty) {
+        try {
+          final imgService = ref.read(imageServiceProvider);
+          final file = await imgService.downloadImage(result.url);
+          localPath = file.path;
+        } catch (e) {
+          print('[Generate] Download to temp failed: $e');
+        }
       }
 
       if (mounted) {
@@ -216,21 +217,12 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           ),
         );
       }
-    } on XaiApiException catch (e, stack) {
-      print('[Generate] XaiApiException: $e');
-      print('[Generate] Stack: $stack');
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('API chyba (${e.statusCode}): ${e.message}')),
-        );
-      }
     } catch (e, stack) {
       print('[Generate] Exception: $e');
-      print('[Generate] Type: ${e.runtimeType}');
       print('[Generate] Stack: $stack');
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Chyba [${e.runtimeType}]: $e')),
+          SnackBar(content: Text('Chyba: $e')),
         );
       }
     } finally {

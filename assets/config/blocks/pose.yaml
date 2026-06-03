@@ -6,7 +6,7 @@ blocks:
   - id: pose_dynamic_action
     label: "Dynamická akční"
     tags: [dynamic, action, movement]
-    value: "dynamic action pose, mid-motion stance, powerful body language"
+    value: "full body shot, dynamic action pose, mid-motion stance, powerful body language"
     mood: [dark, technical]
     incompatible: [pose_restrained, pose_intimate_moment]
 
@@ -20,14 +20,14 @@ blocks:
   - id: pose_magical_girl
     label: "Kouzelná dívka transformace"
     tags: [magical_girl, transformation, sparkle]
-    value: "anime magical girl transformation pose, outstretched arms, dynamic energy radiating, graceful stance"
+    value: "full body shot, anime magical girl transformation pose, outstretched arms, dynamic energy radiating, graceful stance"
     mood: [sweet, surreal]
     incompatible: [pose_restrained, pose_mecha_cockpit]
 
   - id: pose_restrained
     label: "Spoutaná póza"
     tags: [restrained, bondage, suggestion]
-    value: "restrained pose suggestion, hands behind back, constrained body language, tension in posture"
+    value: "full body shot, restrained pose, hands behind back, constrained body language, tension in posture"
     mood: [dark]
     incompatible: [pose_dynamic_action, pose_magical_girl, pose_comical_surprised]
 
@@ -41,34 +41,97 @@ blocks:
   - id: pose_comical_surprised
     label: "Komicky překvapená"
     tags: [comical, surprised, chibi, exaggerated]
-    value: "comical surprised pose, exaggerated body reaction, chibi-style overreaction, arms flailing"
+    value: "full body shot, comical surprised pose, exaggerated body reaction, chibi-style overreaction, arms flailing"
     mood: [sweet]
     incompatible: [pose_restrained, pose_mecha_cockpit]
 
   - id: pose_elegant_standing
     label: "Elegantní stojící"
     tags: [elegant, standing, composed]
-    value: "elegant standing pose, graceful posture, one hand near face, composed body language"
+    value: "full body shot, elegant standing pose, graceful posture, one hand near face, composed body language"
     mood: [sweet, dark, nostalgic]
-    incompatible: []
+    incompatible: [expression_ahegao, expression_messy_drool]
 
   - id: pose_combat_ready
     label: "Bojová připravenost"
     tags: [combat, ready, martial]
-    value: "combat ready stance, feet planted, fists raised, intense body tension, martial arts pose"
+    value: "full body shot, combat ready stance, feet planted, fists raised, intense body tension, martial arts pose"
     mood: [dark, technical]
     incompatible: [pose_intimate_moment, pose_comical_surprised]
 
   - id: pose_reclining
     label: "Ležící"
     tags: [reclining, lying, relaxed]
-    value: "reclining pose, lying down, relaxed body position, draped fabric beneath"
+    value: "full length shot, reclining pose, lying down, relaxed body position, draped fabric beneath"
     mood: [sweet, dark, nostalgic]
     incompatible: [pose_dynamic_action, pose_mecha_cockpit, pose_combat_ready]
 
   - id: pose_close_up_portrait
     label: "Detail portrét"
     tags: [close_up, portrait, face]
-    value: "close up portrait composition, face and shoulders framing, direct viewer engagement"
+    value: "close up portrait, face and shoulders framing, direct viewer engagement"
     mood: [sweet, dark, surreal, technical, nostalgic]
     incompatible: []
+
+  - id: pose_cowboy_shot
+    label: "Cowboy záběr (po stehna)"
+    tags: [cowboy, thigh, three_quarter]
+    value: "cowboy shot, framed from thighs up, three quarter body view, classic cinematic composition"
+    mood: [sweet, dark, nostalgic, technical]
+    incompatible: []
+
+  - id: pose_bust_shot
+    label: "Polopostrét (po hrudník)"
+    tags: [bust, chest, upper_body]
+    value: "bust shot, framed from chest up, upper body portrait, balanced composition"
+    mood: [sweet, dark, surreal, nostalgic, technical]
+    incompatible: []
+
+  - id: pose_full_body
+    label: "Celá postava"
+    tags: [full_body, standing, neutral]
+    value: "full body shot, standing pose, complete figure visible from head to toe, neutral natural stance"
+    mood: [sweet, dark, surreal, technical, nostalgic]
+    incompatible: [pose_close_up_portrait, pose_bust_shot, pose_cowboy_shot]
+
+  - id: pose_sitting
+    label: "Sedí"
+    tags: [sitting, seated, full_body]
+    value: "full body shot, seated pose, sitting position, relaxed or composed seated stance, complete figure visible"
+    mood: [sweet, dark, nostalgic, technical]
+    incompatible: [pose_dynamic_action, pose_combat_ready, pose_magical_girl]
+
+  - id: pose_kneeling
+    label: "Klečí"
+    tags: [kneeling, floor, full_body]
+    value: "full body shot, kneeling pose, on knees, figure visible from head to knees, grounded posture"
+    mood: [sweet, dark, nostalgic]
+    incompatible: [pose_dynamic_action, pose_mecha_cockpit, pose_group_photo]
+
+  - id: pose_frontal_nude
+    label: "Čelí nazí"
+    tags: [frontal, nude, full_body, facing]
+    value: "full body shot, frontal nude pose, facing viewer directly, full figure visible, natural unclothed body"
+    mood: [dark, sweet]
+    incompatible: [pose_mecha_cockpit, pose_group_photo, pose_selfie, clothing_latex_collar, clothing_translucent_fabrics, clothing_full_leather, clothing_school_uniform, clothing_pilot_suit, clothing_magical_outfit, clothing_cyberpunk_wear, clothing_casual_modern, clothing_kimono_traditional, clothing_lingerie]
+
+  - id: pose_intimate_full_body
+    label: "Intimní moment (celá postava)"
+    tags: [intimate, full_body, close, gentle]
+    value: "full body shot, intimate moment pose, close personal distance, gentle body language, tender composition, full figure visible"
+    mood: [sweet, dark, nostalgic]
+    incompatible: [pose_dynamic_action, pose_mecha_cockpit, pose_combat_ready]
+
+  - id: pose_selfie
+    label: "Selfie"
+    tags: [selfie, arm, close_up, front_facing]
+    value: "selfie angle, close-up from above, arm-extended perspective, front-facing camera framing, casual spontaneous feel"
+    mood: [sweet, nostalgic]
+    incompatible: [pose_dynamic_action, pose_mecha_cockpit, pose_combat_ready, pose_restrained]
+
+  - id: pose_group_photo
+    label: "Skupinová foto"
+    tags: [group, standing, ensemble, full_body]
+    value: "full body group photo pose, people standing side by side, natural relaxed posture, ensemble composition, casual gathering"
+    mood: [sweet, nostalgic]
+    incompatible: [pose_dynamic_action, pose_intimate_moment, pose_restrained, pose_mecha_cockpit]

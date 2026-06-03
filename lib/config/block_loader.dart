@@ -8,6 +8,8 @@ import 'models/preset.dart';
 class BlockLoader {
   static const _blockFiles = [
     'subject',
+    'nationality',
+    'body_type',
     'style',
     'face',
     'eyes',

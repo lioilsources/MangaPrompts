@@ -1,0 +1,60 @@
+category: body_type
+label: "Typ postavy"
+icon: accessibility
+required: false
+blocks:
+  - id: body_slim
+    label: "Hubená / štíhlá"
+    tags: [slim, slender, lean, thin]
+    value: "slender slim body type, lean delicate figure, thin waist, light build"
+    mood: [sweet, dark, surreal, technical, nostalgic]
+    incompatible: [body_corpulent, body_curvy]
+
+  - id: body_curvy
+    label: "Silnější / křivky"
+    tags: [curvy, fuller, shapely, feminine]
+    value: "curvy fuller figure, shapely natural curves, feminine proportions, soft rounded form"
+    mood: [sweet, dark, surreal, nostalgic]
+    incompatible: [body_slim]
+
+  - id: body_corpulent
+    label: "Korpulentní"
+    tags: [plus_size, full_figured, voluptuous, generous]
+    value: "full-figured plus-size body, generous voluptuous proportions, soft full build"
+    mood: [sweet, dark, nostalgic]
+    incompatible: [body_slim]
+
+  - id: body_big_butt
+    label: "Velký zadek"
+    tags: [big_butt, hourglass, wide_hips, curvy_bottom]
+    value: "prominent large rounded buttocks, wide curvy hips, hourglass bottom-heavy figure"
+    mood: [sweet, dark, surreal]
+    incompatible: []
+
+  - id: body_big_breasts
+    label: "Velká prsa"
+    tags: [large_breasts, full_bust, voluptuous_chest]
+    value: "large full breasts, voluptuous bust, prominent chest"
+    mood: [sweet, dark, surreal]
+    incompatible: [body_small_breasts]
+
+  - id: body_small_breasts
+    label: "Malá prsa"
+    tags: [small_breasts, flat_chest, petite_bust]
+    value: "small breasts, flat chest, subtle minimal bust, petite figure"
+    mood: [sweet, dark, surreal, technical]
+    incompatible: [body_big_breasts]
+
+  - id: body_tall
+    label: "Vysoká"
+    tags: [tall, statuesque, long_legs]
+    value: "tall statuesque figure, long slender legs, elongated proportions, commanding height"
+    mood: [sweet, dark, technical, nostalgic]
+    incompatible: [body_petite]
+
+  - id: body_petite
+    label: "Malá / drobná"
+    tags: [petite, small, compact, short]
+    value: "petite small stature, compact delicate frame, short height, dainty proportions"
+    mood: [sweet, surreal, nostalgic]
+    incompatible: [body_tall]

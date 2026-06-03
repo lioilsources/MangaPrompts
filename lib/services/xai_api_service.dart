@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'image_generation_service.dart';
 
 class XaiApiException implements Exception {
   final String message;
@@ -10,27 +11,21 @@ class XaiApiException implements Exception {
   String toString() => 'XaiApiException($statusCode): $message';
 }
 
-class GeneratedImage {
-  final String url;
-  final String revisedPrompt;
-
-  GeneratedImage({required this.url, this.revisedPrompt = ''});
-}
-
-class XaiApiService {
+class XaiApiService implements ImageGenerationService {
   static const _baseUrl = 'https://api.x.ai/v1';
   final String apiKey;
 
   XaiApiService({required this.apiKey});
 
   Map<String, String> get _headers => {
-    'Authorization': 'Bearer $apiKey',
-    'Content-Type': 'application/json',
-  };
+        'Authorization': 'Bearer $apiKey',
+        'Content-Type': 'application/json',
+      };
 
-  /// Text-to-image generation
+  @override
   Future<GeneratedImage> generateImage({
     required String prompt,
+    String negativePrompt = '',
     String model = 'grok-imagine-image',
     String aspectRatio = '1:1',
     String resolution = '2k',
@@ -43,21 +38,21 @@ class XaiApiService {
         'prompt': prompt,
         'aspect_ratio': aspectRatio,
         'resolution': resolution,
+        // X.AI Grok does not currently expose a negative_prompt field.
       }),
     );
-
     return _parseImageResponse(response);
   }
 
-  /// Image-to-image editing (base image + prompt)
+  @override
   Future<GeneratedImage> editImage({
     required String prompt,
     required String base64Image,
+    String negativePrompt = '',
     String mimeType = 'image/jpeg',
     String model = 'grok-imagine-image',
   }) async {
     final dataUri = 'data:$mimeType;base64,$base64Image';
-
     final response = await http.post(
       Uri.parse('$_baseUrl/images/edits'),
       headers: _headers,
@@ -67,14 +62,10 @@ class XaiApiService {
         'image_url': dataUri,
       }),
     );
-
     return _parseImageResponse(response);
   }
 
   GeneratedImage _parseImageResponse(http.Response response) {
-    print('[xAI] Status: ${response.statusCode}');
-    print('[xAI] Body: ${response.body.length > 500 ? response.body.substring(0, 500) : response.body}');
-
     if (response.statusCode != 200) {
       String errorMsg;
       try {
@@ -87,22 +78,12 @@ class XaiApiService {
     }
 
     final body = jsonDecode(response.body);
-    print('[xAI] Parsed body type: ${body.runtimeType}');
-    print('[xAI] Keys: ${body is Map ? body.keys.toList() : 'N/A'}');
-
     final data = body['data'];
-    print('[xAI] data type: ${data.runtimeType}, value: ${data is List ? 'List(${data.length})' : data}');
-
     if (data is! List || data.isEmpty) {
       throw XaiApiException('No images returned. Body: ${response.body.substring(0, 200)}');
     }
 
     final first = data[0];
-    print('[xAI] first item type: ${first.runtimeType}');
-    if (first is Map) {
-      print('[xAI] first keys: ${first.keys.toList()}');
-    }
-
     if (first is Map) {
       return GeneratedImage(
         url: (first['url'] ?? first['b64_json']) as String,

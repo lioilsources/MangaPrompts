@@ -4,6 +4,8 @@ templates:
     description: "Standardní portrétní šablona pro jednu postavu"
     slot_order:
       - subject
+      - nationality
+      - body_type
       - style
       - face
       - eyes
@@ -25,6 +27,8 @@ templates:
       - style
       - quality
     optional_slots:
+      - nationality
+      - body_type
       - face
       - eyes
       - eyebrows
@@ -43,6 +47,8 @@ templates:
     description: "Dynamická akční šablona s důrazem na pohyb a efekty"
     slot_order:
       - subject
+      - nationality
+      - body_type
       - style
       - expression
       - pose
@@ -61,6 +67,8 @@ templates:
       - pose
       - quality
     optional_slots:
+      - nationality
+      - body_type
       - face
       - eyes
       - eyebrows
@@ -70,5 +78,211 @@ templates:
       - effects
       - lighting
       - background
+      - camera
+      - palette
+
+  - id: template_selfie
+    label: "Selfie"
+    description: "Selfie portrét jedné postavy z ruky"
+    slot_order:
+      - subject
+      - nationality
+      - body_type
+      - style
+      - face
+      - eyes
+      - eyebrows
+      - hair
+      - expression
+      - pose
+      - clothing
+      - lighting
+      - effects
+      - background
+      - camera
+      - palette
+      - quality
+    negative_slot: negative
+    separator: ", "
+    required_slots:
+      - subject
+      - style
+      - quality
+    optional_slots:
+      - nationality
+      - body_type
+      - face
+      - eyes
+      - eyebrows
+      - hair
+      - expression
+      - pose
+      - clothing
+      - lighting
+      - effects
+      - background
+      - camera
+      - palette
+
+  - id: template_group_photo
+    label: "Skupinová foto"
+    description: "Skupinová fotografie celých postav"
+    slot_order:
+      - subject
+      - nationality
+      - body_type
+      - style
+      - expression
+      - pose
+      - clothing
+      - lighting
+      - background
+      - camera
+      - palette
+      - quality
+    negative_slot: negative
+    separator: ", "
+    required_slots:
+      - subject
+      - style
+      - quality
+    optional_slots:
+      - nationality
+      - body_type
+      - face
+      - eyes
+      - eyebrows
+      - hair
+      - expression
+      - pose
+      - clothing
+      - lighting
+      - effects
+      - background
+      - camera
+      - palette
+
+  - id: template_intimate
+    label: "Intimní moment"
+    description: "Intimní scéna celých postav v blízkém kontaktu"
+    slot_order:
+      - subject
+      - nationality
+      - body_type
+      - style
+      - face
+      - eyes
+      - expression
+      - pose
+      - clothing
+      - lighting
+      - effects
+      - background
+      - camera
+      - palette
+      - quality
+    negative_slot: negative
+    separator: ", "
+    required_slots:
+      - subject
+      - style
+      - pose
+      - quality
+    optional_slots:
+      - nationality
+      - body_type
+      - face
+      - eyes
+      - eyebrows
+      - hair
+      - expression
+      - clothing
+      - lighting
+      - effects
+      - background
+      - camera
+      - palette
+
+  - id: template_indoor_scene
+    label: "V místnosti"
+    description: "Scéna v interiéru — ložnice, obývák, kuchyně, koupelna, záchod"
+    slot_order:
+      - subject
+      - nationality
+      - body_type
+      - style
+      - face
+      - eyes
+      - hair
+      - expression
+      - pose
+      - clothing
+      - lighting
+      - effects
+      - background
+      - camera
+      - palette
+      - quality
+    negative_slot: negative
+    separator: ", "
+    required_slots:
+      - subject
+      - style
+      - background
+      - quality
+    optional_slots:
+      - nationality
+      - body_type
+      - face
+      - eyes
+      - eyebrows
+      - hair
+      - expression
+      - pose
+      - clothing
+      - lighting
+      - effects
+      - camera
+      - palette
+
+  - id: template_outdoor_scene
+    label: "Venku"
+    description: "Scéna v exteriéru — les, skála, louka, plovárna, diskotéka"
+    slot_order:
+      - subject
+      - nationality
+      - body_type
+      - style
+      - face
+      - eyes
+      - hair
+      - expression
+      - pose
+      - clothing
+      - lighting
+      - effects
+      - background
+      - camera
+      - palette
+      - quality
+    negative_slot: negative
+    separator: ", "
+    required_slots:
+      - subject
+      - style
+      - background
+      - quality
+    optional_slots:
+      - nationality
+      - body_type
+      - face
+      - eyes
+      - eyebrows
+      - hair
+      - expression
+      - pose
+      - clothing
+      - lighting
+      - effects
       - camera
       - palette

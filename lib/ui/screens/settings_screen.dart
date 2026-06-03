@@ -11,27 +11,42 @@ class SettingsScreen extends ConsumerStatefulWidget {
 
 class _SettingsScreenState extends ConsumerState<SettingsScreen> {
   late TextEditingController _apiKeyController;
-  bool _obscure = true;
+  late TextEditingController _cfIdController;
+  late TextEditingController _cfSecretController;
+  bool _obscureKey = true;
+  bool _obscureCfSecret = true;
 
   @override
   void initState() {
     super.initState();
     _apiKeyController = TextEditingController();
+    _cfIdController = TextEditingController();
+    _cfSecretController = TextEditingController();
   }
 
   @override
   void dispose() {
     _apiKeyController.dispose();
+    _cfIdController.dispose();
+    _cfSecretController.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
+    final provider = ref.watch(providerTypeProvider);
     final apiKey = ref.watch(apiKeyProvider);
+    final cfId = ref.watch(ol1nCfIdProvider);
+    final cfSecret = ref.watch(ol1nCfSecretProvider);
 
-    // Sync controller with current value (only if user isn't editing)
     if (_apiKeyController.text.isEmpty && apiKey.isNotEmpty) {
       _apiKeyController.text = apiKey;
+    }
+    if (_cfIdController.text.isEmpty && cfId.isNotEmpty) {
+      _cfIdController.text = cfId;
+    }
+    if (_cfSecretController.text.isEmpty && cfSecret.isNotEmpty) {
+      _cfSecretController.text = cfSecret;
     }
 
     return Scaffold(
@@ -40,73 +55,152 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
         padding: const EdgeInsets.all(16),
         children: [
           Text(
-            'xAI API',
+            'Backend pro generování',
             style: Theme.of(context).textTheme.titleMedium,
           ),
-          const SizedBox(height: 8),
-          Text(
-            'Zadej API klíč z console.x.ai pro generování obrázků.',
-            style: Theme.of(context).textTheme.bodySmall,
-          ),
           const SizedBox(height: 12),
-          TextField(
-            controller: _apiKeyController,
-            obscureText: _obscure,
-            decoration: InputDecoration(
-              labelText: 'API klíč',
-              hintText: 'xai-...',
-              border: const OutlineInputBorder(),
-              suffixIcon: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  IconButton(
-                    icon: Icon(
-                      _obscure ? Icons.visibility : Icons.visibility_off,
+          SegmentedButton<String>(
+            segments: const [
+              ButtonSegment(value: 'xai', label: Text('xAI / Grok')),
+              ButtonSegment(value: 'ol1n', label: Text('llm.ol1n.com')),
+            ],
+            selected: {provider},
+            onSelectionChanged: (s) => _setProvider(s.first),
+          ),
+          const SizedBox(height: 24),
+          if (provider == 'xai') ...[
+            Text('xAI API', style: Theme.of(context).textTheme.titleSmall),
+            const SizedBox(height: 4),
+            Text(
+              'API klíč z console.x.ai pro generování přes Grok.',
+              style: Theme.of(context).textTheme.bodySmall,
+            ),
+            const SizedBox(height: 12),
+            TextField(
+              controller: _apiKeyController,
+              obscureText: _obscureKey,
+              decoration: InputDecoration(
+                labelText: 'API klíč',
+                hintText: 'xai-...',
+                border: const OutlineInputBorder(),
+                suffixIcon: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    IconButton(
+                      icon: Icon(
+                        _obscureKey ? Icons.visibility : Icons.visibility_off,
+                      ),
+                      onPressed: () => setState(() => _obscureKey = !_obscureKey),
                     ),
-                    onPressed: () => setState(() => _obscure = !_obscure),
-                  ),
-                  IconButton(
-                    icon: const Icon(Icons.save),
-                    onPressed: _saveApiKey,
-                  ),
-                ],
+                    IconButton(
+                      icon: const Icon(Icons.save),
+                      onPressed: _saveApiKey,
+                    ),
+                  ],
+                ),
+              ),
+              onSubmitted: (_) => _saveApiKey(),
+            ),
+            const SizedBox(height: 8),
+            if (apiKey.isNotEmpty) _savedBadge(context),
+          ] else ...[
+            Text(
+              'llm.ol1n.com — Cloudflare Access',
+              style: Theme.of(context).textTheme.titleSmall,
+            ),
+            const SizedBox(height: 4),
+            Text(
+              'Lokální AiStack (Flux / Qwen). '
+              'Zadej CF Access service token nebo nech prázdné '
+              'pokud je nastaven při buildu (--dart-define).',
+              style: Theme.of(context).textTheme.bodySmall,
+            ),
+            const SizedBox(height: 12),
+            TextField(
+              controller: _cfIdController,
+              decoration: const InputDecoration(
+                labelText: 'CF Client ID',
+                hintText: 'xxxxxxxx.access',
+                border: OutlineInputBorder(),
               ),
             ),
-            onSubmitted: (_) => _saveApiKey(),
-          ),
-          const SizedBox(height: 8),
-          if (apiKey.isNotEmpty)
-            Row(
-              children: [
-                Icon(Icons.check_circle,
-                    size: 16, color: Theme.of(context).colorScheme.primary),
-                const SizedBox(width: 4),
-                Text(
-                  'API klíč uložen',
-                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: Theme.of(context).colorScheme.primary,
+            const SizedBox(height: 12),
+            TextField(
+              controller: _cfSecretController,
+              obscureText: _obscureCfSecret,
+              decoration: InputDecoration(
+                labelText: 'CF Client Secret',
+                border: const OutlineInputBorder(),
+                suffixIcon: IconButton(
+                  icon: Icon(
+                    _obscureCfSecret
+                        ? Icons.visibility
+                        : Icons.visibility_off,
                   ),
+                  onPressed: () =>
+                      setState(() => _obscureCfSecret = !_obscureCfSecret),
                 ),
-              ],
+              ),
             ),
+            const SizedBox(height: 12),
+            FilledButton.icon(
+              icon: const Icon(Icons.save),
+              label: const Text('Uložit'),
+              onPressed: _saveCfCredentials,
+            ),
+            const SizedBox(height: 8),
+            if (cfId.isNotEmpty) _savedBadge(context),
+          ],
         ],
       ),
     );
   }
 
+  Widget _savedBadge(BuildContext context) {
+    return Row(
+      children: [
+        Icon(Icons.check_circle,
+            size: 16, color: Theme.of(context).colorScheme.primary),
+        const SizedBox(width: 4),
+        Text(
+          'Uloženo',
+          style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                color: Theme.of(context).colorScheme.primary,
+              ),
+        ),
+      ],
+    );
+  }
+
+  void _setProvider(String type) {
+    final prefs = ref.read(sharedPreferencesProvider);
+    prefs.setString('provider_type', type);
+    ref.read(providerTypeProvider.notifier).state = type;
+  }
+
   void _saveApiKey() {
     final key = _apiKeyController.text.trim();
     if (key.isEmpty) return;
-
     final prefs = ref.read(sharedPreferencesProvider);
     prefs.setString('xai_api_key', key);
     ref.read(apiKeyProvider.notifier).state = key;
+    _showSnack('API klíč uložen');
+  }
 
+  void _saveCfCredentials() {
+    final id = _cfIdController.text.trim();
+    final secret = _cfSecretController.text.trim();
+    final prefs = ref.read(sharedPreferencesProvider);
+    prefs.setString('ol1n_cf_id', id);
+    prefs.setString('ol1n_cf_secret', secret);
+    ref.read(ol1nCfIdProvider.notifier).state = id;
+    ref.read(ol1nCfSecretProvider.notifier).state = secret;
+    _showSnack('Uloženo');
+  }
+
+  void _showSnack(String msg) {
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('API klíč uložen'),
-        duration: Duration(seconds: 1),
-      ),
+      SnackBar(content: Text(msg), duration: const Duration(seconds: 1)),
     );
   }
 }

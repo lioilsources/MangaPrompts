@@ -60,7 +60,6 @@ presets:
       lighting: lighting_cinematic
       effects: effects_manga_speed_lines
       background: background_motion_blur
-      camera: camera_sony_a7iii
       palette: palette_black_red
       quality: quality_8k_hyper
       negative: negative_standard
@@ -85,4 +84,104 @@ presets:
       camera: camera_fujifilm_gfx100
       palette: palette_pastel_pink_blue
       quality: quality_photo
+      negative: negative_standard
+
+  - id: preset_selfie_manga
+    label: "Selfie manga"
+    description: "Manga selfie portrét mladé ženy z ruky"
+    template: template_selfie
+    blocks:
+      subject: subject_woman_20s
+      style: style_manga
+      face: face_round_soft
+      eyes: eyes_large_round_blue_green
+      eyebrows: eyebrows_thin_arched
+      hair: hair_long_flowing_blonde
+      expression: expression_blushing
+      pose: pose_selfie
+      clothing: clothing_casual_modern
+      lighting: lighting_warm_sunset
+      effects: effects_sparkle
+      background: background_school_rooftop
+      camera: camera_canon_r5
+      palette: palette_pastel_pink_blue
+      quality: quality_photo
+      negative: negative_standard
+
+  - id: preset_group_friends
+    label: "Skupina přátel"
+    description: "Skupinová foto přátel na louce v realistickém stylu"
+    template: template_group_photo
+    blocks:
+      subject: subject_couple
+      style: style_realistic
+      expression: expression_gentle_smile
+      pose: pose_group_photo
+      clothing: clothing_casual_modern
+      lighting: lighting_golden_hour
+      background: background_meadow
+      camera: camera_sony_a7iii
+      palette: palette_sepia_faded
+      quality: quality_photo
+      negative: negative_standard
+
+  - id: preset_intimate_real
+    label: "Intimní moment"
+    description: "Intimní scéna páru v ložnici ve fotorealistickém stylu"
+    template: template_intimate
+    blocks:
+      subject: subject_couple
+      style: style_realistic
+      face: face_round_soft
+      eyes: eyes_half_closed_sultry
+      expression: expression_shy_gaze
+      pose: pose_intimate_full_body
+      clothing: clothing_lingerie
+      lighting: lighting_soft_natural
+      effects: effects_bokeh
+      background: background_bedroom
+      camera: camera_canon_r5
+      palette: palette_warm_earth
+      quality: quality_8k_hyper
+      negative: negative_standard
+
+  - id: preset_bedroom_ai
+    label: "Ložnice AI"
+    description: "AI generovaná scéna mladé ženy v ložnici"
+    template: template_indoor_scene
+    blocks:
+      subject: subject_woman_20s
+      style: style_ai_aesthetic
+      face: face_heart
+      eyes: eyes_large_round_blue_green
+      hair: hair_long_flowing_blonde
+      expression: expression_dazed
+      pose: pose_reclining
+      clothing: clothing_lingerie
+      lighting: lighting_soft_natural
+      effects: effects_sparkle
+      background: background_bedroom
+      camera: camera_fujifilm_gfx100
+      palette: palette_pink_peach
+      quality: quality_8k_hyper
+      negative: negative_standard
+
+  - id: preset_forest_comix
+    label: "Les komix"
+    description: "Komixová akční scéna v lese"
+    template: template_outdoor_scene
+    blocks:
+      subject: subject_woman_20s
+      style: style_comic_book
+      face: face_angular_cheekbones
+      eyes: eyes_sharp_narrow_crimson
+      hair: hair_pixie_tousled
+      expression: expression_stoic_neutral
+      pose: pose_combat_ready
+      clothing: clothing_casual_modern
+      lighting: lighting_cinematic
+      effects: effects_manga_speed_lines
+      background: background_forest
+      palette: palette_black_red
+      quality: quality_8k_hyper
       negative: negative_standard

@@ -6,9 +6,9 @@ blocks:
   - id: quality_8k_hyper
     label: "8K hyperdetailní"
     tags: [8k, hyperdetailed, pores]
-    value: "hyperdetailed, 8k resolution, skin pores visible, ultra high definition, sharp focus"
+    value: "hyperdetailed, 8k resolution, ultra high definition, sharp focus throughout"
     mood: [dark, technical, surreal]
-    incompatible: [quality_film]
+    incompatible: [quality_film, style_minimalist]
 
   - id: quality_photo
     label: "Fotorealistická"
