@@ -1,187 +1,201 @@
 presets:
   - id: preset_shojo_heroine
-    label: "Shojo hrdinka"
-    description: "Romantická shojo hrdinka se třpytivými efekty a měkkým osvětlením"
+    label: "Shojo hrdinka (anime)"
+    description: "Romantická shojo hrdinka, anime ilustrace, portrét"
     template: template_portrait
     blocks:
-      subject: subject_woman_20s
+      medium: medium_anime
+      subject: subject_woman
+      framing: framing_portrait
       style: style_shojo_romantic
       face: face_heart
       eyes: eyes_large_round_blue_green
       eyebrows: eyebrows_thin_arched
       hair: hair_long_flowing_blonde
       expression: expression_shy_gaze
-      pose: pose_elegant_standing
-      clothing: clothing_school_uniform
+      pose: pose_elegant
+      clothing_outfit: outfit_school_uniform
       lighting: lighting_warm_sunset
       effects: effects_sparkle
       background: background_cherry_blossom
-      camera: camera_canon_r5
       palette: palette_pink_peach
-      quality: quality_photo
-      negative: negative_standard
+      quality: quality_clean_lines
+      negative: negative_illustration_guard
 
   - id: preset_cyberpunk_dark
-    label: "Cyberpunk temný"
-    description: "Temná kyberpunková postava v neonové uličce"
+    label: "Cyberpunk temný (foto)"
+    description: "Temná kyberpunková postava, fotorealistická, neonová ulička"
     template: template_portrait
     blocks:
-      subject: subject_woman_20s
-      style: style_cyberpunk_fetish
+      medium: medium_photoreal
+      subject: subject_woman
+      framing: framing_portrait
+      style: style_cyberpunk
       face: face_angular_cheekbones
       eyes: eyes_sharp_narrow_crimson
       eyebrows: eyebrows_straight_thick
       hair: hair_asymmetrical_bangs
       expression: expression_stoic_neutral
-      pose: pose_elegant_standing
-      clothing: clothing_cyberpunk_wear
+      pose: pose_arms_crossed
+      clothing_outfit: outfit_bodysuit
       lighting: lighting_neon_lit
-      effects: effects_glitch_art
+      effects: effects_holographic
       background: background_neon_alley
       camera: camera_leica_m6
       palette: palette_magenta_cyan
-      quality: quality_8k_hyper
-      negative: negative_standard
+      quality: quality_skin_detail
+      negative: negative_photo_guard
 
   - id: preset_shonen_hero
-    label: "Shonen hrdina"
-    description: "Dynamický akční shonen hrdina s pohybovými efekty"
+    label: "Shonen hrdina (manga)"
+    description: "Dynamický akční shonen hrdina, čб manga, celá postava"
     template: template_action_scene
     blocks:
-      subject: subject_man_20s
+      medium: medium_manga
+      subject: subject_man
+      framing: framing_full_body
       style: style_shonen_action
-      face: face_strong_jaw
-      eyes: eyes_sharp_narrow_glint
-      eyebrows: eyebrows_slightly_furrowed
-      hair: hair_pixie_tousled
       expression: expression_angry_glare
       pose: pose_dynamic_action
-      clothing: clothing_casual_modern
-      lighting: lighting_cinematic
+      clothing_top: top_tshirt
+      clothing_bottom: bottom_trousers
       effects: effects_manga_speed_lines
+      lighting: lighting_cinematic
       background: background_motion_blur
       palette: palette_black_red
-      quality: quality_8k_hyper
-      negative: negative_standard
+      quality: quality_clean_lines
+      negative: negative_illustration_guard
 
   - id: preset_magical_girl
-    label: "Kouzelná dívka"
-    description: "Třpytivá transformační scéna kouzelné dívky"
+    label: "Kouzelná dívka (anime)"
+    description: "Třpytivá transformace kouzelné dívky, anime, celá postava"
     template: template_portrait
     blocks:
-      subject: subject_woman_20s
+      medium: medium_anime
+      subject: subject_woman
+      framing: framing_full_body
       style: style_magical_girl
       face: face_round_soft
       eyes: eyes_upturned_sparkle
       eyebrows: eyebrows_thin_arched
       hair: hair_twin_tails
       expression: expression_surprised
-      pose: pose_magical_girl
-      clothing: clothing_magical_outfit
+      pose: pose_magical_transform
+      clothing_outfit: outfit_magical
       lighting: lighting_golden_hour
       effects: effects_sparkle
       background: background_starfield
-      camera: camera_fujifilm_gfx100
       palette: palette_pastel_pink_blue
-      quality: quality_photo
-      negative: negative_standard
+      quality: quality_clean_lines
+      negative: negative_illustration_guard
 
-  - id: preset_selfie_manga
-    label: "Selfie manga"
-    description: "Manga selfie portrét mladé ženy z ruky"
+  - id: preset_selfie_real
+    label: "Selfie (foto)"
+    description: "Fotorealistický selfie portrét mladé ženy"
     template: template_selfie
     blocks:
-      subject: subject_woman_20s
-      style: style_manga
+      medium: medium_photoreal
+      subject: subject_woman
+      framing: framing_closeup
+      style: style_slice_of_life
       face: face_round_soft
       eyes: eyes_large_round_blue_green
       eyebrows: eyebrows_thin_arched
       hair: hair_long_flowing_blonde
       expression: expression_blushing
-      pose: pose_selfie
-      clothing: clothing_casual_modern
+      clothing_top: top_crop_top
       lighting: lighting_warm_sunset
-      effects: effects_sparkle
       background: background_school_rooftop
       camera: camera_canon_r5
       palette: palette_pastel_pink_blue
-      quality: quality_photo
-      negative: negative_standard
+      quality: quality_skin_detail
+      negative: negative_photo_guard
 
   - id: preset_group_friends
-    label: "Skupina přátel"
-    description: "Skupinová foto přátel na louce v realistickém stylu"
+    label: "Skupina přátel (foto)"
+    description: "Fotorealistická skupinová foto na louce, celé postavy"
     template: template_group_photo
     blocks:
-      subject: subject_couple
-      style: style_realistic
+      medium: medium_photoreal
+      subject: subject_group_mixed
+      framing: framing_full_body
+      style: style_slice_of_life
       expression: expression_gentle_smile
-      pose: pose_group_photo
-      clothing: clothing_casual_modern
+      pose: pose_standing_neutral
+      clothing_top: top_tshirt
+      clothing_bottom: bottom_denim_shorts
       lighting: lighting_golden_hour
       background: background_meadow
       camera: camera_sony_a7iii
       palette: palette_sepia_faded
-      quality: quality_photo
-      negative: negative_standard
+      quality: quality_skin_detail
+      negative: negative_photo_guard
 
   - id: preset_intimate_real
-    label: "Intimní moment"
-    description: "Intimní scéna páru v ložnici ve fotorealistickém stylu"
+    label: "Intimní moment (foto)"
+    description: "Fotorealistická intimní scéna páru v ložnici"
     template: template_intimate
     blocks:
+      medium: medium_photoreal
       subject: subject_couple
-      style: style_realistic
-      face: face_round_soft
-      eyes: eyes_half_closed_sultry
+      framing: framing_full_body
+      style: style_shojo_romantic
+      eyes: eyes_heavy_lidded_shadowed
       expression: expression_shy_gaze
-      pose: pose_intimate_full_body
-      clothing: clothing_lingerie
+      pose: pose_intimate
+      clothing_outfit: outfit_lingerie_set
       lighting: lighting_soft_natural
       effects: effects_bokeh
       background: background_bedroom
       camera: camera_canon_r5
-      palette: palette_warm_earth
-      quality: quality_8k_hyper
-      negative: negative_standard
+      palette: palette_sepia_faded
+      quality: quality_skin_detail
+      negative: negative_photo_guard
 
-  - id: preset_bedroom_ai
-    label: "Ložnice AI"
-    description: "AI generovaná scéna mladé ženy v ložnici"
+  - id: preset_bedroom_woman
+    label: "Ložnice (foto)"
+    description: "Fotorealistická scéna ženy v ložnici, vrstvené oblečení"
     template: template_indoor_scene
     blocks:
-      subject: subject_woman_20s
-      style: style_ai_aesthetic
+      medium: medium_photoreal
+      subject: subject_woman
+      framing: framing_full_body
+      style: style_slice_of_life
       face: face_heart
       eyes: eyes_large_round_blue_green
       hair: hair_long_flowing_blonde
       expression: expression_dazed
       pose: pose_reclining
-      clothing: clothing_lingerie
+      clothing_top: top_tank_top
+      clothing_underwear: underwear_panties
+      clothing_legwear: legwear_socks_ankle
       lighting: lighting_soft_natural
-      effects: effects_sparkle
       background: background_bedroom
       camera: camera_fujifilm_gfx100
       palette: palette_pink_peach
-      quality: quality_8k_hyper
-      negative: negative_standard
+      quality: quality_skin_detail
+      negative: negative_photo_guard
 
   - id: preset_forest_comix
-    label: "Les komix"
-    description: "Komixová akční scéna v lese"
+    label: "Les komiks"
+    description: "Komiksová akční scéna v lese, celá postava"
     template: template_outdoor_scene
     blocks:
-      subject: subject_woman_20s
-      style: style_comic_book
+      medium: medium_comic
+      subject: subject_woman
+      framing: framing_full_body
+      style: style_shonen_action
       face: face_angular_cheekbones
       eyes: eyes_sharp_narrow_crimson
       hair: hair_pixie_tousled
       expression: expression_stoic_neutral
       pose: pose_combat_ready
-      clothing: clothing_casual_modern
+      clothing_top: top_crop_top
+      clothing_bottom: bottom_shorts
+      clothing_legwear: legwear_thigh_highs
       lighting: lighting_cinematic
-      effects: effects_manga_speed_lines
+      effects: effects_motion_lines
       background: background_forest
       palette: palette_black_red
-      quality: quality_8k_hyper
-      negative: negative_standard
+      quality: quality_clean_lines
+      negative: negative_illustration_guard

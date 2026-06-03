@@ -1,0 +1,76 @@
+category: clothing_outfit
+label: "Oblečení – celý outfit"
+icon: checkroom
+required: false
+# One-piece / full outfits. Pick one of these OR build from top+bottom layers.
+# Marked mutually exclusive with each other to avoid stacking whole costumes.
+blocks:
+  - id: outfit_dress
+    label: "Elegantní šaty"
+    tags: [dress, elegant, onepiece]
+    value: "an elegant fitted dress"
+    mood: [sweet, dark, nostalgic]
+    incompatible: [outfit_summer_dress, outfit_kimono, outfit_school_uniform, outfit_swimsuit, outfit_business_suit, outfit_magical, outfit_pilot_suit, outfit_bodysuit, outfit_lingerie_set]
+
+  - id: outfit_summer_dress
+    label: "Letní šaty"
+    tags: [dress, summer, onepiece]
+    value: "a light flowing summer dress"
+    mood: [sweet, nostalgic]
+    incompatible: [outfit_dress, outfit_kimono, outfit_school_uniform, outfit_swimsuit, outfit_business_suit, outfit_magical, outfit_pilot_suit, outfit_bodysuit, outfit_lingerie_set]
+
+  - id: outfit_kimono
+    label: "Kimono"
+    tags: [kimono, traditional, onepiece]
+    value: "a traditional Japanese kimono with an ornate obi belt"
+    mood: [sweet, nostalgic]
+    incompatible: [outfit_dress, outfit_summer_dress, outfit_school_uniform, outfit_swimsuit, outfit_business_suit, outfit_magical, outfit_pilot_suit, outfit_bodysuit, outfit_lingerie_set]
+
+  - id: outfit_school_uniform
+    label: "Školní uniforma (komplet)"
+    tags: [school, uniform, onepiece]
+    value: "a Japanese school uniform, sailor collar and pleated skirt"
+    mood: [sweet, nostalgic]
+    incompatible: [outfit_dress, outfit_summer_dress, outfit_kimono, outfit_swimsuit, outfit_business_suit, outfit_magical, outfit_pilot_suit, outfit_bodysuit, outfit_lingerie_set]
+
+  - id: outfit_swimsuit
+    label: "Plavky (jednodílné)"
+    tags: [swimsuit, swim, onepiece]
+    value: "a one-piece swimsuit"
+    mood: [sweet, nostalgic]
+    incompatible: [outfit_dress, outfit_summer_dress, outfit_kimono, outfit_school_uniform, outfit_business_suit, outfit_magical, outfit_pilot_suit, outfit_bodysuit, outfit_lingerie_set]
+
+  - id: outfit_business_suit
+    label: "Business oblek"
+    tags: [suit, formal, onepiece]
+    value: "a tailored business suit"
+    mood: [dark, technical, nostalgic]
+    incompatible: [outfit_dress, outfit_summer_dress, outfit_kimono, outfit_school_uniform, outfit_swimsuit, outfit_magical, outfit_pilot_suit, outfit_bodysuit, outfit_lingerie_set]
+
+  - id: outfit_magical
+    label: "Kostým kouzelné dívky"
+    tags: [magical_girl, costume, onepiece]
+    value: "a magical-girl costume with ribbons and frills"
+    mood: [sweet, surreal]
+    incompatible: [outfit_dress, outfit_summer_dress, outfit_kimono, outfit_school_uniform, outfit_swimsuit, outfit_business_suit, outfit_pilot_suit, outfit_bodysuit, outfit_lingerie_set]
+
+  - id: outfit_pilot_suit
+    label: "Pilotní oblek (mecha)"
+    tags: [pilot, mecha, technical, onepiece]
+    value: "a tight-fitting mecha pilot flight suit with technical detailing"
+    mood: [technical, dark]
+    incompatible: [outfit_dress, outfit_summer_dress, outfit_kimono, outfit_school_uniform, outfit_swimsuit, outfit_business_suit, outfit_magical, outfit_bodysuit, outfit_lingerie_set]
+
+  - id: outfit_bodysuit
+    label: "Bodysuit"
+    tags: [bodysuit, sleek, onepiece]
+    value: "a sleek form-fitting bodysuit"
+    mood: [dark, technical, surreal]
+    incompatible: [outfit_dress, outfit_summer_dress, outfit_kimono, outfit_school_uniform, outfit_swimsuit, outfit_business_suit, outfit_magical, outfit_pilot_suit, outfit_lingerie_set]
+
+  - id: outfit_lingerie_set
+    label: "Komplet spodního prádla"
+    tags: [lingerie, intimate, onepiece]
+    value: "a delicate matching lingerie set"
+    mood: [sweet, dark]
+    incompatible: [outfit_dress, outfit_summer_dress, outfit_kimono, outfit_school_uniform, outfit_swimsuit, outfit_business_suit, outfit_magical, outfit_pilot_suit, outfit_bodysuit]

@@ -1,0 +1,62 @@
+category: clothing_legwear
+label: "Oblečení – nohy / punčochy"
+icon: checkroom
+required: false
+# Layerable legwear (socks, tights, stockings). Multi-select friendly — e.g.
+# thigh-highs plus ankle socks. Medium-agnostic.
+blocks:
+  - id: legwear_socks_ankle
+    label: "Kotníkové ponožky"
+    tags: [socks, ankle]
+    value: "short ankle socks"
+    mood: [sweet, nostalgic, technical]
+    incompatible: []
+
+  - id: legwear_socks_crew
+    label: "Klasické ponožky"
+    tags: [socks, crew]
+    value: "crew-length cotton socks"
+    mood: [sweet, nostalgic]
+    incompatible: []
+
+  - id: legwear_knee_socks
+    label: "Podkolenky"
+    tags: [socks, knee_high]
+    value: "knee-high socks"
+    mood: [sweet, nostalgic]
+    incompatible: []
+
+  - id: legwear_thigh_highs
+    label: "Nadkolenky"
+    tags: [stockings, thigh_high]
+    value: "thigh-high stockings"
+    mood: [sweet, dark, nostalgic]
+    incompatible: []
+
+  - id: legwear_pantyhose
+    label: "Silonky (sheer)"
+    tags: [pantyhose, sheer, tights]
+    value: "sheer nude pantyhose"
+    mood: [sweet, dark, nostalgic]
+    incompatible: []
+
+  - id: legwear_black_tights
+    label: "Černé punčocháče"
+    tags: [tights, opaque]
+    value: "opaque black tights"
+    mood: [dark, nostalgic, technical]
+    incompatible: []
+
+  - id: legwear_fishnets
+    label: "Síťované punčochy"
+    tags: [fishnet, stockings]
+    value: "fishnet stockings"
+    mood: [dark, surreal]
+    incompatible: []
+
+  - id: legwear_bare_legs
+    label: "Holé nohy"
+    tags: [bare]
+    value: "bare legs, no legwear"
+    mood: [sweet, dark, nostalgic, technical]
+    incompatible: [legwear_pantyhose, legwear_black_tights, legwear_thigh_highs, legwear_fishnets]

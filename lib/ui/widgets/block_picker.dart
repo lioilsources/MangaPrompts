@@ -144,6 +144,8 @@ class BlockPicker extends ConsumerWidget {
         return Icons.accessibility_new;
       case 'checkroom':
         return Icons.checkroom;
+      case 'crop':
+        return Icons.crop;
       case 'light_mode':
       case 'lightbulb':
         return Icons.light_mode;

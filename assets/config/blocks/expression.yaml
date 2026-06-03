@@ -82,7 +82,7 @@ blocks:
     tags: [ahegao, exaggerated, nsfw]
     value: "ahegao expression, rolled back eyes, tongue out, exaggerated pleasure face"
     mood: [surreal]
-    incompatible: [expression_gentle_smile, expression_stoic_neutral, expression_angry_glare, pose_elegant_standing, pose_group_photo, pose_magical_girl, pose_combat_ready]
+    incompatible: [expression_gentle_smile, expression_stoic_neutral, expression_angry_glare, pose_elegant, pose_magical_transform, pose_combat_ready]
 
   - id: expression_dazed
     label: "Omámený pohled"
@@ -103,4 +103,4 @@ blocks:
     tags: [drool, messy, nsfw]
     value: "messy drool at corner of mouth, disheveled expression, smeared lipstick"
     mood: [dark, surreal]
-    incompatible: [expression_gentle_smile, expression_stoic_neutral, pose_elegant_standing]
+    incompatible: [expression_gentle_smile, expression_stoic_neutral, pose_elegant]

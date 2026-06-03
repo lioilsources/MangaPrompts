@@ -1,0 +1,83 @@
+category: clothing_top
+label: "Oblečení – vršek"
+icon: checkroom
+required: false
+# Layerable top garment. Multi-select friendly — combine freely with bottom,
+# legwear and underwear. Medium-agnostic fashion descriptors only.
+blocks:
+  - id: top_tank_top
+    label: "Nátělník"
+    tags: [tank, undershirt]
+    value: "a fitted ribbed tank top"
+    mood: [sweet, dark, nostalgic, technical]
+    incompatible: []
+
+  - id: top_crop_top
+    label: "Tričko nad pupík (crop top)"
+    tags: [crop, midriff]
+    value: "a cropped top ending above the navel, bare midriff"
+    mood: [sweet, dark, nostalgic]
+    incompatible: []
+
+  - id: top_tshirt
+    label: "Tričko"
+    tags: [tshirt, casual]
+    value: "a casual cotton t-shirt"
+    mood: [sweet, nostalgic, technical]
+    incompatible: []
+
+  - id: top_oversized_tshirt
+    label: "Oversized tričko"
+    tags: [tshirt, oversized]
+    value: "an oversized loose t-shirt"
+    mood: [sweet, nostalgic]
+    incompatible: []
+
+  - id: top_blouse
+    label: "Halenka"
+    tags: [blouse, elegant]
+    value: "a soft flowing blouse"
+    mood: [sweet, nostalgic, dark]
+    incompatible: []
+
+  - id: top_sweater
+    label: "Svetr"
+    tags: [sweater, knit, cozy]
+    value: "a cozy knit sweater"
+    mood: [sweet, nostalgic]
+    incompatible: []
+
+  - id: top_hoodie
+    label: "Mikina s kapucí"
+    tags: [hoodie, casual]
+    value: "a relaxed pullover hoodie"
+    mood: [sweet, nostalgic, technical]
+    incompatible: []
+
+  - id: top_button_shirt
+    label: "Košile"
+    tags: [shirt, buttoned]
+    value: "a buttoned collared shirt"
+    mood: [sweet, dark, technical, nostalgic]
+    incompatible: []
+
+  - id: top_sailor
+    label: "Námořnický vršek (school)"
+    tags: [sailor, school, uniform]
+    value: "a school sailor-collar top"
+    mood: [sweet, nostalgic]
+    incompatible: []
+
+  - id: top_bikini
+    label: "Bikiny vršek"
+    tags: [bikini, swim]
+    value: "a bikini top"
+    mood: [sweet, dark, nostalgic]
+    incompatible: []
+
+  - id: top_sport
+    label: "Sportovní crop top"
+    tags: [sport, athletic, crop]
+    value: "a sporty athletic crop top"
+    mood: [sweet, technical]
+    incompatible: []

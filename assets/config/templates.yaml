@@ -1,9 +1,11 @@
 templates:
   - id: template_portrait
     label: "Portrét"
-    description: "Standardní portrétní šablona pro jednu postavu"
+    description: "Jedna postava — medium → subjekt → rámování → detaily"
     slot_order:
+      - medium
       - subject
+      - framing
       - nationality
       - body_type
       - style
@@ -13,7 +15,11 @@ templates:
       - hair
       - expression
       - pose
-      - clothing
+      - clothing_outfit
+      - clothing_top
+      - clothing_bottom
+      - clothing_legwear
+      - clothing_underwear
       - lighting
       - effects
       - background
@@ -23,36 +29,47 @@ templates:
     negative_slot: negative
     separator: ", "
     required_slots:
+      - medium
       - subject
-      - style
-      - quality
+      - framing
     optional_slots:
       - nationality
       - body_type
+      - style
       - face
       - eyes
       - eyebrows
       - hair
       - expression
       - pose
-      - clothing
+      - clothing_outfit
+      - clothing_top
+      - clothing_bottom
+      - clothing_legwear
+      - clothing_underwear
       - lighting
       - effects
       - background
       - camera
       - palette
+      - quality
 
   - id: template_action_scene
     label: "Akční scéna"
-    description: "Dynamická akční šablona s důrazem na pohyb a efekty"
+    description: "Dynamická scéna s důrazem na pózu a efekty"
     slot_order:
+      - medium
       - subject
+      - framing
       - nationality
       - body_type
       - style
       - expression
       - pose
-      - clothing
+      - clothing_outfit
+      - clothing_top
+      - clothing_bottom
+      - clothing_legwear
       - effects
       - lighting
       - background
@@ -62,30 +79,33 @@ templates:
     negative_slot: negative
     separator: ", "
     required_slots:
+      - medium
       - subject
-      - style
+      - framing
       - pose
-      - quality
     optional_slots:
       - nationality
       - body_type
-      - face
-      - eyes
-      - eyebrows
-      - hair
+      - style
       - expression
-      - clothing
+      - clothing_outfit
+      - clothing_top
+      - clothing_bottom
+      - clothing_legwear
       - effects
       - lighting
       - background
       - camera
       - palette
+      - quality
 
   - id: template_selfie
     label: "Selfie"
-    description: "Selfie portrét jedné postavy z ruky"
+    description: "Selfie záběr jedné postavy"
     slot_order:
+      - medium
       - subject
+      - framing
       - nationality
       - body_type
       - style
@@ -94,8 +114,8 @@ templates:
       - eyebrows
       - hair
       - expression
-      - pose
-      - clothing
+      - clothing_outfit
+      - clothing_top
       - lighting
       - effects
       - background
@@ -105,36 +125,41 @@ templates:
     negative_slot: negative
     separator: ", "
     required_slots:
+      - medium
       - subject
-      - style
-      - quality
+      - framing
     optional_slots:
       - nationality
       - body_type
+      - style
       - face
       - eyes
       - eyebrows
       - hair
       - expression
-      - pose
-      - clothing
+      - clothing_outfit
+      - clothing_top
       - lighting
       - effects
       - background
       - camera
       - palette
+      - quality
 
   - id: template_group_photo
     label: "Skupinová foto"
-    description: "Skupinová fotografie celých postav"
+    description: "Pár / trojice / čtveřice / větší skupina"
     slot_order:
+      - medium
       - subject
-      - nationality
-      - body_type
+      - framing
       - style
       - expression
       - pose
-      - clothing
+      - clothing_outfit
+      - clothing_top
+      - clothing_bottom
+      - clothing_legwear
       - lighting
       - background
       - camera
@@ -143,30 +168,30 @@ templates:
     negative_slot: negative
     separator: ", "
     required_slots:
+      - medium
       - subject
-      - style
-      - quality
+      - framing
     optional_slots:
-      - nationality
-      - body_type
-      - face
-      - eyes
-      - eyebrows
-      - hair
+      - style
       - expression
       - pose
-      - clothing
+      - clothing_outfit
+      - clothing_top
+      - clothing_bottom
+      - clothing_legwear
       - lighting
-      - effects
       - background
       - camera
       - palette
+      - quality
 
   - id: template_intimate
     label: "Intimní moment"
-    description: "Intimní scéna celých postav v blízkém kontaktu"
+    description: "Blízká scéna jedné postavy nebo páru"
     slot_order:
+      - medium
       - subject
+      - framing
       - nationality
       - body_type
       - style
@@ -174,7 +199,11 @@ templates:
       - eyes
       - expression
       - pose
-      - clothing
+      - clothing_outfit
+      - clothing_top
+      - clothing_bottom
+      - clothing_legwear
+      - clothing_underwear
       - lighting
       - effects
       - background
@@ -184,30 +213,36 @@ templates:
     negative_slot: negative
     separator: ", "
     required_slots:
+      - medium
       - subject
-      - style
-      - pose
-      - quality
+      - framing
     optional_slots:
       - nationality
       - body_type
+      - style
       - face
       - eyes
-      - eyebrows
-      - hair
       - expression
-      - clothing
+      - pose
+      - clothing_outfit
+      - clothing_top
+      - clothing_bottom
+      - clothing_legwear
+      - clothing_underwear
       - lighting
       - effects
       - background
       - camera
       - palette
+      - quality
 
   - id: template_indoor_scene
     label: "V místnosti"
-    description: "Scéna v interiéru — ložnice, obývák, kuchyně, koupelna, záchod"
+    description: "Interiér — ložnice, obývák, kuchyně, koupelna, záchod"
     slot_order:
+      - medium
       - subject
+      - framing
       - nationality
       - body_type
       - style
@@ -216,7 +251,11 @@ templates:
       - hair
       - expression
       - pose
-      - clothing
+      - clothing_outfit
+      - clothing_top
+      - clothing_bottom
+      - clothing_legwear
+      - clothing_underwear
       - lighting
       - effects
       - background
@@ -226,30 +265,37 @@ templates:
     negative_slot: negative
     separator: ", "
     required_slots:
+      - medium
       - subject
-      - style
+      - framing
       - background
-      - quality
     optional_slots:
       - nationality
       - body_type
+      - style
       - face
       - eyes
-      - eyebrows
       - hair
       - expression
       - pose
-      - clothing
+      - clothing_outfit
+      - clothing_top
+      - clothing_bottom
+      - clothing_legwear
+      - clothing_underwear
       - lighting
       - effects
       - camera
       - palette
+      - quality
 
   - id: template_outdoor_scene
     label: "Venku"
-    description: "Scéna v exteriéru — les, skála, louka, plovárna, diskotéka"
+    description: "Exteriér — les, skála, louka, plovárna, diskotéka"
     slot_order:
+      - medium
       - subject
+      - framing
       - nationality
       - body_type
       - style
@@ -258,7 +304,10 @@ templates:
       - hair
       - expression
       - pose
-      - clothing
+      - clothing_outfit
+      - clothing_top
+      - clothing_bottom
+      - clothing_legwear
       - lighting
       - effects
       - background
@@ -268,21 +317,25 @@ templates:
     negative_slot: negative
     separator: ", "
     required_slots:
+      - medium
       - subject
-      - style
+      - framing
       - background
-      - quality
     optional_slots:
       - nationality
       - body_type
+      - style
       - face
       - eyes
-      - eyebrows
       - hair
       - expression
       - pose
-      - clothing
+      - clothing_outfit
+      - clothing_top
+      - clothing_bottom
+      - clothing_legwear
       - lighting
       - effects
       - camera
       - palette
+      - quality

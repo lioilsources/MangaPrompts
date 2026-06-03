@@ -7,7 +7,9 @@ import 'models/preset.dart';
 
 class BlockLoader {
   static const _blockFiles = [
+    'medium',
     'subject',
+    'framing',
     'nationality',
     'body_type',
     'style',
@@ -17,7 +19,11 @@ class BlockLoader {
     'hair',
     'expression',
     'pose',
-    'clothing',
+    'clothing_outfit',
+    'clothing_top',
+    'clothing_bottom',
+    'clothing_legwear',
+    'clothing_underwear',
     'lighting',
     'effects',
     'background',
