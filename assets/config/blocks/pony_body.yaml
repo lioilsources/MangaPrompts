@@ -1,0 +1,39 @@
+category: pony_body
+label: "Postava / Proporce (Pony)"
+icon: accessibility
+required: false
+blocks:
+  - id: pb_slim
+    label: "Štíhlá"
+    tags: [pony, body]
+    value: "slim, slender"
+    mood: [sweet, dark, surreal, nostalgic]
+    incompatible: [pb_athletic, pb_curvy]
+
+  - id: pb_athletic
+    label: "Atletická"
+    tags: [pony, body]
+    value: "athletic, toned, fit"
+    mood: [sweet, dark, surreal, technical]
+    incompatible: [pb_slim, pb_curvy]
+
+  - id: pb_curvy
+    label: "Plnoštíhlá / Curves"
+    tags: [pony, body]
+    value: "thick thighs, wide hips, curvy"
+    mood: [sweet, dark, surreal]
+    incompatible: [pb_slim, pb_athletic]
+
+  - id: pb_petite
+    label: "Drobná / Petite"
+    tags: [pony, body]
+    value: "petite, small stature"
+    mood: [sweet, surreal, nostalgic]
+    incompatible: []
+
+  - id: pb_tall
+    label: "Vysoká"
+    tags: [pony, body]
+    value: "tall, long legs"
+    mood: [sweet, dark, surreal]
+    incompatible: [pb_petite]

@@ -1,0 +1,35 @@
+category: pony_quality
+label: "Skóre / Rating (Pony)"
+icon: star
+required: true
+# PonyDiffusion quality boosters prepended before character tags.
+# Combines score tier + content rating + source in one slot so the user
+# only has to pick one value instead of stacking three separate picks.
+blocks:
+  - id: pq_s9_safe
+    label: "Skóre 9 · safe"
+    tags: [pony, quality, safe]
+    value: "score_9, score_8_up, score_7_up, score_6_up, score_5_up, rating:safe, source_anime"
+    mood: [sweet, technical, nostalgic, surreal]
+    incompatible: [pq_s9_quest, pq_s9_exp, pq_s8_safe]
+
+  - id: pq_s9_quest
+    label: "Skóre 9 · questionable"
+    tags: [pony, quality, questionable]
+    value: "score_9, score_8_up, score_7_up, score_6_up, score_5_up, rating:questionable, source_anime"
+    mood: [dark, surreal, sweet]
+    incompatible: [pq_s9_safe, pq_s9_exp, pq_s8_safe]
+
+  - id: pq_s9_exp
+    label: "Skóre 9 · explicit"
+    tags: [pony, quality, explicit]
+    value: "score_9, score_8_up, score_7_up, score_6_up, score_5_up, rating:explicit, source_anime"
+    mood: [dark]
+    incompatible: [pq_s9_safe, pq_s9_quest, pq_s8_safe]
+
+  - id: pq_s8_safe
+    label: "Skóre 8+ · safe (rychlejší)"
+    tags: [pony, quality, safe]
+    value: "score_8_up, score_7_up, score_6_up, score_5_up, rating:safe, source_anime"
+    mood: [sweet, technical, nostalgic]
+    incompatible: [pq_s9_safe, pq_s9_quest, pq_s9_exp]

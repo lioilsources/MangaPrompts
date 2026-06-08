@@ -339,3 +339,70 @@ templates:
       - camera
       - palette
       - quality
+
+  # ── PonyDiffusion / Danbooru tag-based templates ──────────────────────────
+  # Quality is the first slot (score boosters + rating).
+  # All slot names are prefixed pony_ to stay fully isolated from natural-
+  # language templates. The engine joins values with ", " — no extra logic needed.
+
+  - id: template_pony_portrait
+    label: "Pony — Portrét"
+    description: "PonyDiffusion: jedna postava, Danbooru tagy"
+    slot_order:
+      - pony_quality
+      - pony_subject
+      - pony_framing
+      - pony_body
+      - pony_hair
+      - pony_eyes
+      - pony_expression
+      - pony_style
+      - pony_clothing
+      - pony_pose
+      - pony_background
+    negative_slot: pony_negative
+    separator: ", "
+    required_slots:
+      - pony_quality
+      - pony_subject
+      - pony_framing
+    optional_slots:
+      - pony_body
+      - pony_hair
+      - pony_eyes
+      - pony_expression
+      - pony_style
+      - pony_clothing
+      - pony_pose
+      - pony_background
+
+  - id: template_pony_scene
+    label: "Pony — Scéna"
+    description: "PonyDiffusion: scéna s důrazem na pozadí a akci"
+    slot_order:
+      - pony_quality
+      - pony_subject
+      - pony_framing
+      - pony_style
+      - pony_expression
+      - pony_clothing
+      - pony_pose
+      - pony_background
+      - pony_hair
+      - pony_eyes
+      - pony_body
+    negative_slot: pony_negative
+    separator: ", "
+    required_slots:
+      - pony_quality
+      - pony_subject
+      - pony_background
+    optional_slots:
+      - pony_framing
+      - pony_style
+      - pony_expression
+      - pony_clothing
+      - pony_pose
+      - pony_hair
+      - pony_eyes
+      - pony_body

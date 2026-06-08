@@ -1,0 +1,32 @@
+category: pony_framing
+label: "Rámování (Pony)"
+icon: crop
+required: true
+blocks:
+  - id: pf_portrait
+    label: "Portrét"
+    tags: [pony, framing, portrait]
+    value: "upper body, portrait"
+    mood: [sweet, dark, surreal, nostalgic, technical]
+    incompatible: [pf_full_body, pf_face_close, pf_cowboy]
+
+  - id: pf_full_body
+    label: "Celé tělo"
+    tags: [pony, framing, full_body]
+    value: "full body"
+    mood: [sweet, dark, surreal, nostalgic]
+    incompatible: [pf_portrait, pf_face_close, pf_cowboy]
+
+  - id: pf_face_close
+    label: "Zblízka (obličej)"
+    tags: [pony, framing, close_up]
+    value: "close-up, face focus"
+    mood: [sweet, dark, surreal, technical]
+    incompatible: [pf_portrait, pf_full_body, pf_cowboy]
+
+  - id: pf_cowboy
+    label: "Cowboy shot (pas nahoru)"
+    tags: [pony, framing, cowboy]
+    value: "cowboy shot"
+    mood: [sweet, dark, surreal, nostalgic]
+    incompatible: [pf_portrait, pf_full_body, pf_face_close]

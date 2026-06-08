@@ -1,0 +1,88 @@
+category: pony_hair
+label: "Vlasy (Pony)"
+icon: face
+required: false
+blocks:
+  - id: ph_blonde_long
+    label: "Blond dlouhé"
+    tags: [pony, hair]
+    value: "long hair, blonde hair"
+    mood: [sweet, nostalgic, surreal]
+    incompatible: []
+
+  - id: ph_blonde_short
+    label: "Blond krátké"
+    tags: [pony, hair]
+    value: "short hair, blonde hair"
+    mood: [sweet, nostalgic]
+    incompatible: []
+
+  - id: ph_black_long
+    label: "Černé dlouhé"
+    tags: [pony, hair]
+    value: "long hair, black hair"
+    mood: [dark, surreal, nostalgic]
+    incompatible: []
+
+  - id: ph_brown
+    label: "Tmavě hnědé"
+    tags: [pony, hair]
+    value: "long hair, dark brown hair"
+    mood: [sweet, dark, nostalgic]
+    incompatible: []
+
+  - id: ph_red
+    label: "Červené"
+    tags: [pony, hair]
+    value: "long hair, red hair"
+    mood: [dark, surreal, sweet]
+    incompatible: []
+
+  - id: ph_silver
+    label: "Stříbrné / Bílé"
+    tags: [pony, hair]
+    value: "long hair, silver hair, white hair"
+    mood: [surreal, dark, sweet]
+    incompatible: []
+
+  - id: ph_purple
+    label: "Fialové"
+    tags: [pony, hair]
+    value: "long hair, purple hair"
+    mood: [surreal, dark]
+    incompatible: []
+
+  - id: ph_blue
+    label: "Modré"
+    tags: [pony, hair]
+    value: "long hair, blue hair"
+    mood: [surreal, sweet]
+    incompatible: []
+
+  - id: ph_twintails
+    label: "Twintails (copánky)"
+    tags: [pony, hair]
+    value: "twintails"
+    mood: [sweet, surreal]
+    incompatible: []
+
+  - id: ph_ponytail
+    label: "Culík"
+    tags: [pony, hair]
+    value: "ponytail"
+    mood: [sweet, nostalgic]
+    incompatible: []
+
+  - id: ph_bun
+    label: "Drdol"
+    tags: [pony, hair]
+    value: "hair bun, bun"
+    mood: [sweet, nostalgic]
+    incompatible: []
+
+  - id: ph_braids
+    label: "Copánky (dvojité)"
+    tags: [pony, hair]
+    value: "twin braids, braided hair"
+    mood: [sweet, nostalgic]
+    incompatible: []
