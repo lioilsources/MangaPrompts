@@ -1,0 +1,46 @@
+category: pony_subject
+label: "Postava (Pony)"
+icon: person
+required: true
+blocks:
+  - id: ps_1girl
+    label: "1 dívka"
+    tags: [pony, solo, female]
+    value: "1girl, solo"
+    mood: [sweet, dark, surreal, nostalgic]
+    incompatible: [ps_2girls, ps_couple, ps_1boy, ps_multiple_girls]
+
+  - id: ps_1girl_mature
+    label: "1 žena (zralá)"
+    tags: [pony, solo, female, mature]
+    value: "1girl, solo, mature female, woman"
+    mood: [sweet, dark, surreal]
+    incompatible: [ps_2girls, ps_couple, ps_1boy, ps_multiple_girls]
+
+  - id: ps_1boy
+    label: "1 chlapec"
+    tags: [pony, solo, male]
+    value: "1boy, solo"
+    mood: [sweet, dark, surreal, nostalgic]
+    incompatible: [ps_1girl, ps_1girl_mature, ps_2girls, ps_couple, ps_multiple_girls]
+
+  - id: ps_2girls
+    label: "2 dívky"
+    tags: [pony, duo, female]
+    value: "2girls"
+    mood: [sweet, dark, surreal, nostalgic]
+    incompatible: [ps_1girl, ps_1girl_mature, ps_1boy, ps_couple, ps_multiple_girls]
+
+  - id: ps_couple
+    label: "Pár (dívka + chlapec)"
+    tags: [pony, duo, mixed]
+    value: "1girl, 1boy, couple"
+    mood: [sweet, dark, nostalgic]
+    incompatible: [ps_1girl, ps_1girl_mature, ps_1boy, ps_2girls, ps_multiple_girls]
+
+  - id: ps_multiple_girls
+    label: "Více dívek (3+)"
+    tags: [pony, group, female]
+    value: "multiple girls, group"
+    mood: [sweet, nostalgic, surreal]
+    incompatible: [ps_1girl, ps_1girl_mature, ps_1boy, ps_2girls, ps_couple]

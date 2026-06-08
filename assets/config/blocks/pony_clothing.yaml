@@ -1,0 +1,67 @@
+category: pony_clothing
+label: "Oblečení (Pony)"
+icon: checkroom
+required: false
+blocks:
+  - id: pc_school
+    label: "Školní uniforma"
+    tags: [pony, clothing]
+    value: "school uniform, serafuku, sailor collar"
+    mood: [sweet, nostalgic, surreal]
+    incompatible: []
+
+  - id: pc_sundress
+    label: "Letní šaty"
+    tags: [pony, clothing]
+    value: "sundress, summer clothes, floral dress"
+    mood: [sweet, nostalgic]
+    incompatible: []
+
+  - id: pc_bikini
+    label: "Bikini / Plavky"
+    tags: [pony, clothing]
+    value: "bikini, swimsuit"
+    mood: [sweet, surreal]
+    incompatible: []
+
+  - id: pc_casual
+    label: "Casual"
+    tags: [pony, clothing]
+    value: "casual clothes, t-shirt, jeans"
+    mood: [sweet, nostalgic, dark]
+    incompatible: []
+
+  - id: pc_fantasy
+    label: "Fantasy výzbroj"
+    tags: [pony, clothing]
+    value: "fantasy armor, adventurer outfit, cape"
+    mood: [dark, surreal]
+    incompatible: []
+
+  - id: pc_kimono
+    label: "Kimono"
+    tags: [pony, clothing]
+    value: "kimono, japanese clothes, obi"
+    mood: [sweet, nostalgic, surreal]
+    incompatible: []
+
+  - id: pc_office
+    label: "Office lady"
+    tags: [pony, clothing]
+    value: "business suit, blazer, office lady"
+    mood: [dark, technical, sweet]
+    incompatible: []
+
+  - id: pc_maid
+    label: "Pokojská (maid)"
+    tags: [pony, clothing]
+    value: "maid dress, apron, frills"
+    mood: [sweet, surreal]
+    incompatible: []
+
+  - id: pc_nude
+    label: "Bez oblečení"
+    tags: [pony, clothing]
+    value: "nude, naked, no clothes"
+    mood: [dark, surreal]
+    incompatible: []

@@ -31,6 +31,19 @@ class BlockLoader {
     'palette',
     'quality',
     'negative',
+    // PonyDiffusion / Danbooru tag-based blocks
+    'pony_quality',
+    'pony_subject',
+    'pony_framing',
+    'pony_body',
+    'pony_hair',
+    'pony_eyes',
+    'pony_expression',
+    'pony_style',
+    'pony_clothing',
+    'pony_pose',
+    'pony_background',
+    'pony_negative',
   ];
 
   static Map<String, dynamic> _yamlToMap(YamlMap yaml) {

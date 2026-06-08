@@ -1,0 +1,67 @@
+category: pony_background
+label: "Pozadí (Pony)"
+icon: landscape
+required: false
+blocks:
+  - id: pbg_white
+    label: "Jednoduché bílé"
+    tags: [pony, background]
+    value: "simple background, white background"
+    mood: [sweet, technical, surreal]
+    incompatible: [pbg_gradient]
+
+  - id: pbg_gradient
+    label: "Gradientní"
+    tags: [pony, background]
+    value: "gradient background"
+    mood: [sweet, surreal, nostalgic]
+    incompatible: [pbg_white]
+
+  - id: pbg_park
+    label: "Park / Příroda"
+    tags: [pony, background, outdoors]
+    value: "outdoors, park, trees, nature, grass"
+    mood: [sweet, nostalgic]
+    incompatible: [pbg_bedroom, pbg_classroom, pbg_cafe]
+
+  - id: pbg_beach
+    label: "Pláž"
+    tags: [pony, background, outdoors]
+    value: "beach, ocean, summer, sky"
+    mood: [sweet, nostalgic, surreal]
+    incompatible: [pbg_bedroom, pbg_classroom, pbg_cafe]
+
+  - id: pbg_forest
+    label: "Les"
+    tags: [pony, background, outdoors]
+    value: "forest, trees, nature, outdoors, dappled light"
+    mood: [dark, surreal, nostalgic]
+    incompatible: [pbg_bedroom, pbg_classroom, pbg_cafe]
+
+  - id: pbg_bedroom
+    label: "Ložnice / Pokoj"
+    tags: [pony, background, indoors]
+    value: "bedroom, indoors, room"
+    mood: [sweet, dark, nostalgic]
+    incompatible: [pbg_park, pbg_beach, pbg_forest, pbg_classroom, pbg_cafe]
+
+  - id: pbg_classroom
+    label: "Třída / Škola"
+    tags: [pony, background, indoors]
+    value: "classroom, school, indoors, desks"
+    mood: [sweet, nostalgic]
+    incompatible: [pbg_park, pbg_beach, pbg_forest, pbg_bedroom, pbg_cafe]
+
+  - id: pbg_cafe
+    label: "Kavárna"
+    tags: [pony, background, indoors]
+    value: "cafe, coffee shop, indoors, cozy"
+    mood: [sweet, nostalgic]
+    incompatible: [pbg_park, pbg_beach, pbg_forest, pbg_bedroom, pbg_classroom]
+
+  - id: pbg_city_night
+    label: "Město v noci"
+    tags: [pony, background, outdoors]
+    value: "city, night, neon lights, urban, street"
+    mood: [dark, surreal, nostalgic]
+    incompatible: [pbg_bedroom, pbg_classroom, pbg_cafe]

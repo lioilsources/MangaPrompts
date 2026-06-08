@@ -1,0 +1,53 @@
+category: pony_expression
+label: "Výraz (Pony)"
+icon: sentiment_satisfied
+required: false
+blocks:
+  - id: pex_smile
+    label: "Úsměv"
+    tags: [pony, expression]
+    value: "smile"
+    mood: [sweet, nostalgic]
+    incompatible: []
+
+  - id: pex_blush
+    label: "Červenání"
+    tags: [pony, expression]
+    value: "blush"
+    mood: [sweet, nostalgic, surreal]
+    incompatible: []
+
+  - id: pex_happy
+    label: "Radost / Smích"
+    tags: [pony, expression]
+    value: "happy, open mouth, grin"
+    mood: [sweet, nostalgic]
+    incompatible: [pex_serious, pex_sad]
+
+  - id: pex_serious
+    label: "Vážný výraz"
+    tags: [pony, expression]
+    value: "serious, expressionless"
+    mood: [dark, technical, surreal]
+    incompatible: [pex_happy, pex_sad]
+
+  - id: pex_sad
+    label: "Smutný / Plačící"
+    tags: [pony, expression]
+    value: "sad, tears, crying"
+    mood: [dark, nostalgic]
+    incompatible: [pex_happy, pex_serious]
+
+  - id: pex_surprised
+    label: "Překvapení"
+    tags: [pony, expression]
+    value: "surprised, wide eyes, open mouth"
+    mood: [sweet, surreal]
+    incompatible: []
+
+  - id: pex_smirk
+    label: "Drzý úsměv / Smirk"
+    tags: [pony, expression]
+    value: "smirk, confident"
+    mood: [dark, sweet, surreal]
+    incompatible: [pex_serious]
