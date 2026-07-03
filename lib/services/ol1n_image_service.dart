@@ -93,15 +93,7 @@ class OlinkImageService implements ImageGenerationService {
         .timeout(_submitTimeout);
     debugPrint('[ol1n] POST $path → ${response.statusCode}');
     if (response.statusCode != 202) {
-      String msg;
-      try {
-        msg = (jsonDecode(response.body) as Map)['detail']?.toString() ??
-            response.body;
-      } catch (_) {
-        msg = response.body;
-      }
-      final snippet = msg.length > 200 ? '${msg.substring(0, 200)}…' : msg;
-      throw OlinkApiException(snippet, statusCode: response.statusCode);
+      throw OlinkApiException(_parseError(response), statusCode: response.statusCode);
     }
     final json = jsonDecode(response.body) as Map<String, dynamic>;
     final jobId = json['id'] as String;
@@ -179,6 +171,23 @@ class OlinkImageService implements ImageGenerationService {
       );
     }
     return response.bodyBytes;
+  }
+
+  static String _parseError(http.Response response) {
+    final code = response.statusCode;
+    // Cloudflare / proxy errors return HTML — give a human-readable message.
+    if (code == 502 || code == 503 || code == 504) {
+      return 'Backend nedostupný ($code) — zkontroluj server llm.ol1n.com';
+    }
+    if (code == 401 || code == 403) {
+      return 'Chyba autentizace ($code) — zkontroluj CF Access token';
+    }
+    try {
+      final msg = (jsonDecode(response.body) as Map)['detail']?.toString();
+      if (msg != null && msg.isNotEmpty) return msg;
+    } catch (_) {}
+    final body = response.body;
+    return body.length > 200 ? '${body.substring(0, 200)}…' : body;
   }
 
   void dispose() => _client.close();

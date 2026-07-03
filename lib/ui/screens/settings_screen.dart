@@ -38,6 +38,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     final apiKey = ref.watch(apiKeyProvider);
     final cfId = ref.watch(ol1nCfIdProvider);
     final cfSecret = ref.watch(ol1nCfSecretProvider);
+    final comfyWorkflow = ref.watch(comfyWorkflowProvider);
 
     if (_apiKeyController.text.isEmpty && apiKey.isNotEmpty) {
       _apiKeyController.text = apiKey;
@@ -63,11 +64,13 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             segments: const [
               ButtonSegment(value: 'xai', label: Text('xAI / Grok')),
               ButtonSegment(value: 'ol1n', label: Text('llm.ol1n.com')),
+              ButtonSegment(value: 'comfyui', label: Text('ComfyUI')),
             ],
             selected: {provider},
             onSelectionChanged: (s) => _setProvider(s.first),
           ),
           const SizedBox(height: 24),
+
           if (provider == 'xai') ...[
             Text('xAI API', style: Theme.of(context).textTheme.titleSmall),
             const SizedBox(height: 4),
@@ -103,57 +106,89 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             ),
             const SizedBox(height: 8),
             if (apiKey.isNotEmpty) _savedBadge(context),
-          ] else ...[
+
+          ] else if (provider == 'ol1n') ...[
             Text(
               'llm.ol1n.com — Cloudflare Access',
               style: Theme.of(context).textTheme.titleSmall,
             ),
             const SizedBox(height: 4),
             Text(
-              'Lokální AiStack (Flux / Qwen). '
+              'Lokální AiStack (Flux diffusers API). '
               'Zadej CF Access service token nebo nech prázdné '
               'pokud je nastaven při buildu (--dart-define).',
               style: Theme.of(context).textTheme.bodySmall,
             ),
             const SizedBox(height: 12),
-            TextField(
-              controller: _cfIdController,
-              decoration: const InputDecoration(
-                labelText: 'CF Client ID',
-                hintText: 'xxxxxxxx.access',
-                border: OutlineInputBorder(),
-              ),
+            ..._cfCredentialFields(context, cfId),
+            const SizedBox(height: 8),
+            if (cfId.isNotEmpty) _savedBadge(context),
+
+          ] else ...[
+            // ComfyUI
+            Text(
+              'ComfyUI — comfyui.ol1n.com',
+              style: Theme.of(context).textTheme.titleSmall,
             ),
-            const SizedBox(height: 12),
-            TextField(
-              controller: _cfSecretController,
-              obscureText: _obscureCfSecret,
-              decoration: InputDecoration(
-                labelText: 'CF Client Secret',
-                border: const OutlineInputBorder(),
-                suffixIcon: IconButton(
-                  icon: Icon(
-                    _obscureCfSecret
-                        ? Icons.visibility
-                        : Icons.visibility_off,
-                  ),
-                  onPressed: () =>
-                      setState(() => _obscureCfSecret = !_obscureCfSecret),
-                ),
-              ),
+            const SizedBox(height: 4),
+            Text(
+              'Lokální ComfyUI (Flux / Pony workflow). '
+              'Sdílí CF Access token s llm.ol1n.com.',
+              style: Theme.of(context).textTheme.bodySmall,
             ),
-            const SizedBox(height: 12),
-            FilledButton.icon(
-              icon: const Icon(Icons.save),
-              label: const Text('Uložit'),
-              onPressed: _saveCfCredentials,
+            const SizedBox(height: 16),
+            Text('Workflow', style: Theme.of(context).textTheme.labelLarge),
+            const SizedBox(height: 8),
+            SegmentedButton<String>(
+              segments: const [
+                ButtonSegment(value: 'flux', label: Text('Flux')),
+                ButtonSegment(value: 'pony', label: Text('Pony Diffusion')),
+              ],
+              selected: {comfyWorkflow},
+              onSelectionChanged: (s) => _setComfyWorkflow(s.first),
             ),
+            const SizedBox(height: 20),
+            ..._cfCredentialFields(context, cfId),
             const SizedBox(height: 8),
             if (cfId.isNotEmpty) _savedBadge(context),
           ],
         ],
       ),
     );
+  }
+
+  List<Widget> _cfCredentialFields(BuildContext context, String cfId) {
+    return [
+      TextField(
+        controller: _cfIdController,
+        decoration: const InputDecoration(
+          labelText: 'CF Client ID',
+          hintText: 'xxxxxxxx.access',
+          border: OutlineInputBorder(),
+        ),
+      ),
+      const SizedBox(height: 12),
+      TextField(
+        controller: _cfSecretController,
+        obscureText: _obscureCfSecret,
+        decoration: InputDecoration(
+          labelText: 'CF Client Secret',
+          border: const OutlineInputBorder(),
+          suffixIcon: IconButton(
+            icon: Icon(
+              _obscureCfSecret ? Icons.visibility : Icons.visibility_off,
+            ),
+            onPressed: () => setState(() => _obscureCfSecret = !_obscureCfSecret),
+          ),
+        ),
+      ),
+      const SizedBox(height: 12),
+      FilledButton.icon(
+        icon: const Icon(Icons.save),
+        label: const Text('Uložit'),
+        onPressed: _saveCfCredentials,
+      ),
+    ];
   }
 
   Widget _savedBadge(BuildContext context) {
@@ -176,6 +211,12 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     final prefs = ref.read(sharedPreferencesProvider);
     prefs.setString('provider_type', type);
     ref.read(providerTypeProvider.notifier).state = type;
+  }
+
+  void _setComfyWorkflow(String wf) {
+    final prefs = ref.read(sharedPreferencesProvider);
+    prefs.setString('comfy_workflow', wf);
+    ref.read(comfyWorkflowProvider.notifier).state = wf;
   }
 
   void _saveApiKey() {
