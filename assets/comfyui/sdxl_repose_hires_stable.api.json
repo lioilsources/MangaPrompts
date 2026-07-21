@@ -1,0 +1,453 @@
+{
+  "1": {
+    "class_type": "CheckpointLoaderSimple",
+    "_meta": {
+      "title": "CheckpointLoaderSimple"
+    },
+    "inputs": {
+      "ckpt_name": "__CKPT__"
+    }
+  },
+  "2": {
+    "class_type": "LoadImage",
+    "_meta": {
+      "title": "Fotka A — osoba/identita (viditelný obličej)"
+    },
+    "inputs": {
+      "image": "__IMAGE__",
+      "upload": "image"
+    }
+  },
+  "3": {
+    "class_type": "IPAdapterUnifiedLoader",
+    "_meta": {
+      "title": "IPAdapterUnifiedLoader"
+    },
+    "inputs": {
+      "model": [
+        "1",
+        0
+      ],
+      "preset": "PLUS (high strength)"
+    }
+  },
+  "4": {
+    "class_type": "IPAdapterAdvanced",
+    "_meta": {
+      "title": "IPAdapter — vzhled z A"
+    },
+    "inputs": {
+      "model": [
+        "3",
+        0
+      ],
+      "ipadapter": [
+        "3",
+        1
+      ],
+      "image": [
+        "2",
+        0
+      ],
+      "weight": 0.45,
+      "weight_type": "linear",
+      "combine_embeds": "concat",
+      "start_at": 0.0,
+      "end_at": 0.6,
+      "embeds_scaling": "V only"
+    }
+  },
+  "5": {
+    "class_type": "LoadImage",
+    "_meta": {
+      "title": "Depth template (poza) — hotova depth mapa z input/poses/pose_depth/"
+    },
+    "inputs": {
+      "image": "__POSE__",
+      "upload": "image"
+    }
+  },
+  "6": {
+    "class_type": "InstantIDModelLoader",
+    "_meta": {
+      "title": "InstantIDModelLoader"
+    },
+    "inputs": {
+      "instantid_file": "ip-adapter.bin"
+    }
+  },
+  "7": {
+    "class_type": "InstantIDFaceAnalysis",
+    "_meta": {
+      "title": "InstantIDFaceAnalysis"
+    },
+    "inputs": {
+      "provider": "CPU"
+    }
+  },
+  "8": {
+    "class_type": "ControlNetLoader",
+    "_meta": {
+      "title": "ControlNetLoader"
+    },
+    "inputs": {
+      "control_net_name": "instantid-controlnet-sdxl.safetensors"
+    }
+  },
+  "9": {
+    "class_type": "CLIPTextEncode",
+    "_meta": {
+      "title": "Positive"
+    },
+    "inputs": {
+      "clip": [
+        "1",
+        1
+      ],
+      "text": "__PROMPT__"
+    }
+  },
+  "10": {
+    "class_type": "CLIPTextEncode",
+    "_meta": {
+      "title": "Negative"
+    },
+    "inputs": {
+      "clip": [
+        "1",
+        1
+      ],
+      "text": "__NEGATIVE__"
+    }
+  },
+  "11": {
+    "class_type": "ApplyInstantID",
+    "_meta": {
+      "title": "InstantID — tvář z A"
+    },
+    "inputs": {
+      "instantid": [
+        "6",
+        0
+      ],
+      "insightface": [
+        "7",
+        0
+      ],
+      "control_net": [
+        "8",
+        0
+      ],
+      "image": [
+        "2",
+        0
+      ],
+      "model": [
+        "4",
+        0
+      ],
+      "positive": [
+        "9",
+        0
+      ],
+      "negative": [
+        "10",
+        0
+      ],
+      "weight": 0.55,
+      "start_at": 0.15,
+      "end_at": 0.8
+    }
+  },
+  "14": {
+    "class_type": "ControlNetLoader",
+    "_meta": {
+      "title": "ControlNetLoader"
+    },
+    "inputs": {
+      "control_net_name": "controlnet-union-sdxl-promax-xinsir.safetensors"
+    }
+  },
+  "15": {
+    "class_type": "SetUnionControlNetType",
+    "_meta": {
+      "title": "SetUnionControlNetType"
+    },
+    "inputs": {
+      "control_net": [
+        "14",
+        0
+      ],
+      "type": "depth"
+    }
+  },
+  "16": {
+    "class_type": "ControlNetApplyAdvanced",
+    "_meta": {
+      "title": "Depth ControlNet — póza"
+    },
+    "inputs": {
+      "positive": [
+        "11",
+        1
+      ],
+      "negative": [
+        "11",
+        2
+      ],
+      "control_net": [
+        "15",
+        0
+      ],
+      "image": [
+        "5",
+        0
+      ],
+      "strength": 0.75,
+      "start_percent": 0.0,
+      "end_percent": 0.9
+    }
+  },
+  "17": {
+    "class_type": "EmptyLatentImage",
+    "_meta": {
+      "title": "EmptyLatentImage"
+    },
+    "inputs": {
+      "width": 832,
+      "height": 1216,
+      "batch_size": 1
+    }
+  },
+  "18": {
+    "class_type": "KSampler",
+    "_meta": {
+      "title": "KSampler"
+    },
+    "inputs": {
+      "model": [
+        "11",
+        0
+      ],
+      "positive": [
+        "16",
+        0
+      ],
+      "negative": [
+        "16",
+        1
+      ],
+      "latent_image": [
+        "17",
+        0
+      ],
+      "seed": 0,
+      "steps": 35,
+      "cfg": 5.0,
+      "sampler_name": "dpmpp_3m_sde",
+      "scheduler": "karras",
+      "denoise": 1.0
+    }
+  },
+  "19": {
+    "class_type": "VAEDecode",
+    "_meta": {
+      "title": "VAEDecode"
+    },
+    "inputs": {
+      "samples": [
+        "18",
+        0
+      ],
+      "vae": [
+        "1",
+        2
+      ]
+    }
+  },
+  "20": {
+    "class_type": "SaveImage",
+    "_meta": {
+      "title": "SaveImage"
+    },
+    "inputs": {
+      "images": [
+        "31",
+        0
+      ],
+      "filename_prefix": "ControlNet/sdxl_repose_depthtpl_hires_stable"
+    }
+  },
+  "21": {
+    "class_type": "UpscaleModelLoader",
+    "_meta": {
+      "title": "Upscale model"
+    },
+    "inputs": {
+      "model_name": "4x-UltraSharp.pth"
+    }
+  },
+  "22": {
+    "class_type": "ImageUpscaleWithModel",
+    "_meta": {
+      "title": "ImageUpscaleWithModel"
+    },
+    "inputs": {
+      "upscale_model": [
+        "21",
+        0
+      ],
+      "image": [
+        "19",
+        0
+      ]
+    }
+  },
+  "23": {
+    "class_type": "ImageScaleBy",
+    "_meta": {
+      "title": "downscale 4x -> 1.5x"
+    },
+    "inputs": {
+      "image": [
+        "22",
+        0
+      ],
+      "upscale_method": "area",
+      "scale_by": 0.375
+    }
+  },
+  "24": {
+    "class_type": "VAEEncode",
+    "_meta": {
+      "title": "VAEEncode"
+    },
+    "inputs": {
+      "pixels": [
+        "23",
+        0
+      ],
+      "vae": [
+        "1",
+        2
+      ]
+    }
+  },
+  "25": {
+    "class_type": "KSampler",
+    "_meta": {
+      "title": "KSampler hires (denoise 0.45)"
+    },
+    "inputs": {
+      "model": [
+        "11",
+        0
+      ],
+      "positive": [
+        "16",
+        0
+      ],
+      "negative": [
+        "16",
+        1
+      ],
+      "latent_image": [
+        "24",
+        0
+      ],
+      "seed": 0,
+      "steps": 20,
+      "cfg": 5.0,
+      "sampler_name": "dpmpp_3m_sde",
+      "scheduler": "karras",
+      "denoise": 0.45
+    }
+  },
+  "26": {
+    "class_type": "VAEDecode",
+    "_meta": {
+      "title": "VAEDecode"
+    },
+    "inputs": {
+      "samples": [
+        "25",
+        0
+      ],
+      "vae": [
+        "1",
+        2
+      ]
+    }
+  },
+  "30": {
+    "class_type": "UltralyticsDetectorProvider",
+    "_meta": {
+      "title": "BBOX face detector"
+    },
+    "inputs": {
+      "model_name": "bbox/face_yolov8m.pt"
+    }
+  },
+  "31": {
+    "class_type": "FaceDetailer",
+    "_meta": {
+      "title": "FaceDetailer (oblicej)"
+    },
+    "inputs": {
+      "image": [
+        "26",
+        0
+      ],
+      "model": [
+        "11",
+        0
+      ],
+      "clip": [
+        "1",
+        1
+      ],
+      "vae": [
+        "1",
+        2
+      ],
+      "positive": [
+        "11",
+        1
+      ],
+      "negative": [
+        "11",
+        2
+      ],
+      "bbox_detector": [
+        "30",
+        0
+      ],
+      "guide_size": 512.0,
+      "guide_size_for": true,
+      "max_size": 1024.0,
+      "seed": 0,
+      "steps": 20,
+      "cfg": 6.0,
+      "sampler_name": "dpmpp_2m",
+      "scheduler": "karras",
+      "denoise": 0.45,
+      "feather": 5,
+      "noise_mask": true,
+      "force_inpaint": true,
+      "bbox_threshold": 0.5,
+      "bbox_dilation": 10,
+      "bbox_crop_factor": 3.0,
+      "sam_detection_hint": "center-1",
+      "sam_dilation": 0,
+      "sam_threshold": 0.93,
+      "sam_bbox_expansion": 0,
+      "sam_mask_hint_threshold": 0.7,
+      "sam_mask_hint_use_negative": "False",
+      "drop_size": 10,
+      "wildcard": "",
+      "cycle": 1,
+      "inpaint_model": false,
+      "noise_mask_feather": 20
+    }
+  }
+}

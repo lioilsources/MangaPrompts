@@ -1,5 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import '../config/secrets.dart';
 import '../services/image_generation_service.dart';
 import '../services/xai_api_service.dart';
 import '../services/ol1n_image_service.dart';
@@ -31,12 +32,14 @@ final apiKeyProvider = StateProvider<String>((ref) {
 
 final ol1nCfIdProvider = StateProvider<String>((ref) {
   final prefs = ref.watch(sharedPreferencesProvider);
-  return prefs.getString('ol1n_cf_id') ?? '';
+  final saved = prefs.getString('ol1n_cf_id');
+  return (saved != null && saved.isNotEmpty) ? saved : Secrets.cfAccessClientId;
 });
 
 final ol1nCfSecretProvider = StateProvider<String>((ref) {
   final prefs = ref.watch(sharedPreferencesProvider);
-  return prefs.getString('ol1n_cf_secret') ?? '';
+  final saved = prefs.getString('ol1n_cf_secret');
+  return (saved != null && saved.isNotEmpty) ? saved : Secrets.cfAccessClientSecret;
 });
 
 /// Returns the active image generation service, or null if not configured.

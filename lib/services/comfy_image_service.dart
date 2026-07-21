@@ -24,6 +24,10 @@ class ComfyImageService implements ImageGenerationService {
   static const _ponyTxt2img = 'assets/comfyui/pony_txt2img.api.json';
   static const _ponyImg2img = 'assets/comfyui/pony_img2img.api.json';
 
+  /// Repose mode (face + pose depth template → image). Standalone workflow,
+  /// independent of the flux/pony selection above.
+  static const _reposeWorkflow = 'assets/comfyui/sdxl_repose_hires_stable.api.json';
+
   static const _submitTimeout = Duration(seconds: 30);
   static const _pollTimeout = Duration(seconds: 15);
   static const _pollInterval = Duration(seconds: 2);
@@ -96,6 +100,47 @@ class ComfyImageService implements ImageGenerationService {
     return _runToResult(wf);
   }
 
+  /// Repose: uploads the face and the (bundled) pose depth template as two
+  /// separate images and drives the InstantID + depth-ControlNet workflow.
+  Future<GeneratedImage> generateRepose({
+    required String prompt,
+    required String negativePrompt,
+    required Uint8List faceBytes,
+    required Uint8List poseBytes,
+    required String checkpoint,
+  }) async {
+    final faceName = await _uploadImage(faceBytes);
+    // stable filename → overwrite instead of piling up copies on the server
+    final poseName = await _uploadImage(poseBytes, filename: 'manga_pose.png');
+    final tpl = await _template(_reposeWorkflow);
+    final wf = _prepare(
+      tpl,
+      prompt: prompt,
+      negativePrompt: negativePrompt,
+      batch: 1,
+      imageName: faceName,
+      poseName: poseName,
+      checkpoint: checkpoint,
+    );
+    return _runToResult(wf);
+  }
+
+  /// SDXL checkpoints available on the ComfyUI server (for the Repose model picker).
+  Future<List<String>> availableCheckpoints() async {
+    final resp = await _client
+        .get(Uri.parse('$_baseUrl/object_info/CheckpointLoaderSimple'),
+            headers: _authHeaders)
+        .timeout(_submitTimeout);
+    if (resp.statusCode != 200) {
+      throw Exception('object_info HTTP ${resp.statusCode}');
+    }
+    final json = jsonDecode(resp.body) as Map<String, dynamic>;
+    final required = ((json['CheckpointLoaderSimple'] as Map)['input']
+        as Map)['required'] as Map;
+    final opts = (required['ckpt_name'] as List).first as List;
+    return opts.cast<String>();
+  }
+
   Future<GeneratedImage> _runToResult(Map<String, dynamic> workflow) async {
     final promptId = await _queuePrompt(workflow);
     debugPrint('[comfy] prompt_id=$promptId');
@@ -104,6 +149,7 @@ class ComfyImageService implements ImageGenerationService {
     if (images.isEmpty) throw Exception('ComfyUI: žádné výstupní obrázky');
 
     final tempDir = await getTemporaryDirectory();
+    await tempDir.create(recursive: true);
     final file = File(
       '${tempDir.path}/comfy_${DateTime.now().millisecondsSinceEpoch}.png',
     );
@@ -251,14 +297,14 @@ class ComfyImageService implements ImageGenerationService {
     return resp.bodyBytes;
   }
 
-  Future<String> _uploadImage(Uint8List bytes) async {
+  Future<String> _uploadImage(Uint8List bytes, {String? filename}) async {
     final req = http.MultipartRequest('POST', Uri.parse('$_baseUrl/upload/image'))
       ..headers.addAll(_authHeaders)
       ..fields['overwrite'] = 'true'
       ..files.add(http.MultipartFile.fromBytes(
         'image',
         bytes,
-        filename: 'manga_input_${DateTime.now().millisecondsSinceEpoch}.png',
+        filename: filename ?? 'manga_input_${DateTime.now().millisecondsSinceEpoch}.png',
       ));
     final streamed = await _client.send(req).timeout(_submitTimeout);
     final resp = await http.Response.fromStream(streamed);
@@ -286,6 +332,8 @@ class ComfyImageService implements ImageGenerationService {
     required String negativePrompt,
     required int batch,
     String? imageName,
+    String? poseName,
+    String? checkpoint,
   }) {
     final wf = jsonDecode(jsonEncode(template)) as Map<String, dynamic>;
     final seed = Random().nextInt(1 << 31);
@@ -300,6 +348,8 @@ class ComfyImageService implements ImageGenerationService {
         if (value == '__PROMPT__') inputs[key] = prompt;
         if (value == '__NEGATIVE__') inputs[key] = negativePrompt;
         if (value == '__IMAGE__' && imageName != null) inputs[key] = imageName;
+        if (value == '__POSE__' && poseName != null) inputs[key] = poseName;
+        if (value == '__CKPT__' && checkpoint != null) inputs[key] = checkpoint;
       });
 
       switch (cls) {

@@ -12,6 +12,7 @@ import '../widgets/image_base_picker.dart';
 import 'result_screen.dart';
 import 'settings_screen.dart';
 import 'presets_screen.dart';
+import 'repose_screen.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});
@@ -36,6 +37,14 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       appBar: AppBar(
         title: const Text('MangaPrompts'),
         actions: [
+          IconButton(
+            icon: const Icon(Icons.accessibility_new),
+            tooltip: 'Repose (obličej v póze)',
+            onPressed: () => Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => const ReposeScreen()),
+            ),
+          ),
           IconButton(
             icon: const Icon(Icons.bookmarks),
             tooltip: 'Presety',

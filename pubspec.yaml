@@ -31,6 +31,19 @@ dev_dependencies:
   freezed: ^2.5.8
   json_serializable: ^6.9.5
   riverpod_generator: ^2.6.4
+  flutter_launcher_icons: ^0.14.1
+
+flutter_launcher_icons:
+  image_path: "assets/icon/app_icon.png"
+  android: true
+  ios: true
+  remove_alpha_ios: true
+  macos:
+    generate: true
+    image_path: "assets/icon/app_icon.png"
+  web:
+    generate: true
+    image_path: "assets/icon/app_icon.png"
 
 flutter:
   uses-material-design: true
@@ -38,3 +51,4 @@ flutter:
     - assets/config/blocks/
     - assets/config/
     - assets/comfyui/
+    - assets/poses/pose_depth/

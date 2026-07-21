@@ -139,6 +139,7 @@ class OlinkImageService implements ImageGenerationService {
           final resultUrl = json['result_url'] as String;
           final bytes = await _downloadResult(resultUrl);
           final tempDir = await getTemporaryDirectory();
+          await tempDir.create(recursive: true);
           final file = File(
             '${tempDir.path}/manga_${DateTime.now().millisecondsSinceEpoch}.png',
           );

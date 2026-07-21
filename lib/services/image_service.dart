@@ -42,6 +42,7 @@ class ImageService {
       throw Exception('Stažení selhalo (${response.statusCode})');
     }
     final tempDir = await getTemporaryDirectory();
+    await tempDir.create(recursive: true);
     final file = File(
       '${tempDir.path}/manga_${DateTime.now().millisecondsSinceEpoch}.png',
     );
