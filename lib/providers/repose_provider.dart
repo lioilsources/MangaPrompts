@@ -1,5 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../config/secrets.dart';
 import '../services/comfy_image_service.dart';
 import 'api_provider.dart';
 
@@ -41,8 +42,15 @@ final reposeServiceProvider = Provider<ComfyImageService?>((ref) {
   final cfSecret = ref.watch(ol1nCfSecretProvider);
   const envId = String.fromEnvironment('CF_ACCESS_CLIENT_ID');
   const envSecret = String.fromEnvironment('CF_ACCESS_CLIENT_SECRET');
-  final effectiveId = cfId.isNotEmpty ? cfId : envId;
-  final effectiveSecret = cfSecret.isNotEmpty ? cfSecret : envSecret;
+  // Settings → baked Secrets → --dart-define, same order as backend_factory_io.
+  final effectiveId = cfId.isNotEmpty
+      ? cfId
+      : (Secrets.cfAccessClientId.isNotEmpty ? Secrets.cfAccessClientId : envId);
+  final effectiveSecret = cfSecret.isNotEmpty
+      ? cfSecret
+      : (Secrets.cfAccessClientSecret.isNotEmpty
+          ? Secrets.cfAccessClientSecret
+          : envSecret);
   if (effectiveId.isEmpty || effectiveSecret.isEmpty) return null;
   return ComfyImageService(cfId: effectiveId, cfSecret: effectiveSecret);
 });

@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../providers/api_provider.dart';
@@ -48,6 +49,40 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     }
     if (_cfSecretController.text.isEmpty && cfSecret.isNotEmpty) {
       _cfSecretController.text = cfSecret;
+    }
+
+    // Web (Telegram Mini App) always generates through the bot backend —
+    // no provider switch, no credentials, just the workflow choice.
+    if (kIsWeb) {
+      return Scaffold(
+        appBar: AppBar(title: const Text('Nastavení')),
+        body: ListView(
+          padding: const EdgeInsets.all(16),
+          children: [
+            Text(
+              'Generování',
+              style: Theme.of(context).textTheme.titleMedium,
+            ),
+            const SizedBox(height: 4),
+            Text(
+              'Obrázky generuje MangaPrompts bot (ComfyUI). '
+              'Hotový obrázek ti přijde i do chatu s botem.',
+              style: Theme.of(context).textTheme.bodySmall,
+            ),
+            const SizedBox(height: 16),
+            Text('Workflow', style: Theme.of(context).textTheme.labelLarge),
+            const SizedBox(height: 8),
+            SegmentedButton<String>(
+              segments: const [
+                ButtonSegment(value: 'flux', label: Text('Flux')),
+                ButtonSegment(value: 'pony', label: Text('Pony Diffusion')),
+              ],
+              selected: {comfyWorkflow},
+              onSelectionChanged: (s) => _setComfyWorkflow(s.first),
+            ),
+          ],
+        ),
+      );
     }
 
     return Scaffold(

@@ -35,3 +35,10 @@ ios/Flutter/ephemeral/
 # Misc
 *.log
 .claude/
+
+# tgbot (Python backend)
+tgbot/venv/
+tgbot/.venv*/
+tgbot/data/
+tgbot/**/__pycache__/
+tgbot/.pytest_cache/

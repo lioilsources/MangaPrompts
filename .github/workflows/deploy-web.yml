@@ -1,0 +1,64 @@
+name: Deploy Web (Cloudflare Pages)
+
+# Web deploys happen ONLY from CI: the checkout always carries the committed
+# (empty) lib/config/secrets.dart, unlike dev machines with skip-worktree creds.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-web-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    name: Build & Deploy
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.41.x'
+          channel: stable
+          cache: true
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Assert secrets.dart is empty
+        run: |
+          if ! grep -q "cfAccessClientId = ''" lib/config/secrets.dart || \
+             ! grep -q "cfAccessClientSecret = ''" lib/config/secrets.dart; then
+            echo "::error::lib/config/secrets.dart contains non-empty credentials — refusing to build for web"
+            exit 1
+          fi
+
+      # No secret --dart-defines here, ever. TG_BACKEND_URL has a safe default.
+      - name: Build web
+        run: flutter build web --release
+
+      - name: Secret scan of the bundle
+        run: |
+          if grep -REq 'CF-Access-Client|xai-[A-Za-z0-9]{20}|[0-9a-f]{32}\.access' build/web/; then
+            echo "::error::secret-like string found in build/web — aborting deploy"
+            grep -REl 'CF-Access-Client|xai-[A-Za-z0-9]{20}|[0-9a-f]{32}\.access' build/web/
+            exit 1
+          fi
+
+      - name: Deploy to Cloudflare Pages
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: >-
+            pages deploy build/web
+            --project-name=manga-prompts
+            --branch=${{ github.event_name == 'pull_request' && format('pr-{0}', github.event.number) || 'main' }}

@@ -35,6 +35,16 @@ lib/
 
 iOS, Android, macOS, Linux, Web.
 
+Web ships as a **Telegram Mini App**: generation goes through `tgbot/`
+(FastAPI + aiogram on the SPARK box → local ComfyUI), never through the
+direct xAI/ol1n/ComfyUI clients. Platform seams use conditional imports
+(`backend_factory.dart`, `image_service.dart`, `repose_entry.dart`,
+`local_image.dart`, `platform/telegram_webapp.dart`) — anything importing
+dart:io/cronet_http/gal/path_provider must stay out of the web import graph.
+Web deploys ONLY from CI (`.github/workflows/deploy-web.yml` → Cloudflare
+Pages); local `lib/config/secrets.dart` may hold skip-worktree creds that a
+local web deploy would leak. Manual release steps: `docs/telegram-release.md`.
+
 ## Prompt Structure
 
 Three independent selector axes, each populated with blocks:

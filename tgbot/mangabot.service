@@ -1,0 +1,19 @@
+# systemd unit for the MangaPrompts Telegram bot backend (SPARK box).
+# Install:
+#   sudo cp mangabot.service /etc/systemd/system/
+#   sudo systemctl daemon-reload && sudo systemctl enable --now mangabot
+[Unit]
+Description=MangaPrompts Telegram bot backend
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+User=ol1n
+WorkingDirectory=/home/ol1n/Code/MangaPrompts/tgbot
+EnvironmentFile=/etc/mangabot/env
+ExecStart=/home/ol1n/Code/MangaPrompts/tgbot/venv/bin/uvicorn app:app --host 127.0.0.1 --port 8090
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

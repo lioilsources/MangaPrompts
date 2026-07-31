@@ -1,4 +1,4 @@
-import 'dart:io';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../providers/blocks_provider.dart';
@@ -12,7 +12,7 @@ import '../widgets/image_base_picker.dart';
 import 'result_screen.dart';
 import 'settings_screen.dart';
 import 'presets_screen.dart';
-import 'repose_screen.dart';
+import 'repose_entry.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});
@@ -37,14 +37,15 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       appBar: AppBar(
         title: const Text('MangaPrompts'),
         actions: [
-          IconButton(
-            icon: const Icon(Icons.accessibility_new),
-            tooltip: 'Repose (obličej v póze)',
-            onPressed: () => Navigator.push(
-              context,
-              MaterialPageRoute(builder: (_) => const ReposeScreen()),
+          if (!kIsWeb)
+            IconButton(
+              icon: const Icon(Icons.accessibility_new),
+              tooltip: 'Repose (obličej v póze)',
+              onPressed: () => Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const ReposeScreen()),
+              ),
             ),
-          ),
           IconButton(
             icon: const Icon(Icons.bookmarks),
             tooltip: 'Presety',
@@ -97,9 +98,11 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               loading: () => const SizedBox.shrink(),
               error: (_, __) => const SizedBox.shrink(),
             ),
-            // Base image picker
-            const ImageBasePicker(),
-            const SizedBox(height: 8),
+            // Base image picker (img2img is not available on web yet)
+            if (!kIsWeb) ...[
+              const ImageBasePicker(),
+              const SizedBox(height: 8),
+            ],
             // Block pickers list
             Expanded(
               child: activeTemplateAsync.when(
@@ -184,10 +187,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       GeneratedImage result;
 
       if (baseImagePath != null) {
-        final file = File(baseImagePath);
         final imageService = ref.read(imageServiceProvider);
-        final base64 = await imageService.imageToBase64(file);
-        final mimeType = imageService.getMimeType(file);
+        final base64 = await imageService.imageToBase64FromPath(baseImagePath);
+        final mimeType = imageService.getMimeTypeFromPath(baseImagePath);
         result = await apiService.editImage(
           prompt: prompt,
           negativePrompt: negativePrompt,
@@ -203,11 +205,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
       // ol1n service downloads directly to a temp file; xAI returns a URL.
       String? localPath = result.localPath;
-      if (localPath == null && result.url.isNotEmpty) {
+      if (!kIsWeb && localPath == null && result.url.isNotEmpty) {
         try {
           final imgService = ref.read(imageServiceProvider);
-          final file = await imgService.downloadImage(result.url);
-          localPath = file.path;
+          localPath = await imgService.downloadImageToPath(result.url);
         } catch (e) {
           print('[Generate] Download to temp failed: $e');
         }
@@ -222,6 +223,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               prompt: prompt,
               revisedPrompt: result.revisedPrompt,
               localImagePath: localPath,
+              imageBytes: result.bytes,
             ),
           ),
         );

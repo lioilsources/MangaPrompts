@@ -1,14 +1,16 @@
-import 'dart:io';
+import 'package:flutter/foundation.dart' show kIsWeb, Uint8List;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../providers/api_provider.dart';
+import '../widgets/local_image.dart';
 
 class ResultScreen extends ConsumerStatefulWidget {
   final String imageUrl;
   final String prompt;
   final String revisedPrompt;
   final String? localImagePath;
+  final Uint8List? imageBytes;
 
   const ResultScreen({
     super.key,
@@ -16,6 +18,7 @@ class ResultScreen extends ConsumerStatefulWidget {
     required this.prompt,
     this.revisedPrompt = '',
     this.localImagePath,
+    this.imageBytes,
   });
 
   @override
@@ -31,7 +34,10 @@ class _ResultScreenState extends ConsumerState<ResultScreen> {
   void initState() {
     super.initState();
     _localPath = widget.localImagePath;
-    if (_localPath == null) {
+    if (!kIsWeb &&
+        _localPath == null &&
+        widget.imageBytes == null &&
+        widget.imageUrl.isNotEmpty) {
       _downloadToTemp();
     }
   }
@@ -40,10 +46,10 @@ class _ResultScreenState extends ConsumerState<ResultScreen> {
     setState(() => _isDownloading = true);
     try {
       final imageService = ref.read(imageServiceProvider);
-      final file = await imageService.downloadImage(widget.imageUrl);
+      final path = await imageService.downloadImageToPath(widget.imageUrl);
       if (mounted) {
         setState(() {
-          _localPath = file.path;
+          _localPath = path;
           _isDownloading = false;
         });
       }
@@ -92,17 +98,21 @@ class _ResultScreenState extends ConsumerState<ResultScreen> {
       appBar: AppBar(
         title: const Text('Výsledek'),
         actions: [
-          IconButton(
-            icon: _isSaving
-                ? const SizedBox(
-                    width: 20,
-                    height: 20,
-                    child: CircularProgressIndicator(strokeWidth: 2),
-                  )
-                : const Icon(Icons.save_alt),
-            tooltip: 'Uložit do galerie',
-            onPressed: (_isSaving || _localPath == null) ? null : _saveToGallery,
-          ),
+          // On web the image also lands in the Telegram chat — that is the
+          // "save" story there; the gallery needs local files (io only).
+          if (!kIsWeb)
+            IconButton(
+              icon: _isSaving
+                  ? const SizedBox(
+                      width: 20,
+                      height: 20,
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    )
+                  : const Icon(Icons.save_alt),
+              tooltip: 'Uložit do galerie',
+              onPressed:
+                  (_isSaving || _localPath == null) ? null : _saveToGallery,
+            ),
           IconButton(
             icon: const Icon(Icons.copy),
             tooltip: 'Kopírovat prompt',
@@ -122,21 +132,23 @@ class _ResultScreenState extends ConsumerState<ResultScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            // Generated image — prefer local file, fallback to network URL
+            // Generated image — bytes (web) > local file > network URL
             AspectRatio(
               aspectRatio: 1,
-              child: _localPath != null
-                  ? Image.file(
-                      File(_localPath!),
-                      fit: BoxFit.contain,
-                      errorBuilder: (_, error, __) =>
-                          widget.imageUrl.isNotEmpty
-                              ? _networkImage()
-                              : _errorWidget('$error'),
-                    )
-                  : widget.imageUrl.isNotEmpty
-                      ? _networkImage()
-                      : _errorWidget('Obrázek není k dispozici'),
+              child: widget.imageBytes != null
+                  ? Image.memory(widget.imageBytes!, fit: BoxFit.contain)
+                  : _localPath != null
+                      ? LocalImage(
+                          _localPath!,
+                          fit: BoxFit.contain,
+                          errorBuilder: (_, error, __) =>
+                              widget.imageUrl.isNotEmpty
+                                  ? _networkImage()
+                                  : _errorWidget('$error'),
+                        )
+                      : widget.imageUrl.isNotEmpty
+                          ? _networkImage()
+                          : _errorWidget('Obrázek není k dispozici'),
             ),
             if (_isDownloading)
               const Padding(

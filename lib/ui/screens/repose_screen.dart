@@ -253,9 +253,10 @@ class _ReposeScreenState extends ConsumerState<ReposeScreen> {
   }
 
   Future<void> _pickFace(ImageSource source) async {
-    final file = await ref.read(imageServiceProvider).pickImage(source: source);
-    if (file != null) {
-      ref.read(faceImagePathProvider.notifier).state = file.path;
+    final path =
+        await ref.read(imageServiceProvider).pickImagePath(source: source);
+    if (path != null) {
+      ref.read(faceImagePathProvider.notifier).state = path;
     }
   }
 

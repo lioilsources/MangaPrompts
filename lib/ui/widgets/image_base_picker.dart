@@ -1,9 +1,9 @@
-import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 import '../../providers/api_provider.dart';
 import '../../providers/selection_provider.dart';
+import 'local_image.dart';
 
 class ImageBasePicker extends ConsumerWidget {
   const ImageBasePicker({super.key});
@@ -27,8 +27,8 @@ class ImageBasePicker extends ConsumerWidget {
             children: [
               ClipRRect(
                 borderRadius: BorderRadius.circular(4),
-                child: Image.file(
-                  File(imagePath),
+                child: LocalImage(
+                  imagePath,
                   width: 36,
                   height: 36,
                   fit: BoxFit.cover,
@@ -111,9 +111,9 @@ class ImageBasePicker extends ConsumerWidget {
 
   Future<void> _pickImage(WidgetRef ref, ImageSource source) async {
     final imageService = ref.read(imageServiceProvider);
-    final file = await imageService.pickImage(source: source);
-    if (file != null) {
-      ref.read(baseImagePathProvider.notifier).state = file.path;
+    final path = await imageService.pickImagePath(source: source);
+    if (path != null) {
+      ref.read(baseImagePathProvider.notifier).state = path;
     }
   }
 }

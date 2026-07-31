@@ -1,11 +1,11 @@
 {
-    "name": "manga_prompts",
-    "short_name": "manga_prompts",
+    "name": "MangaPrompts",
+    "short_name": "MangaPrompts",
     "start_url": ".",
     "display": "standalone",
-    "background_color": "#0175C2",
-    "theme_color": "#0175C2",
-    "description": "A new Flutter project.",
+    "background_color": "#141218",
+    "theme_color": "#141218",
+    "description": "Skládej AI prompty z LEGO bloků a generuj manga obrázky.",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,
     "icons": [

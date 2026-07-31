@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'app.dart';
+import 'platform/telegram_webapp.dart';
 import 'providers/api_provider.dart';
 
 void main() async {
@@ -16,4 +17,8 @@ void main() async {
       child: const MangaPromptsApp(),
     ),
   );
+
+  // No-ops outside the Telegram Mini App webview.
+  TelegramWebApp.ready();
+  TelegramWebApp.expand();
 }
