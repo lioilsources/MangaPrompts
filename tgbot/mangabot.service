@@ -1,4 +1,5 @@
-# systemd unit for the MangaPrompts Telegram bot backend (SPARK box).
+# Bare-metal alternative to docker-compose.yml (preferred deploy is Docker on
+# the JODA NAS — see README.md). Adjust paths to the checkout location.
 # Install:
 #   sudo cp mangabot.service /etc/systemd/system/
 #   sudo systemctl daemon-reload && sudo systemctl enable --now mangabot
@@ -9,9 +10,9 @@ Wants=network-online.target
 
 [Service]
 User=ol1n
-WorkingDirectory=/home/ol1n/Code/MangaPrompts/tgbot
+WorkingDirectory=/volume1/Code/MangaPrompts/tgbot
 EnvironmentFile=/etc/mangabot/env
-ExecStart=/home/ol1n/Code/MangaPrompts/tgbot/venv/bin/uvicorn app:app --host 127.0.0.1 --port 8090
+ExecStart=/volume1/Code/MangaPrompts/tgbot/venv/bin/uvicorn app:app --host 127.0.0.1 --port 8090
 Restart=on-failure
 RestartSec=5
 

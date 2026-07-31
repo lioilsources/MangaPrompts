@@ -39,11 +39,3 @@ class JobStore:
             for j in self._jobs.values()
             if j.user_id == user_id and j.status in ("queued", "running")
         )
-
-    def today_count(self, user_id: int) -> int:
-        day_start = time.time() - 86400
-        return sum(
-            1
-            for j in self._jobs.values()
-            if j.user_id == user_id and j.created > day_start
-        )

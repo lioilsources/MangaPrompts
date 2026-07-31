@@ -19,7 +19,7 @@ Tyhle kroky vyžadují tvoje účty a jdou udělat jen ručně. Pořadí je záv
 ## 1. Boti u @BotFather
 
 - [ ] `/newbot` → **prod bot** (např. `MangaPromptsBot`) — token do
-      `/etc/mangabot/env` na SPARKu (`BOT_TOKEN=`), nikdy do repa.
+      `tgbot/mangabot.env` na JODĚ (`BOT_TOKEN=`), nikdy do repa.
 - [ ] `/newbot` → **dev bot** (např. `MangaPromptsDevBot`) — token pro dev
       instanci backendu.
 - [ ] Prod bot: `/setuserpic` (z `assets/icon/app_icon.png`), `/setdescription`,
@@ -35,14 +35,19 @@ Tyhle kroky vyžadují tvoje účty a jdou udělat jen ručně. Pořadí je záv
       `CLOUDFLARE_API_TOKEN`, `CLOUDFLARE_ACCOUNT_ID`.
 - [ ] Push na `main` → workflow **Deploy Web** nasadí produkci.
 
-## 3. Backend na SPARKu
+## 3. Backend na JODĚ (NAS) — SPARK dělá jen ComfyUI
 
-Viz `tgbot/README.md` (venv, `/etc/mangabot/env`, systemd, testy).
+Viz `tgbot/README.md` (Docker Compose, `mangabot.env`, testy).
 
-- [ ] Nasadit `tgbot/` + `mangabot.service`, `ALLOWED_ORIGINS=https://app.ol1n.com`.
-- [ ] cloudflared: ingress `tg.ol1n.com → http://localhost:8090` (bez CF Access!)
-      + `cloudflared tunnel route dns <tunnel> tg.ol1n.com`.
-- [ ] Smoke: `curl https://tg.ol1n.com/api/generate` → 401 (bez auth hlavičky).
+- [ ] Checkout repa na JODU, `cp mangabot.env.example mangabot.env`, vyplnit,
+      `docker compose up -d --build`; `ALLOWED_ORIGINS=https://app.ol1n.com`.
+- [ ] Konektivita na ComfyUI: `COMFY_URL=http://<spark-ip>:8188` přes LAN
+      (ComfyUI s `--listen`), nebo `https://comfyui.ol1n.com` + CF Access token.
+- [ ] Veřejná HTTPS: cloudflared na JODĚ (sidecar v docker-compose) s public
+      hostname `tg.ol1n.com → http://mangabot:8090` (bez CF Access!).
+- [ ] Smoke: `curl https://tg.ol1n.com/healthz` → ok;
+      `curl -X POST https://tg.ol1n.com/api/generate` → 401 (bez auth hlavičky).
+- [ ] Denní záloha `tgbot/data/mangabot.db` (kredity + platby!).
 
 ## 4. BotFather — Mini App konfigurace
 

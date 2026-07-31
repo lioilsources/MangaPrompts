@@ -6,9 +6,63 @@ import 'package:http/http.dart' as http;
 import '../platform/telegram_webapp.dart';
 import 'image_generation_service.dart';
 
-/// Web (Telegram Mini App) backend: the SPARK bot service queues the ComfyUI
-/// job, sends the finished image to the user's chat, and serves the bytes back
-/// to the app. Auth is Telegram initData — no API keys live in the web bundle.
+/// Thrown when the backend answers 402: free quota exhausted and no credits.
+class PaymentRequiredException implements Exception {
+  final String message;
+  const PaymentRequiredException(this.message);
+  @override
+  String toString() => message;
+}
+
+class TgPackage {
+  final String id;
+  final int credits;
+  final int stars;
+  final String label;
+
+  const TgPackage({
+    required this.id,
+    required this.credits,
+    required this.stars,
+    required this.label,
+  });
+
+  factory TgPackage.fromJson(Map<String, dynamic> json) => TgPackage(
+        id: json['id'] as String,
+        credits: json['credits'] as int,
+        stars: json['stars'] as int,
+        label: json['label'] as String,
+      );
+}
+
+class TgAccount {
+  final int credits;
+  final int freeRemaining;
+  final int freeLimit;
+  final List<TgPackage> packages;
+
+  const TgAccount({
+    required this.credits,
+    required this.freeRemaining,
+    required this.freeLimit,
+    required this.packages,
+  });
+
+  int get totalRemaining => credits + freeRemaining;
+
+  factory TgAccount.fromJson(Map<String, dynamic> json) => TgAccount(
+        credits: json['credits'] as int,
+        freeRemaining: json['free_remaining'] as int,
+        freeLimit: json['free_limit'] as int,
+        packages: (json['packages'] as List)
+            .map((p) => TgPackage.fromJson((p as Map).cast<String, dynamic>()))
+            .toList(),
+      );
+}
+
+/// Web (Telegram Mini App) backend: the bot service on JODA queues the ComfyUI
+/// job on SPARK, sends the finished image to the user's chat, and serves the
+/// bytes back to the app. Auth is Telegram initData — no API keys on the web.
 class TelegramBackendService implements ImageGenerationService {
   static const _baseUrl = String.fromEnvironment(
     'TG_BACKEND_URL',
@@ -26,11 +80,37 @@ class TelegramBackendService implements ImageGenerationService {
 
   TelegramBackendService({required this.workflow});
 
-  Map<String, String> get _authHeaders {
+  static Map<String, String> get _authHeaders {
     final initData = TelegramWebApp.initData;
     if (initData.isNotEmpty) return {'Authorization': 'tma $initData'};
     if (_devToken.isNotEmpty) return {'Authorization': 'dev $_devToken'};
     throw Exception('Otevři aplikaci v Telegramu (chybí přihlášení).');
+  }
+
+  /// Credit balance, free quota and the package price list.
+  static Future<TgAccount> fetchAccount() async {
+    final resp = await http
+        .get(Uri.parse('$_baseUrl/api/me'), headers: _authHeaders)
+        .timeout(_requestTimeout);
+    if (resp.statusCode != 200) {
+      throw Exception(_errorMessage(resp));
+    }
+    return TgAccount.fromJson(jsonDecode(resp.body) as Map<String, dynamic>);
+  }
+
+  /// Creates a Telegram Stars invoice link for [packageId].
+  static Future<String> createInvoiceLink(String packageId) async {
+    final resp = await http
+        .post(
+          Uri.parse('$_baseUrl/api/invoice'),
+          headers: {..._authHeaders, 'Content-Type': 'application/json'},
+          body: jsonEncode({'package': packageId}),
+        )
+        .timeout(_requestTimeout);
+    if (resp.statusCode != 200) {
+      throw Exception(_errorMessage(resp));
+    }
+    return (jsonDecode(resp.body) as Map<String, dynamic>)['link'] as String;
   }
 
   @override
@@ -50,6 +130,9 @@ class TelegramBackendService implements ImageGenerationService {
           }),
         )
         .timeout(_requestTimeout);
+    if (resp.statusCode == 402) {
+      throw PaymentRequiredException(_errorMessage(resp));
+    }
     if (resp.statusCode != 200) {
       throw Exception(_errorMessage(resp));
     }
@@ -100,7 +183,7 @@ class TelegramBackendService implements ImageGenerationService {
     throw UnsupportedError('img2img zatím není na webu k dispozici');
   }
 
-  String _errorMessage(http.Response resp) {
+  static String _errorMessage(http.Response resp) {
     try {
       final body = jsonDecode(resp.body) as Map<String, dynamic>;
       final detail = body['detail'] ?? body['error'];

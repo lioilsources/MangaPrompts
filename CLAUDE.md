@@ -36,8 +36,10 @@ lib/
 iOS, Android, macOS, Linux, Web.
 
 Web ships as a **Telegram Mini App**: generation goes through `tgbot/`
-(FastAPI + aiogram on the SPARK box → local ComfyUI), never through the
-direct xAI/ol1n/ComfyUI clients. Platform seams use conditional imports
+(FastAPI + aiogram on the JODA NAS → ComfyUI on the SPARK box over
+LAN/CF-Access), never through the direct xAI/ol1n/ComfyUI clients.
+Monetization: Telegram Stars credits (SQLite ledger in tgbot/db.py, packages
+in tgbot/config.py, paywall UI in lib/ui/widgets/paywall_sheet.dart). Platform seams use conditional imports
 (`backend_factory.dart`, `image_service.dart`, `repose_entry.dart`,
 `local_image.dart`, `platform/telegram_webapp.dart`) — anything importing
 dart:io/cronet_http/gal/path_provider must stay out of the web import graph.

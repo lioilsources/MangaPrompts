@@ -66,15 +66,19 @@ def prepare_workflow(
 
 
 class ComfyClient:
-    def __init__(self, base_url: str, client_id: str):
+    def __init__(self, base_url: str, client_id: str, headers: dict | None = None):
+        """`headers` carries CF Access service-token credentials when ComfyUI
+        is reached through its public hostname instead of the LAN."""
         self.base_url = base_url.rstrip("/")
         self.client_id = client_id
+        self.headers = headers or {}
 
     async def queue_prompt(self, session: aiohttp.ClientSession, workflow: dict) -> tuple[str, int]:
         """Submits the workflow; returns (prompt_id, queue_number)."""
         async with session.post(
             f"{self.base_url}/prompt",
             json={"prompt": workflow, "client_id": self.client_id},
+            headers=self.headers,
             timeout=aiohttp.ClientTimeout(total=30),
         ) as resp:
             body = await resp.text()
@@ -89,6 +93,7 @@ class ComfyClient:
     async def get_history(self, session: aiohttp.ClientSession, prompt_id: str) -> dict | None:
         async with session.get(
             f"{self.base_url}/history/{prompt_id}",
+            headers=self.headers,
             timeout=aiohttp.ClientTimeout(total=15),
         ) as resp:
             if resp.status != 200:
@@ -102,6 +107,7 @@ class ComfyClient:
         async with session.get(
             f"{self.base_url}/view",
             params={"filename": filename, "subfolder": subfolder, "type": type_},
+            headers=self.headers,
             timeout=aiohttp.ClientTimeout(total=120),
         ) as resp:
             if resp.status != 200:

@@ -1,80 +1,89 @@
 # MangaPrompts Telegram bot backend
 
-Malá FastAPI + aiogram služba pro SPARK box. Mini App (Flutter web na
-Cloudflare Pages) sem posílá prompty; služba je pouští do lokálního ComfyUI,
-hotový obrázek vrací appce **a zároveň** ho posílá botem do chatu uživatele.
+FastAPI + aiogram služba běžící na **NAS JODA**. Mini App (Flutter web na
+Cloudflare Pages) sem posílá prompty; služba je pouští do **ComfyUI na SPARKu**
+(SPARK dělá jen ComfyUI), hotový obrázek vrací appce **a zároveň** ho posílá
+botem do chatu. Kredity a Telegram Stars platby drží v SQLite.
 
 ```
-Mini App (Pages) ──POST /api/generate (Authorization: tma <initData>)──▶ tgbot (127.0.0.1:8090)
-                                                                          │  localhost
-Telegram chat ◀──sendPhoto───────────────────────────────────────────────┤  ComfyUI :8188
-Mini App      ◀──GET /api/jobs/{id}/image────────────────────────────────┘
+Mini App (Pages) ──POST /api/generate (Authorization: tma <initData>)──▶ mangabot @ JODA:8090
+Mini App        ──POST /api/invoice → openInvoice(⭐)──▶ Telegram ──▶ successful_payment
+                                                                        │
+Telegram chat ◀──sendPhoto──┐                                           ▼
+Mini App      ◀──job image──┴── mangabot ──HTTP(S)──▶ ComfyUI @ SPARK:8188
 ```
 
 ## Endpoints
 
 | Endpoint | Popis |
 |---|---|
-| `POST /api/generate` | `{prompt, negative_prompt, workflow: flux\|pony}` → `{job_id, queue_position}` |
+| `POST /api/generate` | `{prompt, negative_prompt, workflow: flux\|pony}` → `{job_id, queue_position}`; **402** = došla free kvóta i kredity |
 | `GET /api/jobs/{id}` | `{status: queued\|running\|done\|error, error}` |
 | `GET /api/jobs/{id}/image` | PNG bytes hotového jobu |
+| `GET /api/me` | `{credits, free_remaining, free_limit, packages}` |
+| `POST /api/invoice` | `{package}` → `{link}` (Stars invoice, otevírá se přes `WebApp.openInvoice`) |
+| `GET /healthz` | liveness pro monitoring |
 
-Auth: hlavička `Authorization: tma <initData>` — validace oficiálním HMAC
-algoritmem proti `BOT_TOKEN`; identita = Telegram user id. Pro vývoj mimo
-Telegram `Authorization: dev <DEV_TOKEN>` (funguje jen když je `DEV_TOKEN`
-nastaven v env; dev uživateli se neposílá nic do chatu).
+Auth: `Authorization: tma <initData>` (oficiální HMAC validace proti
+`BOT_TOKEN`; identita = Telegram user id). Pro vývoj mimo Telegram
+`Authorization: dev <DEV_TOKEN>` (jen když je `DEV_TOKEN` v env).
 
-## Deploy na SPARK
+## Platby (Telegram Stars)
 
-```bash
-# 1. checkout repa (nebo rsync tgbot/ + assets/comfyui/)
-cd ~/Code && git clone <repo> MangaPrompts && cd MangaPrompts/tgbot
+- Balíčky v `config.PACKAGES` (10/50/250 kreditů za 25/100/400 ⭐).
+- Free kvóta `FREE_DAILY_LIMIT` (default 3) za klouzavých 24 h, pak 1 kredit
+  = 1 generování; spend je atomický v SQLite, neúspěšné generování se vrací.
+- `pre_checkout_query` validuje payload/payera/cenu; `successful_payment`
+  připisuje idempotentně dle `telegram_payment_charge_id`.
+- Bot příkazy: `/paysupport` (povinná platební podpora),
+  `/refund <charge_id>` (jen `ADMIN_USER_ID`; zavolá `refundStarPayment`
+  a odečte kredity).
+- DB: `data/mangabot.db` (WAL). **Zálohovat** — např. denní cron na NAS:
+  `sqlite3 data/mangabot.db ".backup data/backup/mangabot-$(date +%F).db"`.
 
-# 2. venv
-python3 -m venv venv && venv/bin/pip install -r requirements.txt
-
-# 3. env soubor (tokeny NIKDY do repa)
-sudo mkdir -p /etc/mangabot && sudo tee /etc/mangabot/env >/dev/null <<'EOF'
-BOT_TOKEN=<token od @BotFather>
-COMFY_URL=http://127.0.0.1:8188
-WORKFLOW_DIR=/home/ol1n/Code/MangaPrompts/assets/comfyui
-DATA_DIR=/home/ol1n/Code/MangaPrompts/tgbot/data
-ALLOWED_ORIGINS=https://app.ol1n.com
-MINIAPP_URL=https://app.ol1n.com
-DAILY_LIMIT=20
-# DEV_TOKEN=<jen na dev instanci>
-EOF
-sudo chmod 600 /etc/mangabot/env
-
-# 4. systemd
-sudo cp mangabot.service /etc/systemd/system/
-sudo systemctl daemon-reload && sudo systemctl enable --now mangabot
-journalctl -u mangabot -f
-```
-
-## Cloudflare Tunnel
-
-Do existující tunnel konfigurace (stejný tunel jako comfyui.ol1n.com) přidat
-ingress **bez Cloudflare Access** — auth řeší initData:
-
-```yaml
-# ~/.cloudflared/config.yml — PŘED závěrečné http_status:404 pravidlo
-  - hostname: tg.ol1n.com
-    service: http://localhost:8090
-```
+## Deploy na JODA (Docker)
 
 ```bash
-cloudflared tunnel route dns <tunnel-name> tg.ol1n.com
-sudo systemctl restart cloudflared
+# 1. checkout repa na NAS (kvůli assets/comfyui — mountuje se do kontejneru)
+git clone <repo> MangaPrompts && cd MangaPrompts/tgbot
+
+# 2. konfigurace (tokeny NIKDY do repa)
+cp mangabot.env.example mangabot.env && vi mangabot.env
+
+# 3. build + start
+docker compose up -d --build
+docker compose logs -f mangabot
 ```
 
-Volitelně: v Cloudflare dashboardu WAF rate-limit na `/api/generate`.
+### Konektivita JODA → ComfyUI na SPARKu
+
+Dvě varianty, řídí se jen env proměnnými:
+1. **LAN** (preferovaná): `COMFY_URL=http://<spark-ip>:8188` — ComfyUI musí
+   poslouchat na LAN rozhraní (`--listen 0.0.0.0`), ideálně omezit firewallem
+   na IP JODY.
+2. **Přes Cloudflare**: `COMFY_URL=https://comfyui.ol1n.com` +
+   `COMFY_CF_ID`/`COMFY_CF_SECRET` (Access service token).
+
+### Veřejná HTTPS pro tg.ol1n.com
+
+Dvě varianty:
+1. **cloudflared na JODA** (preferovaná — nezávislé na SPARKu): odkomentovat
+   sidecar v `docker-compose.yml`, tunnel token do `mangabot.env`, public
+   hostname `tg.ol1n.com → http://mangabot:8090`.
+2. **Ingress na existujícím tunelu SPARKu**: `service: http://<joda-ip>:8090`
+   (funguje, ale výpadek SPARKu shodí i API).
+
+Bez Cloudflare Access na `tg.ol1n.com` — auth řeší initData; volitelně WAF
+rate-limit na `/api/generate` a `/api/invoice`.
+
+Bare-metal alternativa bez Dockeru: `mangabot.service` (systemd + venv).
 
 ## Lokální vývoj
 
 ```bash
+python3 -m venv venv && venv/bin/pip install -r requirements.txt
 BOT_TOKEN=<dev bot token> DEV_TOKEN=devsecret \
-ALLOWED_ORIGINS=http://localhost:5555 \
+ALLOWED_ORIGINS=http://localhost:5555 COMFY_URL=http://127.0.0.1:8188 \
 venv/bin/uvicorn app:app --host 127.0.0.1 --port 8090 --reload
 ```
 
@@ -85,6 +94,9 @@ flutter run -d chrome \
   --dart-define=TG_BACKEND_URL=http://127.0.0.1:8090 \
   --dart-define=TG_DEV_TOKEN=devsecret
 ```
+
+Platby naostro otestuješ jen v Telegramu (dev bot + Bot API test environment,
+případně nejmenší balíček + `/refund`).
 
 ## Testy
 
@@ -97,6 +109,6 @@ venv/bin/python -m pytest tests/ -q
 
 - `comfy.prepare_workflow` je port `ComfyImageService._prepare` z
   `lib/services/comfy_image_service.dart` — při změně placeholderů drž oba v synku.
-- Joby jsou jen v paměti; obrázek stejně dorazí do chatu, restart služby
-  rozgenerované joby zahodí (appka ukáže timeout/chybu).
-- Limity: 1 běžící job na uživatele, `DAILY_LIMIT` za 24 h.
+- Joby jsou jen v paměti (obrázek stejně dorazí do chatu); kredity a platby
+  jsou v SQLite a restart přežijí.
+- Limity: 1 běžící job na uživatele; free kvóta + kredity viz Platby.

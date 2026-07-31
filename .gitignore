@@ -42,3 +42,4 @@ tgbot/.venv*/
 tgbot/data/
 tgbot/**/__pycache__/
 tgbot/.pytest_cache/
+tgbot/mangabot.env

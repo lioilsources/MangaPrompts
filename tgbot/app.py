@@ -1,11 +1,16 @@
-"""MangaPrompts Telegram bot backend.
+"""MangaPrompts Telegram bot backend (runs on the JODA NAS).
 
 One asyncio process serving both:
-- FastAPI REST API for the Mini App (generate → poll → download image), and
+- FastAPI REST API for the Mini App (generate → poll → download image,
+  credit balance, Stars invoices), and
 - the aiogram bot (long polling; /start button opening the Mini App;
-  sendPhoto of every finished image into the user's chat).
+  sendPhoto of every finished image; Stars payment handling).
 
-Run: uvicorn app:app --host 127.0.0.1 --port 8090  (see mangabot.service)
+ComfyUI itself runs on the SPARK box and is reached over the network
+(COMFY_URL + optional CF Access headers). Credits and payments live in
+SQLite (db.py); jobs are in-memory only.
+
+Run: uvicorn app:app --host 0.0.0.0 --port 8090  (see docker-compose.yml)
 """
 
 import asyncio
@@ -15,14 +20,16 @@ import uuid
 from contextlib import asynccontextmanager
 
 import aiohttp
-from aiogram import Bot, Dispatcher
+from aiogram import Bot, Dispatcher, F
 from aiogram.exceptions import TelegramForbiddenError
-from aiogram.filters import CommandStart
+from aiogram.filters import Command, CommandStart
 from aiogram.types import (
     FSInputFile,
     InlineKeyboardButton,
     InlineKeyboardMarkup,
+    LabeledPrice,
     Message,
+    PreCheckoutQuery,
     WebAppInfo,
 )
 from fastapi import Depends, FastAPI, HTTPException, Request
@@ -31,8 +38,10 @@ from fastapi.responses import FileResponse
 from pydantic import BaseModel, Field
 
 import config
+import payments
 from auth import InvalidInitData, validate_init_data
 from comfy import ComfyClient, ComfyError, prepare_workflow
+from db import Database
 from jobs import Job, JobStore
 
 log = logging.getLogger("mangabot")
@@ -41,7 +50,14 @@ logging.basicConfig(level=logging.INFO)
 bot = Bot(token=config.BOT_TOKEN) if config.BOT_TOKEN else None
 dp = Dispatcher()
 jobs = JobStore()
-comfy = ComfyClient(config.COMFY_URL, client_id=uuid.uuid4().hex)
+db = Database(config.DB_PATH)
+
+_comfy_headers = (
+    {"CF-Access-Client-Id": config.COMFY_CF_ID, "CF-Access-Client-Secret": config.COMFY_CF_SECRET}
+    if config.COMFY_CF_ID and config.COMFY_CF_SECRET
+    else None
+)
+comfy = ComfyClient(config.COMFY_URL, client_id=uuid.uuid4().hex, headers=_comfy_headers)
 _workflow_cache: dict[str, dict] = {}
 
 
@@ -61,8 +77,92 @@ async def on_start(message: Message) -> None:
     )
     await message.answer(
         "Ahoj! Poskládej si prompt z LEGO bloků a vygeneruj manga obrázek. "
-        "Hotový obrázek ti pošlu sem do chatu.",
+        "Hotový obrázek ti pošlu sem do chatu.\n\n"
+        f"Zdarma máš {config.FREE_DAILY_LIMIT} generování denně, "
+        "další jdou za Telegram Stars ⭐ přímo v aplikaci.",
         reply_markup=keyboard,
+    )
+
+
+@dp.message(Command("paysupport"))
+async def on_paysupport(message: Message) -> None:
+    await message.answer(
+        "Problém s platbou? Napiš sem číslo transakce (najdeš ho v Nastavení → "
+        "Telegram Stars → Transakce) a popiš, co se stalo — ozvu se co nejdřív. "
+        "Refundy řešíme do 48 hodin."
+    )
+
+
+@dp.pre_checkout_query()
+async def on_pre_checkout(query: PreCheckoutQuery) -> None:
+    error = payments.validate_pre_checkout(
+        query.invoice_payload, query.from_user.id, query.total_amount
+    )
+    if error is None:
+        await query.answer(ok=True)
+    else:
+        log.warning("pre_checkout rejected for user %s: %s", query.from_user.id, error)
+        await query.answer(ok=False, error_message=error)
+
+
+@dp.message(F.successful_payment)
+async def on_successful_payment(message: Message) -> None:
+    sp = message.successful_payment
+    parsed = payments.parse_payload(sp.invoice_payload)
+    if parsed is None:
+        # Should be impossible after pre-checkout validation — keep the money
+        # trail in the log and resolve manually via /paysupport.
+        log.error("successful_payment with bad payload: %s", sp.invoice_payload)
+        return
+    user_id, package_id = parsed
+    package = config.PACKAGES[package_id]
+    credited = db.add_payment(
+        charge_id=sp.telegram_payment_charge_id,
+        user_id=user_id,
+        stars=sp.total_amount,
+        credits=package["credits"],
+        package=package_id,
+    )
+    if not credited:
+        log.info("duplicate successful_payment %s ignored", sp.telegram_payment_charge_id)
+        return
+    balance = db.credits(user_id)
+    log.info(
+        "payment %s: user %s +%d credits (%d⭐), balance %d",
+        sp.telegram_payment_charge_id, user_id, package["credits"], sp.total_amount, balance,
+    )
+    await message.answer(
+        f"Díky! Připsáno {package['credits']} kreditů. Aktuální zůstatek: {balance}."
+    )
+
+
+@dp.message(Command("refund"))
+async def on_refund(message: Message) -> None:
+    if config.ADMIN_USER_ID == 0 or message.from_user.id != config.ADMIN_USER_ID:
+        return
+    parts = (message.text or "").split(maxsplit=1)
+    if len(parts) != 2:
+        await message.answer("Použití: /refund <telegram_payment_charge_id>")
+        return
+    charge_id = parts[1].strip()
+    payment = db.get_payment(charge_id)
+    if payment is None:
+        await message.answer("Platba nenalezena.")
+        return
+    if payment["status"] != "paid":
+        await message.answer(f"Platba už je ve stavu '{payment['status']}'.")
+        return
+    try:
+        await bot.refund_star_payment(
+            user_id=payment["user_id"], telegram_payment_charge_id=charge_id
+        )
+    except Exception as e:  # noqa: BLE001
+        await message.answer(f"refundStarPayment selhal: {e}")
+        return
+    db.mark_refunded(charge_id)
+    await message.answer(
+        f"Refundováno {payment['stars']}⭐ uživateli {payment['user_id']}, "
+        f"odečteno {payment['credits']} kreditů."
     )
 
 
@@ -110,6 +210,10 @@ class GenerateRequest(BaseModel):
     workflow: str = "flux"
 
 
+class InvoiceRequest(BaseModel):
+    package: str
+
+
 def _load_template(workflow: str) -> dict:
     filename = config.WORKFLOW_FILES.get(workflow)
     if filename is None:
@@ -122,12 +226,53 @@ def _load_template(workflow: str) -> dict:
     return cached
 
 
+@app.get("/healthz")
+async def healthz():
+    return {"status": "ok"}
+
+
+@app.get("/api/me")
+async def me(user_id: int = Depends(current_user_id)):
+    db.ensure_user(user_id)
+    free_used = db.free_used_today(user_id)
+    return {
+        "credits": db.credits(user_id),
+        "free_remaining": max(0, config.FREE_DAILY_LIMIT - free_used),
+        "free_limit": config.FREE_DAILY_LIMIT,
+        "packages": [
+            {"id": pid, "credits": p["credits"], "stars": p["stars"], "label": p["label"]}
+            for pid, p in config.PACKAGES.items()
+        ],
+    }
+
+
+@app.post("/api/invoice")
+async def create_invoice(req: InvoiceRequest, user_id: int = Depends(current_user_id)):
+    package = config.PACKAGES.get(req.package)
+    if package is None:
+        raise HTTPException(status_code=400, detail="unknown package")
+    link = await bot.create_invoice_link(
+        title=package["label"],
+        description="Kredity na generování obrázků v MangaPrompts.",
+        payload=payments.build_payload(user_id, req.package),
+        currency="XTR",
+        prices=[LabeledPrice(label=package["label"], amount=package["stars"])],
+    )
+    return {"link": link}
+
+
 @app.post("/api/generate")
 async def generate(req: GenerateRequest, user_id: int = Depends(current_user_id)):
     if jobs.active_count(user_id) >= 1:
         raise HTTPException(status_code=429, detail="počkej, až doběhne předchozí generování")
-    if jobs.today_count(user_id) >= config.DAILY_LIMIT:
-        raise HTTPException(status_code=429, detail="denní limit generování vyčerpán")
+
+    spend = db.spend_generation(user_id, config.FREE_DAILY_LIMIT)
+    if spend is None:
+        raise HTTPException(
+            status_code=402,
+            detail="denní limit zdarma je vyčerpaný a nemáš žádné kredity",
+        )
+    _, usage_id = spend
 
     template = _load_template(req.workflow)
     wf = prepare_workflow(template, prompt=req.prompt, negative=req.negative_prompt, batch=1)
@@ -137,12 +282,13 @@ async def generate(req: GenerateRequest, user_id: int = Depends(current_user_id)
         try:
             prompt_id, queue_number = await comfy.queue_prompt(session, wf)
         except (ComfyError, aiohttp.ClientError) as e:
+            db.undo_usage(usage_id)
             log.error("queue_prompt failed: %s", e)
             raise HTTPException(status_code=502, detail="ComfyUI není dostupné") from e
     job.prompt_id = prompt_id
     job.status = "running"
     jobs.add(job)
-    asyncio.create_task(_watch_job(job))
+    asyncio.create_task(_watch_job(job, usage_id))
     log.info("job %s queued for user %s (prompt_id=%s)", job.id, user_id, prompt_id)
     return {"job_id": job.id, "queue_position": queue_number}
 
@@ -165,7 +311,7 @@ async def job_image(job_id: str, user_id: int = Depends(current_user_id)):
     return FileResponse(job.image_path, media_type="image/png")
 
 
-async def _watch_job(job: Job) -> None:
+async def _watch_job(job: Job, usage_id: int) -> None:
     try:
         async with aiohttp.ClientSession() as session:
             image = await comfy.wait_for_image(
@@ -174,11 +320,13 @@ async def _watch_job(job: Job) -> None:
     except ComfyError as e:
         job.status = "error"
         job.error = str(e)
+        db.undo_usage(usage_id)  # failed generation must not cost anything
         log.error("job %s failed: %s", job.id, e)
         return
     except Exception as e:  # noqa: BLE001 — watcher must never crash silently
         job.status = "error"
         job.error = "internal error"
+        db.undo_usage(usage_id)
         log.exception("job %s crashed: %s", job.id, e)
         return
 

@@ -8,4 +8,8 @@ class TelegramWebApp {
   static void ready() {}
 
   static void expand() {}
+
+  /// Opens a Telegram Stars invoice; resolves with the final status
+  /// ('paid' / 'cancelled' / 'failed' / 'pending' / 'unavailable').
+  static Future<String> openInvoice(String url) async => 'unavailable';
 }

@@ -1,5 +1,9 @@
 # Plán: Mikroplatby v MangaPrompts Mini Appce (Telegram Stars)
 
+> **Stav: NAIMPLEMENTOVÁNO** (P1–P4). API běží na NAS **JODA** (Docker),
+> SPARK dělá jen ComfyUI. Zbývají manuální kroky P5 (Fragment/TON peněženka)
+> a E2E test v Telegramu — viz `docs/telegram-release.md` a `tgbot/README.md`.
+
 ## Rozhodnutí: Stars, ne přímé krypto
 
 Telegram od června 2024 **vyžaduje, aby se digitální zboží a služby v botech
@@ -51,7 +55,7 @@ Mini App                        tgbot (SPARK)                   Telegram
 
 ## Co je potřeba za infrastrukturu
 
-### 1. Perzistence na SPARKu (nová — dnes je vše in-memory)
+### 1. Perzistence na JODĚ (nová — dnes je vše in-memory)
 Platby vyžadují trvalý stav. **SQLite** (soubor v `DATA_DIR`, WAL mód) stačí:
 - `users(user_id, credits, created)`
 - `payments(charge_id UNIQUE, user_id, stars, credits, package, ts)` — ledger,

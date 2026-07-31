@@ -5,10 +5,13 @@ import '../../providers/blocks_provider.dart';
 import '../../providers/selection_provider.dart';
 import '../../providers/prompt_provider.dart';
 import '../../providers/api_provider.dart';
+import '../../providers/account_provider.dart';
 import '../../services/image_generation_service.dart';
+import '../../services/telegram_backend_service.dart';
 import '../widgets/block_picker.dart';
 import '../widgets/prompt_preview.dart';
 import '../widgets/image_base_picker.dart';
+import '../widgets/paywall_sheet.dart';
 import 'result_screen.dart';
 import 'settings_screen.dart';
 import 'presets_screen.dart';
@@ -37,6 +40,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       appBar: AppBar(
         title: const Text('MangaPrompts'),
         actions: [
+          if (kIsWeb) _creditsChip(),
           if (!kIsWeb)
             IconButton(
               icon: const Icon(Icons.accessibility_new),
@@ -157,6 +161,26 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     );
   }
 
+  Widget _creditsChip() {
+    final account = ref.watch(accountProvider);
+    final label = account.when(
+      data: (a) => '⚡ ${a.totalRemaining}',
+      loading: () => '⚡ …',
+      error: (_, _) => '⚡ ?',
+    );
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.only(right: 4),
+        child: ActionChip(
+          label: Text(label),
+          visualDensity: VisualDensity.compact,
+          tooltip: 'Kredity a balíčky',
+          onPressed: () => PaywallSheet.show(context),
+        ),
+      ),
+    );
+  }
+
   Future<void> _generate(
     BuildContext context,
     WidgetRef ref,
@@ -214,6 +238,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         }
       }
 
+      if (kIsWeb) ref.invalidate(accountProvider);
+
       if (mounted) {
         Navigator.push(
           context,
@@ -227,6 +253,11 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             ),
           ),
         );
+      }
+    } on PaymentRequiredException {
+      if (mounted) {
+        ref.invalidate(accountProvider);
+        PaywallSheet.show(context);
       }
     } catch (e, stack) {
       print('[Generate] Exception: $e');
