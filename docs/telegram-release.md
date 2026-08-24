@@ -48,13 +48,12 @@ Viz `tgbot/README.md` (Docker Compose, `mangabot.env`, testy).
       hostname `tg.ol1n.com → http://mangabot:8090` (bez CF Access!).
 - [x] Smoke: `curl https://tg.ol1n.com/healthz` → ok;
       `curl -X POST https://tg.ol1n.com/api/generate` → 401 (bez auth hlavičky).
-- [ ] **Odstranit `DEV_TOKEN` z `mangabot.env`** — API je od zapnutí tunelu
+- [x] **Odstranit `DEV_TOKEN` z `mangabot.env`** — API je od zapnutí tunelu
       veřejné a ten token obchází initData (generuje jako `user_id=0`).
       Nechat ho tam smí jen dev instance, ne produkce.
-- [ ] Denní záloha `tgbot/data/mangabot.db` (kredity + platby!) — skript je
-      `tgbot/backup.sh`, chybí už jen cron na JODĚ:
-      `0 4 * * * /home/oli/MangaPrompts/tgbot/backup.sh`. **Musí být hotové
-      dřív, než dorazí první reálná platba.**
+- [x] Denní záloha `tgbot/data/mangabot.db` (kredity + platby!) — `tgbot/backup.sh`
+      běží z cronu na JODĚ ve 4:00, log v `/home/oli/mangabot-backup.log`,
+      drží 14 posledních denních.
 - [ ] Kopii záloh dostat *pryč z JODY* — `data/backup/` leží na stejném disku
       jako originál, takže chrání proti smazání a korupci, ne proti selhání disku.
 
