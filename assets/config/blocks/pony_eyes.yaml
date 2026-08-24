@@ -1,52 +1,52 @@
 category: pony_eyes
-label: "Oči (Pony)"
+label: "Eyes (Pony)"
 icon: visibility
 required: false
 blocks:
   - id: pe_blue
-    label: "Modré"
+    label: "Blue"
     tags: [pony, eyes]
     value: "blue eyes"
     mood: [sweet, surreal, nostalgic]
     incompatible: []
 
   - id: pe_green
-    label: "Zelené"
+    label: "Green"
     tags: [pony, eyes]
     value: "green eyes"
     mood: [sweet, surreal, nostalgic]
     incompatible: []
 
   - id: pe_brown
-    label: "Hnědé"
+    label: "Brown"
     tags: [pony, eyes]
     value: "brown eyes"
     mood: [sweet, dark, nostalgic]
     incompatible: []
 
   - id: pe_purple
-    label: "Fialové"
+    label: "Purple"
     tags: [pony, eyes]
     value: "purple eyes"
     mood: [surreal, dark]
     incompatible: []
 
   - id: pe_red
-    label: "Červené"
+    label: "Red"
     tags: [pony, eyes]
     value: "red eyes"
     mood: [dark, surreal]
     incompatible: []
 
   - id: pe_golden
-    label: "Zlaté / Jantarové"
+    label: "Gold / amber"
     tags: [pony, eyes]
     value: "golden eyes, amber eyes"
     mood: [surreal, sweet, dark]
     incompatible: []
 
   - id: pe_heterochromia
-    label: "Heterochromie"
+    label: "Heterochromia"
     tags: [pony, eyes]
     value: "heterochromia, different colored eyes"
     mood: [surreal, dark]

@@ -37,10 +37,10 @@ def validate_pre_checkout(raw_payload: str, payer_id: int, total_amount: int) ->
     """Returns an error message for answerPreCheckoutQuery, or None when OK."""
     parsed = parse_payload(raw_payload)
     if parsed is None:
-        return "Neplatná objednávka, zkus to prosím znovu z aplikace."
+        return "Invalid order, please try again from the app."
     user_id, package_id = parsed
     if user_id != payer_id:
-        return "Objednávka patří jinému účtu."
+        return "This order belongs to a different account."
     if config.PACKAGES[package_id]["stars"] != total_amount:
-        return "Cena objednávky nesouhlasí, zkus to prosím znovu."
+        return "The order price does not match, please try again."
     return None

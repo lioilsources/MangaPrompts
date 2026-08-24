@@ -1,5 +1,5 @@
 category: pose_duo
-label: "Póza dvojice"
+label: "Duo pose"
 icon: people
 required: false
 # Poses for TWO figures. The `pose` axis describes a single body, so it cannot
@@ -15,30 +15,30 @@ required: false
 # because "waltz" alone means little to a diffusion model, while "left hand
 # clasped, his right hand on her shoulder blade" reconstructs.
 blocks:
-  # ── Tanec ─────────────────────────────────────────────────────────────────
+  # ── Dance ─────────────────────────────────────────────────────────────────
   - id: duo_waltz_hold
-    label: "Valčík (uzavřené držení)"
+    label: "Waltz (closed hold)"
     tags: [dance, waltz, ballroom]
     value: "two dancers in closed ballroom hold, chests squared and slightly offset, his right hand flat on her shoulder blade, her left hand resting on his upper arm, their other hands clasped and raised to shoulder height, both standing tall on the balls of their feet"
     mood: [sweet, nostalgic]
     incompatible: [subject_woman, subject_woman_30s, subject_man, subject_man_30s]
 
   - id: duo_tango_dip
-    label: "Tango (záklon)"
+    label: "Tango (dip)"
     tags: [dance, tango, dip]
     value: "tango dip, one partner leaning far back with spine arched and head trailing, supported by the other's arm braced across the upper back, her trailing leg extended and pointed along the floor, his front knee bent deep to carry the weight"
     mood: [dark, technical]
     incompatible: [subject_woman, subject_woman_30s, subject_man, subject_man_30s]
 
   - id: duo_salsa_turn
-    label: "Salsa (otočka)"
+    label: "Salsa (turn)"
     tags: [dance, salsa, latin]
     value: "salsa turn in motion, their joined hands raised overhead as she spins beneath the arch, her skirt flaring outward, his other hand at her waist guiding the rotation, both on the balls of their feet with hips angled"
     mood: [sweet, technical]
     incompatible: [subject_woman, subject_woman_30s, subject_man, subject_man_30s]
 
   - id: duo_ballet_lift
-    label: "Baletní zdvih (pas de deux)"
+    label: "Ballet lift (pas de deux)"
     tags: [dance, ballet, lift]
     value: "classical pas de deux lift, one dancer lifted overhead in arabesque with one leg extended straight behind and arms opened wide, the partner below in a wide stable stance with both arms locked straight, hands gripping the ribcage"
     mood: [sweet, technical]
@@ -52,135 +52,135 @@ blocks:
     incompatible: [subject_woman, subject_woman_30s, subject_man, subject_man_30s]
 
   - id: duo_slow_dance
-    label: "Pomalý tanec"
+    label: "Slow dance"
     tags: [dance, slow, intimate]
     value: "slow dance swaying in place, her arms looped around his neck, his hands resting low on her back, foreheads nearly touching, weight shifting gently from foot to foot"
     mood: [sweet, nostalgic]
     incompatible: [subject_woman, subject_woman_30s, subject_man, subject_man_30s]
 
-  # ── Sport a pohyb ─────────────────────────────────────────────────────────
+  # ── Sport and movement ─────────────────────────────────────────────────────────
   - id: duo_acro_yoga
-    label: "Akro-jóga (základna + letec)"
+    label: "Acro yoga (base + flyer)"
     tags: [sport, yoga, balance, acro]
     value: "acro yoga front bird, the base lying on their back with legs extended straight up and feet planted on the flyer's hip bones, the flyer balanced horizontally face-down above with arms spread wide, both hands clasped for balance"
     mood: [technical, sweet]
     incompatible: [subject_woman, subject_woman_30s, subject_man, subject_man_30s]
 
   - id: duo_figure_skating
-    label: "Krasobruslení (pár)"
+    label: "Pair figure skating"
     tags: [sport, skating, lift, ice]
     value: "pair figure skating lift on ice, one skater raised overhead with body arched and arms swept back, the partner gliding beneath on one blade with both arms locked straight overhead, spray of ice at the trailing skate"
     mood: [technical, sweet]
     incompatible: [subject_woman, subject_woman_30s, subject_man, subject_man_30s]
 
   - id: duo_climbing_belay
-    label: "Lezení s jištěním"
+    label: "Climbing with belay"
     tags: [sport, climbing, rope, outdoor]
     value: "rock climbing pair, one climber high on the wall reaching for a hold with fingers crimped and one leg flagged out for balance, the belayer below braced in a wide stance feeding rope through the device, the line taut between them"
     mood: [technical, dark]
     incompatible: [subject_woman, subject_woman_30s, subject_man, subject_man_30s]
 
   - id: duo_martial_spar
-    label: "Bojový sport (sparring)"
+    label: "Martial arts sparring"
     tags: [sport, martial_arts, spar, action]
     value: "martial arts sparring stance, both fighters mirrored with lead foot forward and guard raised, one throwing a straight punch with hips rotating into it, the other slipping to the side with knees bent and chin tucked"
     mood: [dark, technical]
     incompatible: [subject_woman, subject_woman_30s, subject_man, subject_man_30s]
 
   - id: duo_partner_stretch
-    label: "Protahování ve dvojici"
+    label: "Partner stretch"
     tags: [sport, stretch, training]
     value: "partner stretch on the floor, one seated with legs extended straight and reaching forward toward the toes, the other kneeling behind with both palms pressed flat between the shoulder blades, applying steady gentle pressure"
     mood: [sweet, technical]
     incompatible: [subject_woman, subject_woman_30s, subject_man, subject_man_30s]
 
   - id: duo_running_together
-    label: "Běh ve dvojici"
+    label: "Running together"
     tags: [sport, running, motion]
     value: "two runners side by side mid-stride, opposite arms and legs swinging in sync, both leaning slightly forward, one glancing across at the other, sweat and motion in the fabric of their clothing"
     mood: [technical, sweet]
     incompatible: [subject_woman, subject_woman_30s, subject_man, subject_man_30s]
 
-  # ── Něžné a zamilované ────────────────────────────────────────────────────
+  # ── Tender and affectionate ────────────────────────────────────────────────────
   - id: duo_embrace_facing
-    label: "Objetí čelem k sobě"
+    label: "Face-to-face embrace"
     tags: [romantic, embrace, tender]
     value: "a close standing embrace, arms wrapped fully around each other, one head tucked into the other's shoulder with eyes closed, hands flat against the back, bodies leaning together and weight shared"
     mood: [sweet, nostalgic]
     incompatible: [subject_woman, subject_woman_30s, subject_man, subject_man_30s]
 
   - id: duo_forehead_touch
-    label: "Dotek čel"
+    label: "Forehead touch"
     tags: [romantic, tender, quiet]
     value: "foreheads pressed gently together, eyes closed, noses almost touching, one hand cupping the other's jaw and the second hand resting on the shoulder, shoulders relaxed and turned inward"
     mood: [sweet, nostalgic]
     incompatible: [subject_woman, subject_woman_30s, subject_man, subject_man_30s]
 
   - id: duo_hand_holding_walk
-    label: "Jdou za ruku"
+    label: "Holding hands"
     tags: [romantic, walking, casual]
     value: "walking side by side with fingers interlaced between them, arms hanging loose and swinging slightly, both mid-step on the same foot, one turning their head to speak to the other"
     mood: [sweet, nostalgic]
     incompatible: [subject_woman, subject_woman_30s, subject_man, subject_man_30s]
 
   - id: duo_piggyback
-    label: "Na zádech"
+    label: "Piggyback"
     tags: [romantic, playful, carry]
     value: "piggyback ride, one carried on the other's back with arms looped over the shoulders and legs hooked around the waist, the carrier's hands supporting under the thighs, both laughing with heads tilted together"
     mood: [sweet]
     incompatible: [subject_woman, subject_woman_30s, subject_man, subject_man_30s]
 
   - id: duo_bridal_carry
-    label: "Nesení v náručí"
+    label: "Bridal carry"
     tags: [romantic, carry, lift]
     value: "carried in both arms, one arm under the knees and the other around the back, the carried figure's arm hooked around the neck, both looking at each other, the carrier's stance wide and knees slightly bent"
     mood: [sweet, nostalgic]
     incompatible: [subject_woman, subject_woman_30s, subject_man, subject_man_30s]
 
   - id: duo_back_to_back
-    label: "Zády k sobě"
+    label: "Back to back"
     tags: [romantic, back_to_back, confident]
     value: "standing back to back, shoulder blades touching and weight leaned into each other, arms folded across their chests, heads turned in opposite directions, feet planted wide and steady"
     mood: [technical, dark]
     incompatible: [subject_woman, subject_woman_30s, subject_man, subject_man_30s]
 
   - id: duo_head_on_shoulder
-    label: "Hlava na rameni"
+    label: "Head on shoulder"
     tags: [romantic, quiet, seated]
     value: "seated close together, one resting their head on the other's shoulder with eyes half closed, the other's arm draped around them, their nearer hands loosely joined in a lap, both settled and still"
     mood: [sweet, nostalgic]
     incompatible: [subject_woman, subject_woman_30s, subject_man, subject_man_30s]
 
   - id: duo_shared_umbrella
-    label: "Pod jedním deštníkem"
+    label: "Sharing an umbrella"
     tags: [romantic, rain, umbrella]
     value: "sharing one umbrella in the rain, shoulders pressed together under the canopy, one holding the handle tilted toward the other, the far shoulder of the holder getting wet, both stepping in unison"
     mood: [sweet, nostalgic]
     incompatible: [subject_woman, subject_woman_30s, subject_man, subject_man_30s]
 
   - id: duo_spin_lift
-    label: "Zvednutí a otočka"
+    label: "Lift and spin"
     tags: [romantic, lift, joyful]
     value: "lifted and spun in a circle, hands gripping just under the ribs, the lifted figure's arms thrown wide and head tipped back laughing, feet off the ground and clothing flaring outward from the rotation"
     mood: [sweet]
     incompatible: [subject_woman, subject_woman_30s, subject_man, subject_man_30s]
 
   - id: duo_leaning_railing
-    label: "Opření o zábradlí"
+    label: "Leaning on a railing"
     tags: [romantic, relaxed, standing]
     value: "both leaning forward on a railing side by side, forearms resting on the rail and shoulders touching, gazing out in the same direction, one hip cocked and ankles crossed, easy companionable posture"
     mood: [nostalgic, sweet]
     incompatible: [subject_woman, subject_woman_30s, subject_man, subject_man_30s]
 
   - id: duo_sitting_floor
-    label: "Sedí opřeni o sebe"
+    label: "Sitting against each other"
     tags: [romantic, seated, quiet]
     value: "sitting on the floor leaning against each other shoulder to shoulder, knees drawn up, one head tipped sideways onto the other's, hands resting loosely on their own knees"
     mood: [sweet, nostalgic]
     incompatible: [subject_woman, subject_woman_30s, subject_man, subject_man_30s]
 
   - id: duo_helping_up
-    label: "Podává ruku"
+    label: "Offering a hand"
     tags: [romantic, helping, reach]
     value: "one reaching down with an outstretched arm to pull the other up, their forearms clasped wrist to wrist, the lower figure half risen with one knee still down and the free hand braced on the ground"
     mood: [technical, sweet]

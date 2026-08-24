@@ -1,45 +1,45 @@
 category: pony_pose
-label: "Póza (Pony)"
+label: "Pose (Pony)"
 icon: directions_run
 required: false
 blocks:
   - id: pp_standing
-    label: "Stojící"
+    label: "Standing"
     tags: [pony, pose]
     value: "standing"
     mood: [sweet, dark, surreal, nostalgic]
     incompatible: [pp_sitting, pp_lying]
 
   - id: pp_sitting
-    label: "Sedící"
+    label: "Sitting"
     tags: [pony, pose]
     value: "sitting, sitting down"
     mood: [sweet, dark, surreal, nostalgic]
     incompatible: [pp_standing, pp_lying]
 
   - id: pp_lying
-    label: "Ležící"
+    label: "Lying down"
     tags: [pony, pose]
     value: "lying down, on back, reclining"
     mood: [sweet, dark, surreal]
     incompatible: [pp_standing, pp_sitting]
 
   - id: pp_leaning
-    label: "Opřená"
+    label: "Leaning"
     tags: [pony, pose]
     value: "leaning forward, leaning on surface"
     mood: [sweet, dark, surreal]
     incompatible: []
 
   - id: pp_dynamic
-    label: "Dynamická / Akční"
+    label: "Dynamic / action"
     tags: [pony, pose]
     value: "dynamic pose, action, jumping, motion"
     mood: [dark, surreal, sweet]
     incompatible: [pp_lying]
 
   - id: pp_kneeling
-    label: "Klečící"
+    label: "Kneeling"
     tags: [pony, pose]
     value: "kneeling, on knees"
     mood: [sweet, dark, surreal]

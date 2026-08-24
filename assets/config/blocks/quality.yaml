@@ -1,5 +1,5 @@
 category: quality
-label: "Kvalita / Detail"
+label: "Quality / detail"
 icon: high_quality
 required: false
 # Detail-level only. The word "photorealistic" lives in the `medium` axis now,
@@ -7,35 +7,35 @@ required: false
 # and gated out for illustration media.
 blocks:
   - id: quality_8k_hyper
-    label: "8K hyperdetailní"
+    label: "8K hyperdetailed"
     tags: [8k, hyperdetailed]
     value: "hyperdetailed, 8k resolution, ultra-high definition, crisp sharp focus"
     mood: [dark, technical, surreal]
     incompatible: [quality_film]
 
   - id: quality_4k_detailed
-    label: "4K detailní"
+    label: "4K detailed"
     tags: [4k, detailed, sharp]
     value: "4k resolution, highly detailed, sharp focus, professional quality"
     mood: [sweet, dark, technical, nostalgic, surreal]
     incompatible: []
 
   - id: quality_film
-    label: "Filmová / analogová"
+    label: "Filmic / analog"
     tags: [film, grain, analog, photo_only]
     value: "film grain, analog photo aesthetic, subtle organic noise texture"
     mood: [nostalgic, sweet]
     incompatible: [quality_8k_hyper]
 
   - id: quality_skin_detail
-    label: "Detailní pleť (foto)"
+    label: "Detailed skin (photo)"
     tags: [skin, pores, photo_only]
     value: "fine skin detail, subtle pores and texture, subsurface scattering on skin"
     mood: [dark, technical, sweet]
     incompatible: []
 
   - id: quality_clean_lines
-    label: "Čisté linky (ilustrace)"
+    label: "Clean linework (illustration)"
     tags: [clean_lines, illustration_only]
     value: "clean confident linework, crisp inking, polished finish"
     mood: [sweet, dark, technical, surreal]

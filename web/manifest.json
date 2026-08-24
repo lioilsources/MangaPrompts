@@ -5,7 +5,7 @@
     "display": "standalone",
     "background_color": "#141218",
     "theme_color": "#141218",
-    "description": "Skládej AI prompty z LEGO bloků a generuj manga obrázky.",
+    "description": "Snap AI prompts together from building blocks and generate manga images.",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,
     "icons": [

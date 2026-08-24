@@ -1,5 +1,5 @@
 category: subject
-label: "Postava"
+label: "Subject"
 icon: person
 required: true
 # Subjects describe ONLY count, gender and arrangement — never the render medium.
@@ -8,28 +8,28 @@ required: true
 blocks:
   # --- Single ---
   - id: subject_woman
-    label: "Žena (20s)"
+    label: "Woman (20s)"
     tags: [solo, female, young, adult]
     value: "a young woman in her early 20s, natural beauty, balanced realistic proportions"
     mood: [sweet, dark, surreal, technical, nostalgic]
     incompatible: []
 
   - id: subject_woman_30s
-    label: "Žena (30s)"
+    label: "Woman (30s)"
     tags: [solo, female, mature, adult]
     value: "a woman in her early 30s, natural beauty, balanced realistic proportions"
     mood: [sweet, dark, surreal, technical, nostalgic]
     incompatible: []
 
   - id: subject_man
-    label: "Muž (20s)"
+    label: "Man (20s)"
     tags: [solo, male, young, adult]
     value: "a young man in his early 20s, natural appearance, balanced realistic proportions"
     mood: [sweet, dark, surreal, technical, nostalgic]
     incompatible: []
 
   - id: subject_man_30s
-    label: "Muž (30s)"
+    label: "Man (30s)"
     tags: [solo, male, mature, adult]
     value: "a man in his early 30s, natural appearance, balanced realistic proportions"
     mood: [sweet, dark, surreal, technical, nostalgic]
@@ -37,21 +37,21 @@ blocks:
 
   # --- Pair ---
   - id: subject_couple
-    label: "Pár (muž + žena)"
+    label: "Couple (man + woman)"
     tags: [pair, mixed, group, adult]
     value: "a couple, a young man and a young woman together, natural chemistry, two people"
     mood: [sweet, nostalgic, dark]
     incompatible: []
 
   - id: subject_two_women
-    label: "Dvě ženy"
+    label: "Two women"
     tags: [pair, female, group, adult]
     value: "two young women together, side by side, two people"
     mood: [sweet, dark, surreal, nostalgic]
     incompatible: []
 
   - id: subject_two_men
-    label: "Dva muži"
+    label: "Two men"
     tags: [pair, male, group, adult]
     value: "two young men together, side by side, two people"
     mood: [sweet, dark, surreal, nostalgic]
@@ -59,21 +59,21 @@ blocks:
 
   # --- Trio ---
   - id: subject_three_women
-    label: "Tři ženy"
+    label: "Three women"
     tags: [trio, female, group, adult]
     value: "three young women together as a group, ensemble of three people"
     mood: [sweet, dark, surreal, nostalgic]
     incompatible: []
 
   - id: subject_three_men
-    label: "Tři muži"
+    label: "Three men"
     tags: [trio, male, group, adult]
     value: "three young men together as a group, ensemble of three people"
     mood: [sweet, dark, surreal, nostalgic]
     incompatible: []
 
   - id: subject_three_mixed
-    label: "Trojice (mix)"
+    label: "Trio (mixed)"
     tags: [trio, mixed, group, adult]
     value: "a group of three young people, a mix of men and women, ensemble of three"
     mood: [sweet, dark, surreal, nostalgic]
@@ -81,21 +81,21 @@ blocks:
 
   # --- Quad ---
   - id: subject_four_women
-    label: "Čtyři ženy"
+    label: "Four women"
     tags: [quad, female, group, adult]
     value: "four young women together as a group, ensemble of four people"
     mood: [sweet, dark, surreal, nostalgic]
     incompatible: []
 
   - id: subject_four_men
-    label: "Čtyři muži"
+    label: "Four men"
     tags: [quad, male, group, adult]
     value: "four young men together as a group, ensemble of four people"
     mood: [sweet, dark, surreal, nostalgic]
     incompatible: []
 
   - id: subject_four_mixed
-    label: "Čtveřice (mix)"
+    label: "Quartet (mixed)"
     tags: [quad, mixed, group, adult]
     value: "a group of four young people, a mix of men and women, ensemble of four"
     mood: [sweet, dark, surreal, nostalgic]
@@ -103,21 +103,21 @@ blocks:
 
   # --- Large group (5+) ---
   - id: subject_group_women
-    label: "Skupina žen (5+)"
+    label: "Group of women (5+)"
     tags: [group, female, large, crowd, adult]
     value: "a large group of five or more young women, ensemble crowd composition"
     mood: [sweet, nostalgic, dark]
     incompatible: []
 
   - id: subject_group_men
-    label: "Skupina mužů (5+)"
+    label: "Group of men (5+)"
     tags: [group, male, large, crowd, adult]
     value: "a large group of five or more young men, ensemble crowd composition"
     mood: [sweet, nostalgic, dark]
     incompatible: []
 
   - id: subject_group_mixed
-    label: "Skupina (5+, mix)"
+    label: "Group (5+, mixed)"
     tags: [group, mixed, large, crowd, adult]
     value: "a large group of five or more people, a mixed crowd of men and women, ensemble cast"
     mood: [sweet, nostalgic, dark]

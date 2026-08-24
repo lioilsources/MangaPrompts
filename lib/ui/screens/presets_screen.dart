@@ -38,7 +38,7 @@ class PresetsScreen extends ConsumerWidget {
                   Navigator.pop(context);
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
-                      content: Text('Preset "${preset.label}" načten'),
+                      content: Text('Preset "${preset.label}" loaded'),
                       duration: const Duration(seconds: 1),
                     ),
                   );

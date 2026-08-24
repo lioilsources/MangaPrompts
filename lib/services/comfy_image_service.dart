@@ -154,7 +154,7 @@ class ComfyImageService implements ImageGenerationService {
     debugPrint('[comfy] prompt_id=$promptId');
 
     final images = await _waitForImages(promptId);
-    if (images.isEmpty) throw Exception('ComfyUI: žádné výstupní obrázky');
+    if (images.isEmpty) throw Exception('ComfyUI: no output images');
 
     final tempDir = await getTemporaryDirectory();
     await tempDir.create(recursive: true);
@@ -203,7 +203,7 @@ class ComfyImageService implements ImageGenerationService {
                 throw Exception('ComfyUI chyba — $t: $m');
               }
             case 'execution_interrupted':
-              if (pid == promptId) throw Exception('Zrušeno');
+              if (pid == promptId) throw Exception('Cancelled');
           }
           if (finished) break;
         }
@@ -229,7 +229,7 @@ class ComfyImageService implements ImageGenerationService {
       if (hist == null) continue;
       final statusStr = ((hist['status'] as Map?)?['status_str']) as String?;
       if (statusStr == 'error') {
-        throw Exception('ComfyUI: generování selhalo');
+        throw Exception('ComfyUI: generation failed');
       }
       return _downloadOutputs(promptId, hist: hist);
     }
@@ -240,7 +240,7 @@ class ComfyImageService implements ImageGenerationService {
     Map<String, dynamic>? hist,
   }) async {
     hist ??= await _history(promptId);
-    if (hist == null) throw Exception('ComfyUI: history prázdná');
+    if (hist == null) throw Exception('ComfyUI: history is empty');
 
     final outputs = (hist['outputs'] as Map?)?.cast<String, dynamic>() ?? const {};
     final refs = <Map<String, dynamic>>[];
@@ -252,7 +252,7 @@ class ComfyImageService implements ImageGenerationService {
         refs.add(m);
       }
     }
-    if (refs.isEmpty) throw Exception('ComfyUI: žádné výstupní obrázky ve workflow');
+    if (refs.isEmpty) throw Exception('ComfyUI: no output images in the workflow');
 
     final out = <Uint8List>[];
     for (final r in refs) {

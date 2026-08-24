@@ -35,11 +35,11 @@ class _PaywallSheetState extends ConsumerState<PaywallSheet> {
         ref.invalidate(accountProvider);
         Navigator.pop(context);
         messenger.showSnackBar(
-          SnackBar(content: Text('Připsáno ${package.credits} kreditů 🎉')),
+          SnackBar(content: Text('${package.credits} credits added 🎉')),
         );
       } else if (status == 'failed') {
         messenger.showSnackBar(
-          const SnackBar(content: Text('Platba se nepovedla, zkus to prosím znovu')),
+          const SnackBar(content: Text('Payment failed, please try again')),
         );
       }
       // 'cancelled' / 'pending' → keep the sheet open without noise
@@ -66,7 +66,7 @@ class _PaywallSheetState extends ConsumerState<PaywallSheet> {
           error: (e, _) => Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Text('Nepodařilo se načíst kredity: $e'),
+              Text('Could not load credits: $e'),
               const SizedBox(height: 12),
               OutlinedButton(
                 onPressed: () => ref.invalidate(accountProvider),
@@ -78,12 +78,12 @@ class _PaywallSheetState extends ConsumerState<PaywallSheet> {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text('Kredity', style: Theme.of(context).textTheme.titleLarge),
+              Text('Credits', style: Theme.of(context).textTheme.titleLarge),
               const SizedBox(height: 4),
               Text(
-                'Zdarma ${a.freeRemaining} z ${a.freeLimit} generování denně · '
-                'kreditů: ${a.credits}. 1 kredit = 1 obrázek, platí se '
-                'v Telegram Stars.',
+                '${a.freeRemaining} of ${a.freeLimit} free generations today · '
+                'credits: ${a.credits}. 1 credit = 1 image, paid '
+                'in Telegram Stars.',
                 style: Theme.of(context).textTheme.bodySmall,
               ),
               const SizedBox(height: 12),

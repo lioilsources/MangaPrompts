@@ -1,10 +1,10 @@
 category: pony_style
-label: "Styl (Pony)"
+label: "Style (Pony)"
 icon: palette
 required: false
 blocks:
   - id: pst_anime
-    label: "Anime detailní"
+    label: "Anime detailed"
     tags: [pony, style]
     value: "anime, detailed, beautiful, masterpiece"
     mood: [sweet, dark, surreal, nostalgic]
@@ -18,7 +18,7 @@ blocks:
     incompatible: [pst_anime, pst_watercolor]
 
   - id: pst_watercolor
-    label: "Akvarel"
+    label: "Watercolor"
     tags: [pony, style]
     value: "watercolor, soft colors, painterly"
     mood: [sweet, nostalgic, surreal]
@@ -32,7 +32,7 @@ blocks:
     incompatible: []
 
   - id: pst_soft
-    label: "Soft / Pastelový"
+    label: "Soft / pastel"
     tags: [pony, style]
     value: "soft lighting, pastel colors, gentle, dreamy"
     mood: [sweet, nostalgic]

@@ -84,7 +84,7 @@ class TelegramBackendService implements ImageGenerationService {
     final initData = TelegramWebApp.initData;
     if (initData.isNotEmpty) return {'Authorization': 'tma $initData'};
     if (_devToken.isNotEmpty) return {'Authorization': 'dev $_devToken'};
-    throw Exception('Otevři aplikaci v Telegramu (chybí přihlášení).');
+    throw Exception('Open the app inside Telegram (not signed in).');
   }
 
   /// Credit balance, free quota and the package price list.
@@ -154,10 +154,10 @@ class TelegramBackendService implements ImageGenerationService {
           return _downloadResult(jobId, headers);
         case 'error':
           throw Exception(
-              'Generování selhalo: ${status['error'] ?? 'neznámá chyba'}');
+              'Generation failed: ${status['error'] ?? 'unknown error'}');
       }
     }
-    throw Exception('Generování vypršelo — zkus to prosím znovu.');
+    throw Exception('Generation timed out — please try again.');
   }
 
   Future<GeneratedImage> _downloadResult(
@@ -180,7 +180,7 @@ class TelegramBackendService implements ImageGenerationService {
     String negativePrompt = '',
     String mimeType = 'image/jpeg',
   }) {
-    throw UnsupportedError('img2img zatím není na webu k dispozici');
+    throw UnsupportedError('img2img is not available on the web yet');
   }
 
   static String _errorMessage(http.Response resp) {
@@ -189,6 +189,6 @@ class TelegramBackendService implements ImageGenerationService {
       final detail = body['detail'] ?? body['error'];
       if (detail != null) return 'Server: $detail';
     } catch (_) {}
-    return 'Server vrátil HTTP ${resp.statusCode}';
+    return 'Server returned HTTP ${resp.statusCode}';
   }
 }

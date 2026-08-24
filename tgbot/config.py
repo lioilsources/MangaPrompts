@@ -57,9 +57,9 @@ DB_PATH = DATA_DIR / "mangabot.db"
 
 # Credit packages sold for Telegram Stars (XTR).
 PACKAGES = {
-    "s": {"credits": 10, "stars": 25, "label": "10 kreditů"},
-    "m": {"credits": 50, "stars": 100, "label": "50 kreditů"},
-    "l": {"credits": 250, "stars": 400, "label": "250 kreditů"},
+    "s": {"credits": 10, "stars": 25, "label": "10 credits"},
+    "m": {"credits": 50, "stars": 100, "label": "50 credits"},
+    "l": {"credits": 250, "stars": 400, "label": "250 credits"},
 }
 
 WORKFLOW_FILES = {

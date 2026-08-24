@@ -1,5 +1,5 @@
 category: pose
-label: "Póza / Gesto"
+label: "Pose / gesture"
 icon: accessibility_new
 required: false
 # Poses describe ONLY body gesture/posture — never framing ("full body shot",
@@ -7,98 +7,98 @@ required: false
 # duplicated or contradicted here.
 blocks:
   - id: pose_standing_neutral
-    label: "Stojí (neutrálně)"
+    label: "Standing (neutral)"
     tags: [standing, neutral]
     value: "standing in a relaxed natural stance"
     mood: [sweet, dark, surreal, technical, nostalgic]
     incompatible: []
 
   - id: pose_dynamic_action
-    label: "Dynamická akce"
+    label: "Dynamic action"
     tags: [action, dynamic]
     value: "dynamic action pose, mid-motion, powerful body language"
     mood: [dark, technical]
     incompatible: [pose_reclining, pose_sitting, pose_intimate]
 
   - id: pose_combat_ready
-    label: "Bojová pohotovost"
+    label: "Combat ready"
     tags: [combat, martial]
     value: "combat-ready stance, braced and tense, martial readiness"
     mood: [dark, technical]
     incompatible: [pose_reclining, pose_intimate]
 
   - id: pose_walking
-    label: "Jde (mid-stride)"
+    label: "Walking (mid-stride)"
     tags: [walking, movement]
     value: "walking forward naturally, captured mid-stride"
     mood: [sweet, nostalgic, technical]
     incompatible: [pose_sitting, pose_kneeling, pose_reclining]
 
   - id: pose_sitting
-    label: "Sedí"
+    label: "Sitting"
     tags: [sitting, seated]
     value: "seated, relaxed sitting posture"
     mood: [sweet, dark, nostalgic, technical]
     incompatible: [pose_dynamic_action, pose_combat_ready, pose_walking]
 
   - id: pose_kneeling
-    label: "Klečí"
+    label: "Kneeling"
     tags: [kneeling]
     value: "kneeling on the floor, grounded posture"
     mood: [sweet, dark, nostalgic]
     incompatible: [pose_dynamic_action, pose_walking]
 
   - id: pose_reclining
-    label: "Leží / opírá se"
+    label: "Lying / reclining"
     tags: [reclining, lying]
     value: "reclining, lying back in a relaxed position"
     mood: [sweet, dark, nostalgic]
     incompatible: [pose_dynamic_action, pose_combat_ready, pose_walking]
 
   - id: pose_elegant
-    label: "Elegantní postoj"
+    label: "Elegant stance"
     tags: [elegant, graceful]
     value: "elegant graceful posture, composed poised body language"
     mood: [sweet, dark, nostalgic]
     incompatible: []
 
   - id: pose_intimate
-    label: "Intimní blízkost"
+    label: "Intimate closeness"
     tags: [intimate, tender]
     value: "intimate close posture, gentle tender body language"
     mood: [sweet, dark, nostalgic]
     incompatible: [pose_dynamic_action, pose_combat_ready]
 
   - id: pose_magical_transform
-    label: "Transformace (mág. dívka)"
+    label: "Transformation (magical girl)"
     tags: [magical_girl, transformation]
     value: "magical-girl transformation pose, outstretched arms, radiating energy"
     mood: [sweet, surreal]
     incompatible: [pose_sitting, pose_reclining]
 
   - id: pose_comical_surprised
-    label: "Komicky překvapená"
+    label: "Comically surprised"
     tags: [comical, surprised]
     value: "comical surprised reaction, exaggerated body language, arms flailing"
     mood: [sweet]
     incompatible: [pose_combat_ready, pose_reclining]
 
   - id: pose_hand_on_hip
-    label: "Ruka v bok"
+    label: "Hand on hip"
     tags: [confident, hand_on_hip]
     value: "confident pose, one hand resting on the hip"
     mood: [sweet, dark, technical]
     incompatible: []
 
   - id: pose_arms_crossed
-    label: "Zkřížené ruce"
+    label: "Arms crossed"
     tags: [confident, arms_crossed]
     value: "arms crossed over the chest, self-assured stance"
     mood: [dark, technical]
     incompatible: []
 
   - id: pose_back_turned
-    label: "Otočená zády"
+    label: "Turned away"
     tags: [back, over_shoulder]
     value: "turned away from the camera, looking back over the shoulder"
     mood: [sweet, dark, nostalgic, surreal]

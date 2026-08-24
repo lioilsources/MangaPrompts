@@ -37,7 +37,7 @@ class ImageBasePicker extends ConsumerWidget {
               const SizedBox(width: 8),
               Expanded(
                 child: Text(
-                  'Base obrázek vybrán',
+                  'Base image selected',
                   style: Theme.of(context).textTheme.bodySmall?.copyWith(
                     color: Theme.of(context).colorScheme.onPrimaryContainer,
                   ),
@@ -60,7 +60,7 @@ class ImageBasePicker extends ConsumerWidget {
       child: OutlinedButton.icon(
         onPressed: () => _showOptions(context, ref),
         icon: const Icon(Icons.add_photo_alternate, size: 18),
-        label: const Text('Base obrázek (volitelné)'),
+        label: const Text('Base image (optional)'),
         style: OutlinedButton.styleFrom(
           visualDensity: VisualDensity.compact,
         ),

@@ -50,9 +50,9 @@ class PromptPreview extends ConsumerWidget {
                 // visible, otherwise output quality looks random to the user.
                 Tooltip(
                   message: isAuto
-                      ? 'Model zvolený automaticky podle šablony.\n'
-                          'Změníš ho v Nastavení.'
-                      : 'Model zvolený ručně v Nastavení.',
+                      ? 'Model chosen automatically from the template.\n'
+                          'You can change it in Settings.'
+                      : 'Model chosen manually in Settings.',
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
@@ -113,14 +113,14 @@ class PromptPreview extends ConsumerWidget {
                           Clipboard.setData(ClipboardData(text: prompt));
                           ScaffoldMessenger.of(context).showSnackBar(
                             const SnackBar(
-                              content: Text('Prompt zkopírován'),
+                              content: Text('Prompt copied'),
                               duration: Duration(seconds: 1),
                             ),
                           );
                         }
                       : null,
                   visualDensity: VisualDensity.compact,
-                  tooltip: 'Kopírovat prompt',
+                  tooltip: 'Copy prompt',
                 ),
               ],
             ),
@@ -129,7 +129,7 @@ class PromptPreview extends ConsumerWidget {
           Padding(
             padding: const EdgeInsets.fromLTRB(12, 4, 12, 12),
             child: Text(
-              prompt.isEmpty ? 'Vyber kostičky pro sestavení promptu...' : prompt,
+              prompt.isEmpty ? 'Pick blocks to assemble a prompt...' : prompt,
               style: Theme.of(context).textTheme.bodySmall?.copyWith(
                 fontFamily: 'monospace',
                 color: prompt.isEmpty
