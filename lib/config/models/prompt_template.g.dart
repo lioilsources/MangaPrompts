@@ -26,6 +26,7 @@ _$PromptTemplateImpl _$$PromptTemplateImplFromJson(Map<String, dynamic> json) =>
               ?.map((e) => e as String)
               .toList() ??
           const [],
+      workflow: json['workflow'] as String? ?? '',
     );
 
 Map<String, dynamic> _$$PromptTemplateImplToJson(
@@ -39,4 +40,5 @@ Map<String, dynamic> _$$PromptTemplateImplToJson(
   'separator': instance.separator,
   'required_slots': instance.requiredSlots,
   'optional_slots': instance.optionalSlots,
+  'workflow': instance.workflow,
 };

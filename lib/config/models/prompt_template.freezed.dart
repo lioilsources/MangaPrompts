@@ -34,6 +34,10 @@ mixin _$PromptTemplate {
   @JsonKey(name: 'optional_slots')
   List<String> get optionalSlots => throw _privateConstructorUsedError;
 
+  /// ComfyUI workflow this template's prompt language is written for.
+  /// Empty means 'no opinion' and the engine falls back to flux.
+  String get workflow => throw _privateConstructorUsedError;
+
   /// Serializes this PromptTemplate to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
 
@@ -60,6 +64,7 @@ abstract class $PromptTemplateCopyWith<$Res> {
     String separator,
     @JsonKey(name: 'required_slots') List<String> requiredSlots,
     @JsonKey(name: 'optional_slots') List<String> optionalSlots,
+    String workflow,
   });
 }
 
@@ -86,6 +91,7 @@ class _$PromptTemplateCopyWithImpl<$Res, $Val extends PromptTemplate>
     Object? separator = null,
     Object? requiredSlots = null,
     Object? optionalSlots = null,
+    Object? workflow = null,
   }) {
     return _then(
       _value.copyWith(
@@ -121,6 +127,10 @@ class _$PromptTemplateCopyWithImpl<$Res, $Val extends PromptTemplate>
                 ? _value.optionalSlots
                 : optionalSlots // ignore: cast_nullable_to_non_nullable
                       as List<String>,
+            workflow: null == workflow
+                ? _value.workflow
+                : workflow // ignore: cast_nullable_to_non_nullable
+                      as String,
           )
           as $Val,
     );
@@ -145,6 +155,7 @@ abstract class _$$PromptTemplateImplCopyWith<$Res>
     String separator,
     @JsonKey(name: 'required_slots') List<String> requiredSlots,
     @JsonKey(name: 'optional_slots') List<String> optionalSlots,
+    String workflow,
   });
 }
 
@@ -170,6 +181,7 @@ class __$$PromptTemplateImplCopyWithImpl<$Res>
     Object? separator = null,
     Object? requiredSlots = null,
     Object? optionalSlots = null,
+    Object? workflow = null,
   }) {
     return _then(
       _$PromptTemplateImpl(
@@ -205,6 +217,10 @@ class __$$PromptTemplateImplCopyWithImpl<$Res>
             ? _value._optionalSlots
             : optionalSlots // ignore: cast_nullable_to_non_nullable
                   as List<String>,
+        workflow: null == workflow
+            ? _value.workflow
+            : workflow // ignore: cast_nullable_to_non_nullable
+                  as String,
       ),
     );
   }
@@ -224,6 +240,7 @@ class _$PromptTemplateImpl implements _PromptTemplate {
     final List<String> requiredSlots = const [],
     @JsonKey(name: 'optional_slots')
     final List<String> optionalSlots = const [],
+    this.workflow = '',
   }) : _slotOrder = slotOrder,
        _requiredSlots = requiredSlots,
        _optionalSlots = optionalSlots;
@@ -271,9 +288,15 @@ class _$PromptTemplateImpl implements _PromptTemplate {
     return EqualUnmodifiableListView(_optionalSlots);
   }
 
+  /// ComfyUI workflow this template's prompt language is written for.
+  /// Empty means 'no opinion' and the engine falls back to flux.
+  @override
+  @JsonKey()
+  final String workflow;
+
   @override
   String toString() {
-    return 'PromptTemplate(id: $id, label: $label, description: $description, slotOrder: $slotOrder, negativeSlot: $negativeSlot, separator: $separator, requiredSlots: $requiredSlots, optionalSlots: $optionalSlots)';
+    return 'PromptTemplate(id: $id, label: $label, description: $description, slotOrder: $slotOrder, negativeSlot: $negativeSlot, separator: $separator, requiredSlots: $requiredSlots, optionalSlots: $optionalSlots, workflow: $workflow)';
   }
 
   @override
@@ -300,7 +323,9 @@ class _$PromptTemplateImpl implements _PromptTemplate {
             const DeepCollectionEquality().equals(
               other._optionalSlots,
               _optionalSlots,
-            ));
+            ) &&
+            (identical(other.workflow, workflow) ||
+                other.workflow == workflow));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
@@ -315,6 +340,7 @@ class _$PromptTemplateImpl implements _PromptTemplate {
     separator,
     const DeepCollectionEquality().hash(_requiredSlots),
     const DeepCollectionEquality().hash(_optionalSlots),
+    workflow,
   );
 
   /// Create a copy of PromptTemplate
@@ -344,6 +370,7 @@ abstract class _PromptTemplate implements PromptTemplate {
     final String separator,
     @JsonKey(name: 'required_slots') final List<String> requiredSlots,
     @JsonKey(name: 'optional_slots') final List<String> optionalSlots,
+    final String workflow,
   }) = _$PromptTemplateImpl;
 
   factory _PromptTemplate.fromJson(Map<String, dynamic> json) =
@@ -369,6 +396,11 @@ abstract class _PromptTemplate implements PromptTemplate {
   @override
   @JsonKey(name: 'optional_slots')
   List<String> get optionalSlots;
+
+  /// ComfyUI workflow this template's prompt language is written for.
+  /// Empty means 'no opinion' and the engine falls back to flux.
+  @override
+  String get workflow;
 
   /// Create a copy of PromptTemplate
   /// with the given fields replaced by the non-null parameter values.

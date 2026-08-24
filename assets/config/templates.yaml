@@ -2,6 +2,7 @@ templates:
   - id: template_portrait
     label: "Portrét"
     description: "Jedna postava — medium → subjekt → rámování → detaily"
+    workflow: flux
     slot_order:
       - medium
       - art_tradition
@@ -61,6 +62,7 @@ templates:
   - id: template_action_scene
     label: "Akční scéna"
     description: "Dynamická scéna s důrazem na pózu a efekty"
+    workflow: flux
     slot_order:
       - medium
       - art_tradition
@@ -110,6 +112,7 @@ templates:
   - id: template_selfie
     label: "Selfie"
     description: "Selfie záběr jedné postavy"
+    workflow: flux
     slot_order:
       - medium
       - art_tradition
@@ -159,6 +162,7 @@ templates:
   - id: template_group_photo
     label: "Skupinová foto"
     description: "Pár / trojice / čtveřice / větší skupina"
+    workflow: flux
     slot_order:
       - medium
       - art_tradition
@@ -202,6 +206,7 @@ templates:
   - id: template_intimate
     label: "Intimní moment"
     description: "Blízká scéna jedné postavy nebo páru"
+    workflow: flux
     slot_order:
       - medium
       - art_tradition
@@ -257,6 +262,7 @@ templates:
   - id: template_indoor_scene
     label: "V místnosti"
     description: "Interiér — ložnice, obývák, kuchyně, koupelna, záchod"
+    workflow: flux
     slot_order:
       - medium
       - art_tradition
@@ -314,6 +320,7 @@ templates:
   - id: template_outdoor_scene
     label: "Venku"
     description: "Exteriér — les, skála, louka, plovárna, diskotéka"
+    workflow: flux
     slot_order:
       - medium
       - art_tradition
@@ -374,6 +381,7 @@ templates:
   - id: template_pony_portrait
     label: "Pony — Portrét"
     description: "PonyDiffusion: jedna postava, Danbooru tagy"
+    workflow: pony
     slot_order:
       - pony_quality
       - pony_subject
@@ -405,6 +413,7 @@ templates:
   - id: template_pony_scene
     label: "Pony — Scéna"
     description: "PonyDiffusion: scéna s důrazem na pozadí a akci"
+    workflow: pony
     slot_order:
       - pony_quality
       - pony_subject
