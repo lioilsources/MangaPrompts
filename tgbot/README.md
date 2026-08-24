@@ -38,8 +38,9 @@ Auth: `Authorization: tma <initData>` (oficiální HMAC validace proti
 - Bot příkazy: `/paysupport` (povinná platební podpora),
   `/refund <charge_id>` (jen `ADMIN_USER_ID`; zavolá `refundStarPayment`
   a odečte kredity).
-- DB: `data/mangabot.db` (WAL). **Zálohovat** — např. denní cron na NAS:
-  `sqlite3 data/mangabot.db ".backup data/backup/mangabot-$(date +%F).db"`.
+- DB: `data/mangabot.db` (WAL). **Zálohovat** — jsou v ní kredity i platby.
+  Použij `./backup.sh` (denní cron na NAS). Zálohu musí udělat kontejner:
+  `data/` vlastní root a `sqlite3` CLI není ani na hostu, ani v image.
 
 ## Deploy na JODA (Docker)
 
