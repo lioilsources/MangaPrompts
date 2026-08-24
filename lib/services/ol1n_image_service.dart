@@ -181,7 +181,7 @@ class OlinkImageService implements ImageGenerationService {
       return 'Backend unavailable ($code) — check the llm.ol1n.com server';
     }
     if (code == 401 || code == 403) {
-      return 'Chyba autentizace ($code) — zkontroluj CF Access token';
+      return 'Authentication error ($code) — check the CF Access token';
     }
     try {
       final msg = (jsonDecode(response.body) as Map)['detail']?.toString();

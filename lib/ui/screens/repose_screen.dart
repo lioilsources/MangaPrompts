@@ -97,7 +97,7 @@ class _ReposeScreenState extends ConsumerState<ReposeScreen> {
                 child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
               )
             : const Icon(Icons.auto_awesome),
-        label: Text(_isGenerating ? 'Generuji…' : 'Generovat'),
+        label: Text(_isGenerating ? 'Generating…' : 'Generate'),
       ),
     );
   }
@@ -232,7 +232,7 @@ class _ReposeScreenState extends ConsumerState<ReposeScreen> {
           children: [
             ListTile(
               leading: const Icon(Icons.photo_library),
-              title: const Text('Vybrat z galerie'),
+              title: const Text('Pick from gallery'),
               onTap: () {
                 Navigator.pop(ctx);
                 _pickFace(ImageSource.gallery);
@@ -240,7 +240,7 @@ class _ReposeScreenState extends ConsumerState<ReposeScreen> {
             ),
             ListTile(
               leading: const Icon(Icons.camera_alt),
-              title: const Text('Vyfotit'),
+              title: const Text('Take a photo'),
               onTap: () {
                 Navigator.pop(ctx);
                 _pickFace(ImageSource.camera);
@@ -313,7 +313,7 @@ class _ReposeScreenState extends ConsumerState<ReposeScreen> {
       debugPrint('[Repose] Exception: $e\n$stack');
       if (mounted) {
         ScaffoldMessenger.of(context)
-            .showSnackBar(SnackBar(content: Text('Chyba: $e')));
+            .showSnackBar(SnackBar(content: Text('Error: $e')));
       }
     } finally {
       if (mounted) setState(() => _isGenerating = false);

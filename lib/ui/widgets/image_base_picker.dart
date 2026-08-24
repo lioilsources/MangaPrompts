@@ -77,7 +77,7 @@ class ImageBasePicker extends ConsumerWidget {
           children: [
             ListTile(
               leading: const Icon(Icons.photo_library),
-              title: const Text('Vybrat z galerie'),
+              title: const Text('Pick from gallery'),
               onTap: () {
                 Navigator.pop(ctx);
                 _pickImage(ref, ImageSource.gallery);
@@ -85,7 +85,7 @@ class ImageBasePicker extends ConsumerWidget {
             ),
             ListTile(
               leading: const Icon(Icons.camera_alt),
-              title: const Text('Vyfotit'),
+              title: const Text('Take a photo'),
               onTap: () {
                 Navigator.pop(ctx);
                 _pickImage(ref, ImageSource.camera);
@@ -95,7 +95,7 @@ class ImageBasePicker extends ConsumerWidget {
               ListTile(
                 leading: Icon(Icons.delete,
                     color: Theme.of(context).colorScheme.error),
-                title: Text('Odebrat',
+                title: Text('Remove',
                     style: TextStyle(
                         color: Theme.of(context).colorScheme.error)),
                 onTap: () {

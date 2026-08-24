@@ -85,7 +85,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             ),
           IconButton(
             icon: const Icon(Icons.bookmarks),
-            tooltip: 'Presety',
+            tooltip: 'Presets',
             onPressed: () => Navigator.push(
               context,
               MaterialPageRoute(builder: (_) => const PresetsScreen()),
@@ -103,7 +103,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       ),
       body: categoriesAsync.when(
         loading: () => const Center(child: CircularProgressIndicator()),
-        error: (e, _) => Center(child: Text('Chyba: $e')),
+        error: (e, _) => Center(child: Text('Error: $e')),
         data: (categories) => Column(
           children: [
             // Template selector
@@ -223,7 +223,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 child: CircularProgressIndicator(strokeWidth: 2),
               )
             : const Icon(Icons.auto_awesome),
-        label: Text(_isGenerating ? 'Generuji...' : 'Generovat'),
+        label: Text(_isGenerating ? 'Generating…' : 'Generate'),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
     );
@@ -335,7 +335,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       if (mounted) {
         ScaffoldMessenger.of(
           context,
-        ).showSnackBar(SnackBar(content: Text('Chyba: $e')));
+        ).showSnackBar(SnackBar(content: Text('Error: $e')));
       }
     } finally {
       if (mounted) {
