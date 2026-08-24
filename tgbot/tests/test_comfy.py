@@ -6,7 +6,12 @@ import pytest
 from comfy import prepare_workflow
 
 WORKFLOW_DIR = Path(__file__).resolve().parent.parent.parent / "assets" / "comfyui"
-TXT2IMG_FILES = ["flux_manga_txt2img.api.json", "pony_txt2img.api.json"]
+TXT2IMG_FILES = [
+    "flux_manga_txt2img.api.json",
+    "pony_txt2img.api.json",
+    "juggernaut_lightning_txt2img.api.json",
+    "wai_txt2img.api.json",
+]
 ALL_FILES = sorted(p.name for p in WORKFLOW_DIR.glob("*.api.json"))
 
 
