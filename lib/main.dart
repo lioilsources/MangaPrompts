@@ -21,4 +21,5 @@ void main() async {
   // No-ops outside the Telegram Mini App webview.
   TelegramWebApp.ready();
   TelegramWebApp.expand();
+  TelegramWebApp.disableVerticalSwipes();
 }

@@ -27,6 +27,39 @@ class HomeScreen extends ConsumerStatefulWidget {
 class _HomeScreenState extends ConsumerState<HomeScreen> {
   bool _isGenerating = false;
 
+  /// The block list is long and, inside a Telegram Mini App, dragging *down*
+  /// is claimed by Telegram's collapse gesture — so scrolling back up by hand
+  /// is the awkward direction. This jumps there instead.
+  final _scrollController = ScrollController();
+  bool _showTopButton = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _scrollController.addListener(_onScroll);
+  }
+
+  @override
+  void dispose() {
+    _scrollController.removeListener(_onScroll);
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  void _onScroll() {
+    if (!_scrollController.hasClients) return;
+    final show = _scrollController.offset > 320;
+    if (show != _showTopButton) setState(() => _showTopButton = show);
+  }
+
+  void _scrollToTop() {
+    _scrollController.animateTo(
+      0,
+      duration: const Duration(milliseconds: 350),
+      curve: Curves.easeOutCubic,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final categoriesAsync = ref.watch(categoriesProvider);
@@ -44,7 +77,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           if (!kIsWeb)
             IconButton(
               icon: const Icon(Icons.accessibility_new),
-              tooltip: 'Repose (obličej v póze)',
+              tooltip: 'Repose (face in a pose)',
               onPressed: () => Navigator.push(
                 context,
                 MaterialPageRoute(builder: (_) => const ReposeScreen()),
@@ -60,7 +93,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           ),
           IconButton(
             icon: const Icon(Icons.settings),
-            tooltip: 'Nastavení',
+            tooltip: 'Settings',
             onPressed: () => Navigator.push(
               context,
               MaterialPageRoute(builder: (_) => const SettingsScreen()),
@@ -76,21 +109,26 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             // Template selector
             templatesAsync.when(
               data: (templates) => Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 8,
+                ),
                 child: DropdownButtonFormField<String>(
                   initialValue: activeTemplateId,
                   decoration: const InputDecoration(
-                    labelText: 'Šablona',
+                    labelText: 'Template',
                     isDense: true,
                     border: OutlineInputBorder(),
-                    contentPadding:
-                        EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                    contentPadding: EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 8,
+                    ),
                   ),
                   items: templates
-                      .map((t) => DropdownMenuItem(
-                            value: t.id,
-                            child: Text(t.label),
-                          ))
+                      .map(
+                        (t) =>
+                            DropdownMenuItem(value: t.id, child: Text(t.label)),
+                      )
                       .toList(),
                   onChanged: (id) {
                     if (id != null) {
@@ -109,34 +147,64 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             ],
             // Block pickers list
             Expanded(
-              child: activeTemplateAsync.when(
-                data: (template) {
-                  final orderedCategories = <dynamic>[];
-                  for (final slot in template.slotOrder) {
-                    final cat = categories
-                        .where((c) => c.category == slot)
-                        .firstOrNull;
-                    if (cat != null) orderedCategories.add(cat);
-                  }
-                  final negCat = categories
-                      .where((c) => c.category == template.negativeSlot)
-                      .firstOrNull;
-                  if (negCat != null) orderedCategories.add(negCat);
+              child: Stack(
+                children: [
+                  // The docked "nahoru" button sits over the list rather than
+                  // in the FAB slot, which the Generovat button already owns.
+                  Positioned.fill(
+                    child: activeTemplateAsync.when(
+                      data: (template) {
+                        final orderedCategories = <dynamic>[];
+                        for (final slot in template.slotOrder) {
+                          final cat = categories
+                              .where((c) => c.category == slot)
+                              .firstOrNull;
+                          if (cat != null) orderedCategories.add(cat);
+                        }
+                        final negCat = categories
+                            .where((c) => c.category == template.negativeSlot)
+                            .firstOrNull;
+                        if (negCat != null) orderedCategories.add(negCat);
 
-                  return ListView.builder(
-                    itemCount: orderedCategories.length,
-                    itemBuilder: (context, index) {
-                      return BlockPicker(category: orderedCategories[index]);
-                    },
-                  );
-                },
-                loading: () => const Center(child: CircularProgressIndicator()),
-                error: (_, __) => ListView.builder(
-                  itemCount: categories.length,
-                  itemBuilder: (context, index) {
-                    return BlockPicker(category: categories[index]);
-                  },
-                ),
+                        return ListView.builder(
+                          controller: _scrollController,
+                          itemCount: orderedCategories.length,
+                          itemBuilder: (context, index) {
+                            return BlockPicker(
+                              category: orderedCategories[index],
+                            );
+                          },
+                        );
+                      },
+                      loading: () =>
+                          const Center(child: CircularProgressIndicator()),
+                      error: (_, __) => ListView.builder(
+                        controller: _scrollController,
+                        itemCount: categories.length,
+                        itemBuilder: (context, index) {
+                          return BlockPicker(category: categories[index]);
+                        },
+                      ),
+                    ),
+                  ),
+                  Positioned(
+                    right: 12,
+                    bottom: 12,
+                    child: AnimatedOpacity(
+                      opacity: _showTopButton ? 1 : 0,
+                      duration: const Duration(milliseconds: 180),
+                      child: IgnorePointer(
+                        ignoring: !_showTopButton,
+                        child: FloatingActionButton.small(
+                          heroTag: 'scrollTop',
+                          tooltip: 'Back to top',
+                          onPressed: _scrollToTop,
+                          child: const Icon(Icons.keyboard_double_arrow_up),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ),
             // Prompt preview
@@ -174,7 +242,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         child: ActionChip(
           label: Text(label),
           visualDensity: VisualDensity.compact,
-          tooltip: 'Kredity a balíčky',
+          tooltip: 'Credits and packages',
           onPressed: () => PaywallSheet.show(context),
         ),
       ),
@@ -190,9 +258,11 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     if (apiService == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: const Text('Nastav API klíč nebo přihlašovací údaje v nastavení'),
+          content: const Text(
+            'Set an API key or credentials in Settings',
+          ),
           action: SnackBarAction(
-            label: 'Nastavení',
+            label: 'Settings',
             onPressed: () => Navigator.push(
               context,
               MaterialPageRoute(builder: (_) => const SettingsScreen()),
@@ -263,9 +333,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       print('[Generate] Exception: $e');
       print('[Generate] Stack: $stack');
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Chyba: $e')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Chyba: $e')));
       }
     } finally {
       if (mounted) {

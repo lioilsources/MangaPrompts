@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:js_interop';
+import 'dart:js_interop_unsafe';
 
 @JS('Telegram')
 external JSObject? get _telegram;
@@ -13,6 +14,7 @@ extension type _WebApp(JSObject _) implements JSObject {
   external String? get initData;
   external void ready();
   external void expand();
+  external void disableVerticalSwipes();
   external void openInvoice(String url, JSFunction callback);
 }
 
@@ -32,6 +34,17 @@ class TelegramWebApp {
   static void ready() => _wa?.ready();
 
   static void expand() => _wa?.expand();
+
+  /// Stops Telegram from reading a downward drag inside the app as the
+  /// collapse/close gesture, which otherwise fights every attempt to scroll
+  /// the content back up. Bot API 7.7+; older clients simply do not have the
+  /// method, so probe before calling.
+  static void disableVerticalSwipes() {
+    final wa = _wa;
+    if (wa == null) return;
+    if (!wa.has('disableVerticalSwipes')) return;
+    wa.disableVerticalSwipes();
+  }
 
   /// Opens a Telegram Stars invoice; resolves with the final status
   /// ('paid' / 'cancelled' / 'failed' / 'pending' / 'unavailable').
