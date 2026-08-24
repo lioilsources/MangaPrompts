@@ -7,6 +7,13 @@ BOT_TOKEN is the only required one.
 import os
 from pathlib import Path
 
+
+def _int_env(name: str, default: int) -> int:
+    """An env_file line with no value (`ADMIN_USER_ID=`) must read as unset."""
+    raw = os.environ.get(name, "").strip()
+    return int(raw) if raw else default
+
+
 BOT_TOKEN = os.environ.get("BOT_TOKEN", "")
 
 # ComfyUI runs on the SPARK box; this service runs on the JODA NAS. Reach
@@ -38,13 +45,13 @@ DEV_TOKEN = os.environ.get("DEV_TOKEN", "")
 MINIAPP_URL = os.environ.get("MINIAPP_URL", "https://app.ol1n.com")
 
 # Free generations per rolling 24 h; beyond that 1 generation = 1 credit.
-FREE_DAILY_LIMIT = int(os.environ.get("FREE_DAILY_LIMIT", "3"))
-AUTH_MAX_AGE = int(os.environ.get("AUTH_MAX_AGE", "3600"))
-MAX_PROMPT_CHARS = int(os.environ.get("MAX_PROMPT_CHARS", "4000"))
-JOB_TIMEOUT = int(os.environ.get("JOB_TIMEOUT", "300"))
+FREE_DAILY_LIMIT = _int_env("FREE_DAILY_LIMIT", 3)
+AUTH_MAX_AGE = _int_env("AUTH_MAX_AGE", 3600)
+MAX_PROMPT_CHARS = _int_env("MAX_PROMPT_CHARS", 4000)
+JOB_TIMEOUT = _int_env("JOB_TIMEOUT", 300)
 
 # Telegram user id allowed to run admin commands (/refund). 0 = disabled.
-ADMIN_USER_ID = int(os.environ.get("ADMIN_USER_ID", "0"))
+ADMIN_USER_ID = _int_env("ADMIN_USER_ID", 0)
 
 DB_PATH = DATA_DIR / "mangabot.db"
 
