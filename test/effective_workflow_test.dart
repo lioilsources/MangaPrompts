@@ -69,19 +69,68 @@ void main() {
     });
   });
 
-  test('every shipped template declares a workflow', () async {
-    // Loads the real assets/config/templates.yaml, not a fixture: a template
-    // added later without a declaration would silently fall back to flux,
-    // which is wrong for any tag-based one.
-    TestWidgetsFlutterBinding.ensureInitialized();
-    final templates = await BlockLoader.loadTemplates();
-    expect(templates, isNotEmpty);
-    for (final t in templates) {
-      expect(t.workflow, isNotEmpty, reason: '${t.id} declares no workflow');
-    }
-    // The pony templates speak Danbooru tags — they must never resolve to flux.
-    for (final t in templates.where((t) => t.id.startsWith('template_pony'))) {
-      expect(t.workflow, 'pony', reason: '${t.id} must run on pony');
-    }
+  group('shipped config', () {
+    setUp(() => TestWidgetsFlutterBinding.ensureInitialized());
+
+    test('every template declares a workflow, and the right one', () async {
+      // Loads the real assets/config/templates.yaml, not a fixture: a template
+      // added later without a declaration would silently fall back to flux.
+      final templates = await BlockLoader.loadTemplates();
+      expect(templates, isNotEmpty);
+      for (final t in templates) {
+        expect(t.workflow, isNotEmpty, reason: '${t.id} declares no workflow');
+      }
+      // A template's prompt language and its model must not drift apart.
+      const expected = {
+        'template_pony': 'pony',
+        'template_wai': 'wai',
+        'template_jugg': 'juggernaut',
+      };
+      for (final t in templates) {
+        for (final e in expected.entries) {
+          if (t.id.startsWith(e.key)) {
+            expect(t.workflow, e.value, reason: '${t.id} must run on ${e.value}');
+          }
+        }
+      }
+    });
+
+    test('every slot a template names actually exists', () async {
+      // A typo in slot_order is invisible at runtime — the category just never
+      // shows up in the picker — so catch it here instead.
+      final templates = await BlockLoader.loadTemplates();
+      final categories = await BlockLoader.loadAllCategories();
+      final known = categories.map((c) => c.category).toSet();
+      expect(known, isNotEmpty);
+
+      for (final t in templates) {
+        for (final slot in t.slotOrder) {
+          expect(known, contains(slot), reason: '${t.id}: unknown slot "$slot"');
+        }
+        for (final slot in [...t.requiredSlots, ...t.optionalSlots]) {
+          expect(known, contains(slot),
+              reason: '${t.id}: unknown slot "$slot" in required/optional');
+        }
+        expect(known, contains(t.negativeSlot),
+            reason: '${t.id}: unknown negative_slot "${t.negativeSlot}"');
+      }
+    });
+
+    test('the tag templates never mix in prose axes', () async {
+      // pony_* and wai_* templates speak Danbooru tags; the prose axes would
+      // pollute the prompt with sentences.
+      const prose = {'medium', 'style', 'pose', 'pose_duo', 'art_tradition',
+                     'subject', 'framing', 'background', 'camera', 'quality'};
+      final templates = await BlockLoader.loadTemplates();
+      final tagTemplates = templates.where(
+          (t) => t.workflow == 'pony' || t.workflow == 'wai');
+      expect(tagTemplates, isNotEmpty);
+      for (final t in tagTemplates) {
+        for (final slot in t.slotOrder) {
+          expect(prose, isNot(contains(slot)),
+              reason: '${t.id} mixes prose axis "$slot" into a tag prompt');
+        }
+      }
+    });
   });
 }

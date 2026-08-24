@@ -1,0 +1,20 @@
+category: wai_negative
+label: "Negative prompt (WAI)"
+icon: block
+required: false
+# Illustrious negatives are plain quality tags — no score_4/score_5 ladder,
+# which only means something to PonyDiffusion.
+blocks:
+  - id: wn_standard
+    label: "Standard"
+    tags: [wai, negative]
+    value: "worst quality, low quality, lowres, jpeg artifacts, bad anatomy, bad proportions, extra limbs, missing limbs, deformed, watermark, signature, username, text"
+    mood: [sweet, dark, surreal, technical, nostalgic]
+    incompatible: [wn_strict]
+
+  - id: wn_strict
+    label: "Strict (+ hands and face)"
+    tags: [wai, negative]
+    value: "worst quality, low quality, lowres, jpeg artifacts, bad anatomy, bad proportions, extra limbs, missing limbs, deformed, watermark, signature, username, text, bad hands, extra digits, fewer digits, malformed hands, bad face, bad eyes, cross-eyed"
+    mood: [sweet, dark, surreal, technical]
+    incompatible: [wn_standard]

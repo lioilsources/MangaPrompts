@@ -1,0 +1,37 @@
+category: wai_quality
+label: "Quality / rating (WAI)"
+icon: star
+required: true
+# Illustrious-family quality boosters. NOT interchangeable with pony_quality:
+# the score_N ladder is a PonyDiffusion convention that Illustrious was never
+# trained on, so feeding it here is dead weight in the prompt at best.
+# Everything else in the tag vocabulary (1girl, full body, long hair…) is plain
+# Danbooru and IS shared, which is why the other tag axes are reused as-is.
+blocks:
+  - id: wq_masterpiece_safe
+    label: "Masterpiece · safe"
+    tags: [wai, illustrious, quality, safe]
+    value: "masterpiece, best quality, amazing quality, very aesthetic, absurdres, rating:safe"
+    mood: [sweet, technical, nostalgic, surreal]
+    incompatible: [wq_masterpiece_quest, wq_high_safe, wq_aesthetic_soft]
+
+  - id: wq_masterpiece_quest
+    label: "Masterpiece · questionable"
+    tags: [wai, illustrious, quality, questionable]
+    value: "masterpiece, best quality, amazing quality, very aesthetic, absurdres, rating:questionable"
+    mood: [dark, surreal, sweet]
+    incompatible: [wq_masterpiece_safe, wq_high_safe, wq_aesthetic_soft]
+
+  - id: wq_high_safe
+    label: "High quality · safe (faster)"
+    tags: [wai, illustrious, quality, safe]
+    value: "best quality, high quality, highres, rating:safe"
+    mood: [sweet, technical, nostalgic]
+    incompatible: [wq_masterpiece_safe, wq_masterpiece_quest, wq_aesthetic_soft]
+
+  - id: wq_aesthetic_soft
+    label: "Very aesthetic · soft look"
+    tags: [wai, illustrious, quality, aesthetic]
+    value: "masterpiece, very aesthetic, best quality, soft lighting, detailed illustration, rating:safe"
+    mood: [sweet, nostalgic]
+    incompatible: [wq_masterpiece_safe, wq_masterpiece_quest, wq_high_safe]

@@ -1,5 +1,5 @@
 category: pony_subject
-label: "Subject (Pony)"
+label: "Subject (tags)"
 icon: person
 required: true
 blocks:

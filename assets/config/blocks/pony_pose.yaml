@@ -1,5 +1,5 @@
 category: pony_pose
-label: "Pose (Pony)"
+label: "Pose (tags)"
 icon: directions_run
 required: false
 blocks:

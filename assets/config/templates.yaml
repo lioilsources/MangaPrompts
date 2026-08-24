@@ -441,3 +441,251 @@ templates:
       - pony_hair
       - pony_eyes
       - pony_body
+
+  # ── Juggernaut XL Lightning — photoreal, natural language ─────────────────
+  # Same prose axes as the templates above (Juggernaut is SDXL and reads
+  # descriptive text, not tags), but built around full-body framing.
+
+  - id: template_jugg_person
+    label: "Photoreal — full figure"
+    description: "Juggernaut XL Lightning: one person, head to toe"
+    workflow: juggernaut
+    slot_order:
+      - medium
+      - art_tradition
+      - subject
+      - framing
+      - nationality
+      - body_type
+      - style
+      - face
+      - eyes
+      - hair
+      - expression
+      - pose
+      - clothing_outfit
+      - clothing_top
+      - clothing_bottom
+      - clothing_legwear
+      - lighting
+      - effects
+      - background
+      - camera
+      - palette
+      - quality
+    negative_slot: negative
+    separator: ", "
+    required_slots:
+      - medium
+      - subject
+      - framing
+    optional_slots:
+      - art_tradition
+      - nationality
+      - body_type
+      - style
+      - face
+      - eyes
+      - hair
+      - expression
+      - pose
+      - clothing_outfit
+      - clothing_top
+      - clothing_bottom
+      - clothing_legwear
+      - lighting
+      - effects
+      - background
+      - camera
+      - palette
+      - quality
+
+  - id: template_jugg_duo
+    label: "Photoreal — couple, full figures"
+    description: "Juggernaut XL Lightning: two people, head to toe"
+    workflow: juggernaut
+    slot_order:
+      - medium
+      - art_tradition
+      - subject
+      - framing
+      - nationality
+      - body_type
+      - style
+      - expression
+      - pose_duo
+      - pose
+      - clothing_outfit
+      - clothing_top
+      - clothing_bottom
+      - clothing_legwear
+      - lighting
+      - effects
+      - background
+      - camera
+      - palette
+      - quality
+    negative_slot: negative
+    separator: ", "
+    required_slots:
+      - medium
+      - subject
+      - framing
+      - pose_duo
+    optional_slots:
+      - art_tradition
+      - nationality
+      - body_type
+      - style
+      - expression
+      - pose
+      - clothing_outfit
+      - clothing_top
+      - clothing_bottom
+      - clothing_legwear
+      - lighting
+      - effects
+      - background
+      - camera
+      - palette
+      - quality
+
+  - id: template_jugg_group
+    label: "Photoreal — group, full figures"
+    description: "Juggernaut XL Lightning: three or more people, head to toe"
+    workflow: juggernaut
+    slot_order:
+      - medium
+      - art_tradition
+      - subject
+      - framing
+      - nationality
+      - body_type
+      - style
+      - expression
+      - pose
+      - clothing_outfit
+      - clothing_top
+      - clothing_bottom
+      - lighting
+      - effects
+      - background
+      - camera
+      - palette
+      - quality
+    negative_slot: negative
+    separator: ", "
+    required_slots:
+      - medium
+      - subject
+      - framing
+      - background
+    optional_slots:
+      - art_tradition
+      - nationality
+      - body_type
+      - style
+      - expression
+      - pose
+      - clothing_outfit
+      - clothing_top
+      - clothing_bottom
+      - lighting
+      - effects
+      - camera
+      - palette
+      - quality
+
+  # ── WAI Illustrious — anime, Danbooru tags ────────────────────────────────
+  # Reuses the shared tag axes, but wai_quality/wai_negative instead of the
+  # Pony ones: the score_N ladder means nothing to Illustrious. Deliberately
+  # no pose_duo here — its values are prose, and mixing prose into a tag
+  # prompt is the exact mismatch these per-model templates exist to prevent.
+
+  - id: template_wai_person
+    label: "Anime (WAI) — full figure"
+    description: "WAI Illustrious: one character, head to toe, Danbooru tags"
+    workflow: wai
+    slot_order:
+      - wai_quality
+      - pony_subject
+      - pony_framing
+      - pony_body
+      - pony_hair
+      - pony_eyes
+      - pony_expression
+      - pony_style
+      - pony_clothing
+      - pony_pose
+      - pony_background
+    negative_slot: wai_negative
+    separator: ", "
+    required_slots:
+      - wai_quality
+      - pony_subject
+      - pony_framing
+    optional_slots:
+      - pony_body
+      - pony_hair
+      - pony_eyes
+      - pony_expression
+      - pony_style
+      - pony_clothing
+      - pony_pose
+      - pony_background
+
+  - id: template_wai_duo
+    label: "Anime (WAI) — couple, full figures"
+    description: "WAI Illustrious: two characters, head to toe, Danbooru tags"
+    workflow: wai
+    slot_order:
+      - wai_quality
+      - pony_subject
+      - pony_framing
+      - pony_pose
+      - pony_expression
+      - pony_style
+      - pony_clothing
+      - pony_hair
+      - pony_eyes
+      - pony_background
+    negative_slot: wai_negative
+    separator: ", "
+    required_slots:
+      - wai_quality
+      - pony_subject
+      - pony_framing
+    optional_slots:
+      - pony_pose
+      - pony_expression
+      - pony_style
+      - pony_clothing
+      - pony_hair
+      - pony_eyes
+      - pony_background
+
+  - id: template_wai_group
+    label: "Anime (WAI) — group, full figures"
+    description: "WAI Illustrious: three or more characters, head to toe"
+    workflow: wai
+    slot_order:
+      - wai_quality
+      - pony_subject
+      - pony_framing
+      - pony_background
+      - pony_style
+      - pony_expression
+      - pony_clothing
+      - pony_pose
+    negative_slot: wai_negative
+    separator: ", "
+    required_slots:
+      - wai_quality
+      - pony_subject
+      - pony_framing
+      - pony_background
+    optional_slots:
+      - pony_style
+      - pony_expression
+      - pony_clothing
+      - pony_pose

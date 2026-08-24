@@ -1,5 +1,5 @@
 category: pony_expression
-label: "Expression (Pony)"
+label: "Expression (tags)"
 icon: sentiment_satisfied
 required: false
 blocks:

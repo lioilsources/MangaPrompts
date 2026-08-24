@@ -46,6 +46,10 @@ class BlockLoader {
     'pony_pose',
     'pony_background',
     'pony_negative',
+    // WAI / Illustrious — shares the Danbooru tag axes above, but not the
+    // score_N quality ladder, which is Pony-only.
+    'wai_quality',
+    'wai_negative',
   ];
 
   static Map<String, dynamic> _yamlToMap(YamlMap yaml) {
