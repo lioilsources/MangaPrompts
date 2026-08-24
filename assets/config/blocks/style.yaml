@@ -1,5 +1,5 @@
 category: style
-label: "Styl / Nálada"
+label: "Style / mood"
 icon: brush
 required: false
 # Style is now a pure genre/mood flavour layered on top of any medium.
@@ -7,21 +7,21 @@ required: false
 # the `medium` axis and engine-level gating.
 blocks:
   - id: style_shonen_action
-    label: "Shonen akce"
+    label: "Shonen action"
     tags: [shonen, action]
     value: "dynamic shonen action mood, dramatic high-energy composition, intense atmosphere"
     mood: [dark, technical]
     incompatible: []
 
   - id: style_shojo_romantic
-    label: "Shojo romantický"
+    label: "Shojo romantic"
     tags: [shojo, romantic]
     value: "soft romantic shojo mood, dreamy tender atmosphere, gentle delicate feel"
     mood: [sweet, nostalgic]
     incompatible: []
 
   - id: style_seinen
-    label: "Seinen (vážný)"
+    label: "Seinen (serious)"
     tags: [seinen, mature]
     value: "mature seinen tone, grounded serious atmosphere, detailed restrained composition"
     mood: [dark, technical, nostalgic]
@@ -42,14 +42,14 @@ blocks:
     incompatible: [style_minimalist, style_slice_of_life]
 
   - id: style_noir_dramatic
-    label: "Noir / dramatický"
+    label: "Noir / dramatic"
     tags: [noir, dramatic]
     value: "dramatic noir mood, high-contrast chiaroscuro, cinematic tension"
     mood: [dark]
     incompatible: [style_chibi]
 
   - id: style_magical_girl
-    label: "Kouzelná dívka"
+    label: "Magical girl"
     tags: [magical_girl, sparkle]
     value: "magical-girl theme, sparkle and ribbon motifs, luminous whimsical energy"
     mood: [sweet, surreal]
@@ -63,14 +63,14 @@ blocks:
     incompatible: []
 
   - id: style_minimalist
-    label: "Minimalistický"
+    label: "Minimalist"
     tags: [minimalist, clean]
     value: "minimalist composition, clean negative space, restrained elegant aesthetic"
     mood: [sweet, technical]
     incompatible: [style_cyberpunk, style_shonen_action]
 
   - id: style_chibi
-    label: "Chibi komedie"
+    label: "Chibi comedy"
     tags: [chibi, comedy]
     value: "chibi comedy mood, exaggerated cute proportions, playful comical energy"
     mood: [sweet]

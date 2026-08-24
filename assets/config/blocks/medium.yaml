@@ -1,5 +1,5 @@
 category: medium
-label: "Médium / Render"
+label: "Medium / render"
 icon: brush
 required: true
 # Master render axis. This is the ONLY place the photo-vs-illustration medium is
@@ -7,28 +7,28 @@ required: true
 # Front-loaded by the engine because FLUX/T5 weights early tokens most heavily.
 blocks:
   - id: medium_photoreal
-    label: "Fotorealistická fotka"
+    label: "Photorealistic photo"
     tags: [photoreal, photo]
     value: "a photorealistic photograph, true-to-life detail, natural skin texture, realistic lighting and depth of field"
     mood: [sweet, dark, surreal, technical, nostalgic]
     incompatible: [medium_anime, medium_manga, medium_comic]
 
   - id: medium_anime
-    label: "Anime ilustrace"
+    label: "Anime illustration"
     tags: [anime, illustration, drawn]
     value: "an anime-style illustration, clean cel-shaded linework, vibrant flat colors, expressive anime features"
     mood: [sweet, dark, surreal, technical, nostalgic]
     incompatible: [medium_photoreal, medium_manga, medium_comic]
 
   - id: medium_manga
-    label: "Manga (čб ilustrace)"
+    label: "Manga (B&W illustration)"
     tags: [manga, illustration, drawn, monochrome]
     value: "a black-and-white manga illustration, bold ink linework, screentone shading, dynamic manga aesthetic"
     mood: [sweet, dark, surreal, technical, nostalgic]
     incompatible: [medium_photoreal, medium_anime, medium_comic]
 
   - id: medium_comic
-    label: "Komiks (western ilustrace)"
+    label: "Comic (Western illustration)"
     tags: [comic, illustration, drawn]
     value: "a western comic-book illustration, bold inked outlines, flat cel shading, halftone dot shading"
     mood: [sweet, dark, surreal, technical, nostalgic]

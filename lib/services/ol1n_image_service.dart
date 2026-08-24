@@ -119,7 +119,7 @@ class OlinkImageService implements ImageGenerationService {
       }
 
       if (response.statusCode == 404) {
-        throw OlinkApiException('Job vypršel nebo neexistuje');
+        throw OlinkApiException('Job timed out or does not exist');
       }
       if (response.statusCode != 200) {
         debugPrint('[ol1n] poll → ${response.statusCode}, retrying');
@@ -148,7 +148,7 @@ class OlinkImageService implements ImageGenerationService {
           return GeneratedImage(url: '', localPath: file.path);
 
         case 'error':
-          final msg = json['error'] as String? ?? 'Neznámá chyba';
+          final msg = json['error'] as String? ?? 'Unknown error';
           throw OlinkApiException(msg);
 
         default:
@@ -168,7 +168,7 @@ class OlinkImageService implements ImageGenerationService {
     );
     if (response.statusCode != 200) {
       throw OlinkApiException(
-        'HTTP ${response.statusCode} při stahování výsledku',
+        'HTTP ${response.statusCode} while downloading the result',
       );
     }
     return response.bodyBytes;
@@ -178,7 +178,7 @@ class OlinkImageService implements ImageGenerationService {
     final code = response.statusCode;
     // Cloudflare / proxy errors return HTML — give a human-readable message.
     if (code == 502 || code == 503 || code == 504) {
-      return 'Backend nedostupný ($code) — zkontroluj server llm.ol1n.com';
+      return 'Backend unavailable ($code) — check the llm.ol1n.com server';
     }
     if (code == 401 || code == 403) {
       return 'Chyba autentizace ($code) — zkontroluj CF Access token';

@@ -1,7 +1,7 @@
 presets:
   - id: preset_shojo_heroine
-    label: "Shojo hrdinka (anime)"
-    description: "Romantická shojo hrdinka, anime ilustrace, portrét"
+    label: "Shojo heroine (anime)"
+    description: "Romantic shojo heroine, anime illustration, portrait"
     template: template_portrait
     blocks:
       medium: medium_anime
@@ -23,8 +23,8 @@ presets:
       negative: negative_illustration_guard
 
   - id: preset_cyberpunk_dark
-    label: "Cyberpunk temný (foto)"
-    description: "Temná kyberpunková postava, fotorealistická, neonová ulička"
+    label: "Cyberpunk dark (photo)"
+    description: "Dark cyberpunk figure, photorealistic, neon alley"
     template: template_portrait
     blocks:
       medium: medium_photoreal
@@ -47,8 +47,8 @@ presets:
       negative: negative_photo_guard
 
   - id: preset_shonen_hero
-    label: "Shonen hrdina (manga)"
-    description: "Dynamický akční shonen hrdina, čб manga, celá postava"
+    label: "Shonen hero (manga)"
+    description: "Dynamic shonen action hero, B&W manga, full body"
     template: template_action_scene
     blocks:
       medium: medium_manga
@@ -67,8 +67,8 @@ presets:
       negative: negative_illustration_guard
 
   - id: preset_magical_girl
-    label: "Kouzelná dívka (anime)"
-    description: "Třpytivá transformace kouzelné dívky, anime, celá postava"
+    label: "Magical girl (anime)"
+    description: "Sparkling magical girl transformation, anime, full body"
     template: template_portrait
     blocks:
       medium: medium_anime
@@ -90,8 +90,8 @@ presets:
       negative: negative_illustration_guard
 
   - id: preset_selfie_real
-    label: "Selfie (foto)"
-    description: "Fotorealistický selfie portrét mladé ženy"
+    label: "Selfie (photo)"
+    description: "Photorealistic selfie portrait of a young woman"
     template: template_selfie
     blocks:
       medium: medium_photoreal
@@ -112,8 +112,8 @@ presets:
       negative: negative_photo_guard
 
   - id: preset_group_friends
-    label: "Skupina přátel (foto)"
-    description: "Fotorealistická skupinová foto na louce, celé postavy"
+    label: "Group of friends (photo)"
+    description: "Photorealistic group photo in a meadow, full bodies"
     template: template_group_photo
     blocks:
       medium: medium_photoreal
@@ -132,8 +132,8 @@ presets:
       negative: negative_photo_guard
 
   - id: preset_intimate_real
-    label: "Intimní moment (foto)"
-    description: "Fotorealistická intimní scéna páru v ložnici"
+    label: "Intimate moment (photo)"
+    description: "Photorealistic intimate scene of a couple in a bedroom"
     template: template_intimate
     blocks:
       medium: medium_photoreal
@@ -153,8 +153,8 @@ presets:
       negative: negative_photo_guard
 
   - id: preset_bedroom_woman
-    label: "Ložnice (foto)"
-    description: "Fotorealistická scéna ženy v ložnici, vrstvené oblečení"
+    label: "Bedroom (photo)"
+    description: "Photorealistic scene of a woman in a bedroom, layered clothing"
     template: template_indoor_scene
     blocks:
       medium: medium_photoreal
@@ -177,8 +177,8 @@ presets:
       negative: negative_photo_guard
 
   - id: preset_forest_comix
-    label: "Les komiks"
-    description: "Komiksová akční scéna v lese, celá postava"
+    label: "Forest comic"
+    description: "Comic-style action scene in a forest, full body"
     template: template_outdoor_scene
     blocks:
       medium: medium_comic

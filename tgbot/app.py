@@ -69,17 +69,17 @@ async def on_start(message: Message) -> None:
         inline_keyboard=[
             [
                 InlineKeyboardButton(
-                    text="🎨 Otevřít Tsumiki",
+                    text="🎨 Open Tsumiki",
                     web_app=WebAppInfo(url=config.MINIAPP_URL),
                 )
             ]
         ]
     )
     await message.answer(
-        "Ahoj! Poskládej si prompt z LEGO bloků a vygeneruj manga obrázek. "
-        "Hotový obrázek ti pošlu sem do chatu.\n\n"
-        f"Zdarma máš {config.FREE_DAILY_LIMIT} generování denně, "
-        "další jdou za Telegram Stars ⭐ přímo v aplikaci.",
+        "Hi! Snap a prompt together from building blocks and generate a manga image. "
+        "I'll send the finished image right here in the chat.\n\n"
+        f"You get {config.FREE_DAILY_LIMIT} free generations a day, "
+        "beyond that they cost Telegram Stars ⭐ right inside the app.",
         reply_markup=keyboard,
     )
 
@@ -87,9 +87,9 @@ async def on_start(message: Message) -> None:
 @dp.message(Command("paysupport"))
 async def on_paysupport(message: Message) -> None:
     await message.answer(
-        "Problém s platbou? Napiš sem číslo transakce (najdeš ho v Nastavení → "
-        "Telegram Stars → Transakce) a popiš, co se stalo — ozvu se co nejdřív. "
-        "Refundy řešíme do 48 hodin."
+        "Payment trouble? Send the transaction id here (Settings → "
+        "Telegram Stars → Transactions) and describe what happened — I'll get back to you shortly. "
+        "Refunds are handled within 48 hours."
     )
 
 
@@ -132,7 +132,7 @@ async def on_successful_payment(message: Message) -> None:
         sp.telegram_payment_charge_id, user_id, package["credits"], sp.total_amount, balance,
     )
     await message.answer(
-        f"Díky! Připsáno {package['credits']} kreditů. Aktuální zůstatek: {balance}."
+        f"Thanks! {package['credits']} credits added. Current balance: {balance}."
     )
 
 
@@ -142,27 +142,27 @@ async def on_refund(message: Message) -> None:
         return
     parts = (message.text or "").split(maxsplit=1)
     if len(parts) != 2:
-        await message.answer("Použití: /refund <telegram_payment_charge_id>")
+        await message.answer("Usage: /refund <telegram_payment_charge_id>")
         return
     charge_id = parts[1].strip()
     payment = db.get_payment(charge_id)
     if payment is None:
-        await message.answer("Platba nenalezena.")
+        await message.answer("Payment not found.")
         return
     if payment["status"] != "paid":
-        await message.answer(f"Platba už je ve stavu '{payment['status']}'.")
+        await message.answer(f"That payment is already in state '{payment['status']}'.")
         return
     try:
         await bot.refund_star_payment(
             user_id=payment["user_id"], telegram_payment_charge_id=charge_id
         )
     except Exception as e:  # noqa: BLE001
-        await message.answer(f"refundStarPayment selhal: {e}")
+        await message.answer(f"refundStarPayment failed: {e}")
         return
     db.mark_refunded(charge_id)
     await message.answer(
-        f"Refundováno {payment['stars']}⭐ uživateli {payment['user_id']}, "
-        f"odečteno {payment['credits']} kreditů."
+        f"Refunded {payment['stars']}⭐ to user {payment['user_id']}, "
+        f"{payment['credits']} credits deducted."
     )
 
 
@@ -253,7 +253,7 @@ async def create_invoice(req: InvoiceRequest, user_id: int = Depends(current_use
         raise HTTPException(status_code=400, detail="unknown package")
     link = await bot.create_invoice_link(
         title=package["label"],
-        description="Kredity na generování obrázků v Tsumiki.",
+        description="Credits for generating images in Tsumiki.",
         payload=payments.build_payload(user_id, req.package),
         currency="XTR",
         prices=[LabeledPrice(label=package["label"], amount=package["stars"])],
@@ -264,13 +264,13 @@ async def create_invoice(req: InvoiceRequest, user_id: int = Depends(current_use
 @app.post("/api/generate")
 async def generate(req: GenerateRequest, user_id: int = Depends(current_user_id)):
     if jobs.active_count(user_id) >= 1:
-        raise HTTPException(status_code=429, detail="počkej, až doběhne předchozí generování")
+        raise HTTPException(status_code=429, detail="wait for your previous generation to finish")
 
     spend = db.spend_generation(user_id, config.FREE_DAILY_LIMIT)
     if spend is None:
         raise HTTPException(
             status_code=402,
-            detail="denní limit zdarma je vyčerpaný a nemáš žádné kredity",
+            detail="your free daily limit is used up and you have no credits",
         )
     _, usage_id = spend
 
@@ -284,7 +284,7 @@ async def generate(req: GenerateRequest, user_id: int = Depends(current_user_id)
         except (ComfyError, aiohttp.ClientError) as e:
             db.undo_usage(usage_id)
             log.error("queue_prompt failed: %s", e)
-            raise HTTPException(status_code=502, detail="ComfyUI není dostupné") from e
+            raise HTTPException(status_code=502, detail="ComfyUI is unavailable") from e
     job.prompt_id = prompt_id
     job.status = "running"
     jobs.add(job)

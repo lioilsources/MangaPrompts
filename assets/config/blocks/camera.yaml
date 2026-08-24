@@ -1,5 +1,5 @@
 category: camera
-label: "Kamera (jen foto)"
+label: "Camera (photo only)"
 icon: camera_alt
 required: false
 # Real-camera descriptors. The engine only injects these when the medium is
@@ -63,14 +63,14 @@ blocks:
     incompatible: []
 
   - id: camera_35mm_candid
-    label: "35mm momentka"
+    label: "35mm snapshot"
     tags: [35mm, candid, snapshot]
     value: "a 35mm photograph, candid snapshot style, natural perspective"
     mood: [sweet, nostalgic]
     incompatible: []
 
   - id: camera_macro_sharp
-    label: "Makro ostrý"
+    label: "Macro sharp"
     tags: [macro, sharp, close_up]
     value: "macro lens, razor-sharp focus, visible skin texture and pores"
     mood: [technical, dark]

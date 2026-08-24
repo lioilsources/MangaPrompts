@@ -50,14 +50,14 @@ class _ReposeScreenState extends ConsumerState<ReposeScreen> {
         facePath != null && poseAsset != null && !_isGenerating;
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Repose — obličej v póze')),
+      appBar: AppBar(title: const Text('Repose — face in a pose')),
       body: ListView(
         padding: const EdgeInsets.fromLTRB(16, 16, 16, 96),
         children: [
           _sectionTitle(context, 'Model'),
           _modelDropdown(context),
           const SizedBox(height: 24),
-          _sectionTitle(context, '1. Obličej'),
+          _sectionTitle(context, '1. Face'),
           _facePicker(context, facePath),
           const SizedBox(height: 24),
           _sectionTitle(context, '2. Póza'),
@@ -113,12 +113,12 @@ class _ReposeScreenState extends ConsumerState<ReposeScreen> {
     return async.when(
       loading: () => const LinearProgressIndicator(),
       error: (e, _) => Text(
-        'Nelze načíst modely: $e',
+        'Could not load models: $e',
         style: TextStyle(color: Theme.of(context).colorScheme.error),
       ),
       data: (list) {
         if (list.isEmpty) {
-          return const Text('Žádné modely (zkontroluj CF creds v Nastavení).');
+          return const Text('No models (check the CF credentials in Settings).');
         }
         final value = list.contains(selected) ? selected : list.first;
         if (value != selected) {
@@ -151,7 +151,7 @@ class _ReposeScreenState extends ConsumerState<ReposeScreen> {
       return OutlinedButton.icon(
         onPressed: () => _showFaceOptions(context),
         icon: const Icon(Icons.add_a_photo),
-        label: const Text('Nahrát obličej'),
+        label: const Text('Upload a face'),
       );
     }
     return Row(
@@ -166,7 +166,7 @@ class _ReposeScreenState extends ConsumerState<ReposeScreen> {
           child: OutlinedButton.icon(
             onPressed: () => _showFaceOptions(context),
             icon: const Icon(Icons.swap_horiz, size: 18),
-            label: const Text('Změnit obličej'),
+            label: const Text('Change face'),
           ),
         ),
       ],
@@ -265,9 +265,9 @@ class _ReposeScreenState extends ConsumerState<ReposeScreen> {
     if (service == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: const Text('Nastav Cloudflare Access údaje v nastavení'),
+          content: const Text('Set the Cloudflare Access credentials in Settings'),
           action: SnackBarAction(
-            label: 'Nastavení',
+            label: 'Settings',
             onPressed: () => Navigator.push(
               context,
               MaterialPageRoute(builder: (_) => const SettingsScreen()),

@@ -1,5 +1,5 @@
 category: art_tradition
-label: "Výtvarná tradice"
+label: "Art tradition"
 icon: museum
 required: false
 # Art-historical / cultural visual traditions, layered on top of the `medium`
@@ -11,28 +11,28 @@ required: false
 blocks:
   # ── Americas ──────────────────────────────────────────────────────────────
   - id: art_maya
-    label: "Mayská nástěnná malba"
+    label: "Maya mural"
     tags: [maya, mural, relief, mesoamerica]
     value: "classic maya mural style, formal profile and three-quarter views, intricate geometric patterns, jade green and deep red colors, hieroglyphic decorative elements, stylized proportions"
     mood: [technical, nostalgic]
     incompatible: [medium_photoreal]
 
   - id: art_aztec
-    label: "Aztécký kodex / reliéf"
+    label: "Aztec codex / relief"
     tags: [aztec, codex, relief, mesoamerica]
     value: "aztec codex and stone relief style, bold black outlines, vibrant red turquoise and gold accents, geometric feather and sun motifs, formal stylized figures"
     mood: [dark, technical]
     incompatible: [medium_photoreal]
 
   - id: art_inca
-    label: "Incké textilie a zlatnictví"
+    label: "Inca textile & goldwork"
     tags: [inca, textile, goldwork, andes]
     value: "inca textile and goldwork inspired style, precise geometric patterns, rich gold and deep red tones, formal frontal composition, stylized strong bodies"
     mood: [technical, nostalgic]
     incompatible: [medium_photoreal]
 
   - id: art_ledger
-    label: "Ledger art (prérijní indiáni)"
+    label: "Plains ledger art"
     tags: [ledger, plains, indigenous, north_america]
     value: "plains ledger art style, bold outlines, flat colors, dynamic movement lines, symbolic geometric patterns, earth tones with bright accents"
     mood: [nostalgic, technical]
@@ -54,7 +54,7 @@ blocks:
     incompatible: [medium_photoreal]
 
   - id: art_himba
-    label: "Himba (Namibie)"
+    label: "Himba (Namibia)"
     tags: [himba, namibia, ochre, desert]
     value: "himba inspired style, rich red ochre skin tones, minimal clothing emphasis, strong natural anatomy, warm desert light, textured skin details"
     mood: [nostalgic, sweet]
@@ -69,28 +69,28 @@ blocks:
 
   # ── Oceania & Southeast Asia ──────────────────────────────────────────────
   - id: art_aboriginal
-    label: "Aboriginské tečkované malby"
+    label: "Aboriginal dot painting"
     tags: [aboriginal, dot_painting, australia, ceremonial]
     value: "australian aboriginal dot painting style, intricate dot patterns, earth pigment colors, x-ray style internal forms, symbolic story elements, flat ceremonial composition"
     mood: [surreal, nostalgic]
     incompatible: [medium_photoreal]
 
   - id: art_polynesian
-    label: "Polynéská tradice"
+    label: "Polynesian tradition"
     tags: [polynesian, tattoo, carving, oceania]
     value: "traditional polynesian style, bold geometric tattoos, strong black outlines, stylized powerful bodies, warm skin tones, carved wood aesthetic"
     mood: [technical, dark]
     incompatible: [medium_photoreal]
 
   - id: art_filipino
-    label: "Filipínská tradice"
+    label: "Filipino tradition"
     tags: [filipino, weaving, textile, southeast_asia]
     value: "traditional filipino style, intricate weaving patterns, soft warm colors, graceful elongated figures, decorative textile motifs"
     mood: [sweet, nostalgic]
     incompatible: [medium_photoreal]
 
   - id: art_burmese
-    label: "Barmská chrámová malba"
+    label: "Burmese temple painting"
     tags: [burmese, temple, gold, southeast_asia]
     value: "traditional burmese temple painting style, flowing elegant lines, rich gold and red tones, ornate decorative details, soft idealized faces, luminous atmosphere"
     mood: [sweet, surreal]
@@ -98,35 +98,35 @@ blocks:
 
   # ── Ancient Near East ─────────────────────────────────────────────────────
   - id: art_assyrian
-    label: "Asyrský palácový reliéf"
+    label: "Assyrian palace relief"
     tags: [assyrian, relief, palace, near_east]
     value: "assyrian palace relief style, strong black outlines, low-relief shading, formal profile views, detailed hair and beard patterns, monumental composition"
     mood: [dark, technical]
     incompatible: [medium_photoreal]
 
   - id: art_mesopotamian
-    label: "Mezopotamský reliéf"
+    label: "Mesopotamian relief"
     tags: [mesopotamian, relief, carved_stone, near_east]
     value: "mesopotamian relief style, composite profile views, formal hierarchical proportions, detailed patterned hair, carved stone texture, earthy tones"
     mood: [technical, nostalgic]
     incompatible: [medium_photoreal]
 
   - id: art_arabian
-    label: "Předislámská Arábie"
+    label: "Pre-Islamic Arabia"
     tags: [arabian, pre_islamic, desert, near_east]
     value: "pre-islamic arabian style, elegant elongated figures, soft desert tones, flowing drapery, refined facial features, calm monumental presence"
     mood: [nostalgic, sweet]
     incompatible: [medium_photoreal]
 
   - id: art_hebrew
-    label: "Starověká hebrejská"
+    label: "Ancient Hebrew"
     tags: [hebrew, ancient, near_east, solemn]
     value: "ancient near eastern hebrew inspired style, simple strong outlines, modest earth palette, solemn dignified figures, subtle patterned textiles, formal composition"
     mood: [nostalgic, dark]
     incompatible: [medium_photoreal]
 
   - id: art_egyptian
-    label: "Egyptská nástěnná malba"
+    label: "Egyptian wall painting"
     tags: [egyptian, wall_painting, hieroglyphs, ancient]
     value: "ancient egyptian wall painting style, strict side profile views, flat bold colors, hierarchical proportions, black outlines, ochre skin tones, hieroglyphic decorative elements, formal composition"
     mood: [technical, nostalgic]
@@ -134,28 +134,28 @@ blocks:
 
   # ── Asia ──────────────────────────────────────────────────────────────────
   - id: art_indian_miniature
-    label: "Indická miniatura"
+    label: "Indian miniature"
     tags: [indian, miniature, ornate, south_asia]
     value: "detailed indian miniature painting, flat vibrant colors, intricate decorative patterns, stylized elongated figures, ornate borders, rich reds and golds"
     mood: [sweet, technical]
     incompatible: [medium_photoreal]
 
   - id: art_persian
-    label: "Perská miniatura"
+    label: "Persian miniature"
     tags: [persian, miniature, jewel_tones, ornate]
     value: "persian miniature style, highly detailed decorative patterns, rich jewel tones, flattened perspective, elegant elongated figures, intricate clothing and background ornaments"
     mood: [sweet, surreal]
     incompatible: [medium_photoreal]
 
   - id: art_ukiyoe
-    label: "Ukiyo-e (japonský dřevoryt)"
+    label: "Ukiyo-e (Japanese woodblock)"
     tags: [ukiyoe, woodblock, japan, flat_color]
     value: "ukiyo-e style, bold black outlines, flat color areas, elegant curved lines, stylized hair and clothing folds, limited color palette, japanese woodblock print aesthetic"
     mood: [nostalgic, technical]
     incompatible: [medium_photoreal]
 
   - id: art_chinese_ink
-    label: "Čínská tušová malba"
+    label: "Chinese ink wash"
     tags: [chinese, ink_wash, sumi, minimal]
     value: "traditional chinese ink wash painting, flowing black ink brushstrokes, minimal color, elegant empty space, soft gradients, expressive line work, misty atmosphere"
     mood: [nostalgic, surreal]
@@ -163,28 +163,28 @@ blocks:
 
   # ── Europe ────────────────────────────────────────────────────────────────
   - id: art_greek
-    label: "Antické Řecko"
+    label: "Classical Greece"
     tags: [greek, classical, marble, idealized]
     value: "classical greek inspired painting, idealized muscular anatomy, clean marble-like skin, balanced composition, soft drapery folds, harmonious proportions, muted earth tones"
     mood: [technical, nostalgic]
     incompatible: [medium_photoreal]
 
   - id: art_roman_fresco
-    label: "Římská freska"
+    label: "Roman fresco"
     tags: [roman, fresco, weathered, wall_painting]
     value: "roman fresco style, soft pastel colors, slightly weathered texture, classical drapery, calm idealized faces, muted earth and ochre palette, wall-painting look"
     mood: [nostalgic, sweet]
     incompatible: [medium_photoreal]
 
   - id: art_baroque
-    label: "Baroko (dramatické)"
+    label: "Baroque (dramatic)"
     tags: [baroque, chiaroscuro, dramatic, europe]
     value: "dramatic baroque painting, strong chiaroscuro lighting, deep shadows, rich dark colors, dynamic composition, emotional intensity, detailed fabric folds"
     mood: [dark, technical]
     incompatible: [medium_photoreal]
 
   - id: art_nouveau
-    label: "Secese (Art Nouveau)"
+    label: "Art Nouveau"
     tags: [art_nouveau, organic, decorative, europe]
     value: "art nouveau style, flowing organic lines, decorative floral motifs, elegant elongated figures, soft pastel colors, ornamental details, graceful curves"
     mood: [sweet, nostalgic]

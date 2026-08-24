@@ -1,5 +1,5 @@
 category: negative
-label: "Negativní prompt"
+label: "Negative prompt"
 icon: block
 required: false
 # Negatives are passed as a separate API field. Medium-specific guards are tagged
@@ -7,28 +7,28 @@ required: false
 # "no anime drawing" guard is photo_only and is dropped for illustration media).
 blocks:
   - id: negative_quality
-    label: "Kvalita – negativní"
+    label: "Quality — negative"
     tags: [quality, artifacts, blur]
     value: "low quality, blurry, jpeg artifacts, watermark, text overlay, cropped"
     mood: [sweet, dark, surreal, technical, nostalgic]
     incompatible: []
 
   - id: negative_anatomy
-    label: "Anatomie – negativní"
+    label: "Anatomy — negative"
     tags: [anatomy, deformed, extra]
     value: "deformed anatomy, extra fingers, extra limbs, distorted face, bad proportions"
     mood: [sweet, dark, surreal, technical, nostalgic]
     incompatible: []
 
   - id: negative_photo_guard
-    label: "Foto guard (drž fotorealismus)"
+    label: "Photo guard (keep it photoreal)"
     tags: [style, photo_only]
     value: "anime, cartoon, illustration, drawing, cel shading, flat shading, vector art, 3d render, cgi"
     mood: [sweet, dark, technical, nostalgic]
     incompatible: []
 
   - id: negative_illustration_guard
-    label: "Ilustrace guard (drž kresbu)"
+    label: "Illustration guard (keep it drawn)"
     tags: [style, illustration_only]
     value: "photograph, photorealistic, real photo, dslr, film grain, skin pores"
     mood: [sweet, dark, surreal, technical, nostalgic]

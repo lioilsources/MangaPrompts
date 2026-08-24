@@ -1,7 +1,7 @@
 templates:
   - id: template_portrait
-    label: "Portrét"
-    description: "Jedna postava — medium → subjekt → rámování → detaily"
+    label: "Portrait"
+    description: "One figure — medium → subject → framing → details"
     workflow: flux
     slot_order:
       - medium
@@ -60,8 +60,8 @@ templates:
       - quality
 
   - id: template_action_scene
-    label: "Akční scéna"
-    description: "Dynamická scéna s důrazem na pózu a efekty"
+    label: "Action scene"
+    description: "Dynamic scene built around pose and effects"
     workflow: flux
     slot_order:
       - medium
@@ -111,7 +111,7 @@ templates:
 
   - id: template_selfie
     label: "Selfie"
-    description: "Selfie záběr jedné postavy"
+    description: "Selfie shot of a single figure"
     workflow: flux
     slot_order:
       - medium
@@ -160,8 +160,8 @@ templates:
       - quality
 
   - id: template_group_photo
-    label: "Skupinová foto"
-    description: "Pár / trojice / čtveřice / větší skupina"
+    label: "Group photo"
+    description: "Couple / trio / quartet / larger group"
     workflow: flux
     slot_order:
       - medium
@@ -204,8 +204,8 @@ templates:
       - quality
 
   - id: template_intimate
-    label: "Intimní moment"
-    description: "Blízká scéna jedné postavy nebo páru"
+    label: "Intimate moment"
+    description: "Close scene with one figure or a couple"
     workflow: flux
     slot_order:
       - medium
@@ -260,8 +260,8 @@ templates:
       - quality
 
   - id: template_indoor_scene
-    label: "V místnosti"
-    description: "Interiér — ložnice, obývák, kuchyně, koupelna, záchod"
+    label: "Indoors"
+    description: "Interior — bedroom, living room, kitchen, bathroom, toilet"
     workflow: flux
     slot_order:
       - medium
@@ -318,8 +318,8 @@ templates:
       - quality
 
   - id: template_outdoor_scene
-    label: "Venku"
-    description: "Exteriér — les, skála, louka, plovárna, diskotéka"
+    label: "Outdoors"
+    description: "Exterior — forest, cliffs, meadow, pool, nightclub"
     workflow: flux
     slot_order:
       - medium
@@ -379,8 +379,8 @@ templates:
   # language templates. The engine joins values with ", " — no extra logic needed.
 
   - id: template_pony_portrait
-    label: "Pony — Portrét"
-    description: "PonyDiffusion: jedna postava, Danbooru tagy"
+    label: "Pony — Portrait"
+    description: "PonyDiffusion: one figure, Danbooru tags"
     workflow: pony
     slot_order:
       - pony_quality
@@ -411,8 +411,8 @@ templates:
       - pony_background
 
   - id: template_pony_scene
-    label: "Pony — Scéna"
-    description: "PonyDiffusion: scéna s důrazem na pozadí a akci"
+    label: "Pony — Scene"
+    description: "PonyDiffusion: scene built around background and action"
     workflow: pony
     slot_order:
       - pony_quality

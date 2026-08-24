@@ -7,7 +7,7 @@ class ReposeScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text('Repose')),
-      body: const Center(child: Text('Repose není na webu k dispozici')),
+      body: const Center(child: Text('Repose is not available on the web')),
     );
   }
 }

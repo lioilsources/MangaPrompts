@@ -6,7 +6,7 @@ ImageService createImageService() => _UnsupportedImageService();
 
 class _UnsupportedImageService implements ImageService {
   Never _unsupported() =>
-      throw UnsupportedError('Práce s lokálními soubory není na webu podporována');
+      throw UnsupportedError('Local file access is not supported on the web');
 
   @override
   Future<String?> pickImagePath({ImageSource source = ImageSource.gallery}) =>

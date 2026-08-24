@@ -49,7 +49,7 @@ class IoImageService implements ImageService {
   Future<String> downloadImageToPath(String url) async {
     final response = await http.get(Uri.parse(url));
     if (response.statusCode != 200) {
-      throw Exception('Stažení selhalo (${response.statusCode})');
+      throw Exception('Download failed (${response.statusCode})');
     }
     final tempDir = await getTemporaryDirectory();
     await tempDir.create(recursive: true);

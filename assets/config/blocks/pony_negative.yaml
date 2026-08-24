@@ -1,17 +1,17 @@
 category: pony_negative
-label: "Negativní prompt (Pony)"
+label: "Negative prompt (Pony)"
 icon: block
 required: false
 blocks:
   - id: pn_standard
-    label: "Standardní"
+    label: "Standard"
     tags: [pony, negative]
     value: "lowres, worst quality, bad quality, bad anatomy, bad proportions, extra limbs, missing limbs, deformed, ugly, text, watermark, signature"
     mood: [sweet, dark, surreal, technical, nostalgic]
     incompatible: [pn_strict]
 
   - id: pn_strict
-    label: "Přísný (+ ruce a obličej)"
+    label: "Strict (+ hands and face)"
     tags: [pony, negative]
     value: "lowres, worst quality, bad quality, bad anatomy, bad proportions, extra limbs, missing limbs, deformed, ugly, text, watermark, signature, extra fingers, malformed hands, bad face, bad eyes, cross-eyed"
     mood: [sweet, dark, surreal, technical]

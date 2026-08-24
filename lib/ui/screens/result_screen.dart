@@ -64,7 +64,7 @@ class _ResultScreenState extends ConsumerState<ResultScreen> {
     final path = _localPath;
     if (path == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Obrázek ještě nebyl stažen')),
+        const SnackBar(content: Text('The image has not been downloaded yet')),
       );
       return;
     }
@@ -76,7 +76,7 @@ class _ResultScreenState extends ConsumerState<ResultScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text('Uloženo do galerie'),
+            content: Text('Saved to the gallery'),
             duration: Duration(seconds: 2),
           ),
         );
@@ -84,7 +84,7 @@ class _ResultScreenState extends ConsumerState<ResultScreen> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Nepodařilo se uložit: $e')),
+          SnackBar(content: Text('Could not save: $e')),
         );
       }
     } finally {
@@ -96,7 +96,7 @@ class _ResultScreenState extends ConsumerState<ResultScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Výsledek'),
+        title: const Text('Result'),
         actions: [
           // On web the image also lands in the Telegram chat — that is the
           // "save" story there; the gallery needs local files (io only).
@@ -109,18 +109,18 @@ class _ResultScreenState extends ConsumerState<ResultScreen> {
                       child: CircularProgressIndicator(strokeWidth: 2),
                     )
                   : const Icon(Icons.save_alt),
-              tooltip: 'Uložit do galerie',
+              tooltip: 'Save to gallery',
               onPressed:
                   (_isSaving || _localPath == null) ? null : _saveToGallery,
             ),
           IconButton(
             icon: const Icon(Icons.copy),
-            tooltip: 'Kopírovat prompt',
+            tooltip: 'Copy prompt',
             onPressed: () {
               Clipboard.setData(ClipboardData(text: widget.prompt));
               ScaffoldMessenger.of(context).showSnackBar(
                 const SnackBar(
-                  content: Text('Prompt zkopírován'),
+                  content: Text('Prompt copied'),
                   duration: Duration(seconds: 1),
                 ),
               );
@@ -148,7 +148,7 @@ class _ResultScreenState extends ConsumerState<ResultScreen> {
                         )
                       : widget.imageUrl.isNotEmpty
                           ? _networkImage()
-                          : _errorWidget('Obrázek není k dispozici'),
+                          : _errorWidget('Image not available'),
             ),
             if (_isDownloading)
               const Padding(
@@ -162,7 +162,7 @@ class _ResultScreenState extends ConsumerState<ResultScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Použitý prompt:',
+                    'Prompt used:',
                     style: Theme.of(context).textTheme.titleSmall,
                   ),
                   const SizedBox(height: 8),
@@ -184,7 +184,7 @@ class _ResultScreenState extends ConsumerState<ResultScreen> {
                   if (widget.revisedPrompt.isNotEmpty) ...[
                     const SizedBox(height: 16),
                     Text(
-                      'Revidovaný prompt (Grok):',
+                      'Revised prompt (Grok):',
                       style: Theme.of(context).textTheme.titleSmall,
                     ),
                     const SizedBox(height: 8),
@@ -229,7 +229,7 @@ class _ResultScreenState extends ConsumerState<ResultScreen> {
         );
       },
       errorBuilder: (_, error, __) =>
-          _errorWidget('Nepodařilo se načíst: $error'),
+          _errorWidget('Could not load: $error'),
     );
   }
 
