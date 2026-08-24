@@ -4,6 +4,7 @@ templates:
     description: "Jedna postava — medium → subjekt → rámování → detaily"
     slot_order:
       - medium
+      - art_tradition
       - subject
       - framing
       - nationality
@@ -33,6 +34,7 @@ templates:
       - subject
       - framing
     optional_slots:
+      - art_tradition
       - nationality
       - body_type
       - style
@@ -59,6 +61,7 @@ templates:
     description: "Dynamická scéna s důrazem na pózu a efekty"
     slot_order:
       - medium
+      - art_tradition
       - subject
       - framing
       - nationality
@@ -84,6 +87,7 @@ templates:
       - framing
       - pose
     optional_slots:
+      - art_tradition
       - nationality
       - body_type
       - style
@@ -104,6 +108,7 @@ templates:
     description: "Selfie záběr jedné postavy"
     slot_order:
       - medium
+      - art_tradition
       - subject
       - framing
       - nationality
@@ -129,6 +134,7 @@ templates:
       - subject
       - framing
     optional_slots:
+      - art_tradition
       - nationality
       - body_type
       - style
@@ -151,6 +157,7 @@ templates:
     description: "Pár / trojice / čtveřice / větší skupina"
     slot_order:
       - medium
+      - art_tradition
       - subject
       - framing
       - style
@@ -172,6 +179,7 @@ templates:
       - subject
       - framing
     optional_slots:
+      - art_tradition
       - style
       - expression
       - pose
@@ -190,6 +198,7 @@ templates:
     description: "Blízká scéna jedné postavy nebo páru"
     slot_order:
       - medium
+      - art_tradition
       - subject
       - framing
       - nationality
@@ -217,6 +226,7 @@ templates:
       - subject
       - framing
     optional_slots:
+      - art_tradition
       - nationality
       - body_type
       - style
@@ -241,6 +251,7 @@ templates:
     description: "Interiér — ložnice, obývák, kuchyně, koupelna, záchod"
     slot_order:
       - medium
+      - art_tradition
       - subject
       - framing
       - nationality
@@ -270,6 +281,7 @@ templates:
       - framing
       - background
     optional_slots:
+      - art_tradition
       - nationality
       - body_type
       - style
@@ -294,6 +306,7 @@ templates:
     description: "Exteriér — les, skála, louka, plovárna, diskotéka"
     slot_order:
       - medium
+      - art_tradition
       - subject
       - framing
       - nationality
@@ -322,6 +335,7 @@ templates:
       - framing
       - background
     optional_slots:
+      - art_tradition
       - nationality
       - body_type
       - style
