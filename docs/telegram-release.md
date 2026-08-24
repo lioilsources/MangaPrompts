@@ -27,11 +27,12 @@ Tyhle kroky vyžadují tvoje účty a jdou udělat jen ručně. Pořadí je záv
 
 ## 2. Cloudflare Pages
 
-- [ ] Vytvořit Pages projekt **`tsumiki`** (Direct Upload / wrangler,
-      ne Git integration — deploy dělá GitHub Actions).
+- [x] Vytvořit Pages projekt **`tsumiki`** (Direct Upload / wrangler,
+      ne Git integration — deploy dělá GitHub Actions). Holé `tsumiki.pages.dev`
+      bylo zabrané → projekt jede na **`tsumiki-7t0.pages.dev`**.
 - [ ] Připojit custom doménu, např. **`app.ol1n.com`** (URL v BotFatherovi se
       pak už nikdy nemění).
-- [ ] Cloudflare API token s právem **Pages:Edit** → GitHub repo secrets:
+- [x] Cloudflare API token s právem **Pages:Edit** → GitHub repo secrets:
       `CLOUDFLARE_API_TOKEN`, `CLOUDFLARE_ACCOUNT_ID`.
 - [ ] Push na `main` → workflow **Deploy Web** nasadí produkci.
 
@@ -39,14 +40,17 @@ Tyhle kroky vyžadují tvoje účty a jdou udělat jen ručně. Pořadí je záv
 
 Viz `tgbot/README.md` (Docker Compose, `mangabot.env`, testy).
 
-- [ ] Checkout repa na JODU, `cp mangabot.env.example mangabot.env`, vyplnit,
+- [x] Checkout repa na JODU, `cp mangabot.env.example mangabot.env`, vyplnit,
       `docker compose up -d --build`; `ALLOWED_ORIGINS=https://app.ol1n.com`.
-- [ ] Konektivita na ComfyUI: `COMFY_URL=http://<spark-ip>:8188` přes LAN
+- [x] Konektivita na ComfyUI: `COMFY_URL=http://<spark-ip>:8188` přes LAN
       (ComfyUI s `--listen`), nebo `https://comfyui.ol1n.com` + CF Access token.
-- [ ] Veřejná HTTPS: cloudflared na JODĚ (sidecar v docker-compose) s public
+- [x] Veřejná HTTPS: cloudflared na JODĚ (sidecar v docker-compose) s public
       hostname `tg.ol1n.com → http://mangabot:8090` (bez CF Access!).
-- [ ] Smoke: `curl https://tg.ol1n.com/healthz` → ok;
+- [x] Smoke: `curl https://tg.ol1n.com/healthz` → ok;
       `curl -X POST https://tg.ol1n.com/api/generate` → 401 (bez auth hlavičky).
+- [ ] **Odstranit `DEV_TOKEN` z `mangabot.env`** — API je od zapnutí tunelu
+      veřejné a ten token obchází initData (generuje jako `user_id=0`).
+      Nechat ho tam smí jen dev instance, ne produkce.
 - [ ] Denní záloha `tgbot/data/mangabot.db` (kredity + platby!) — skript je
       `tgbot/backup.sh`, chybí už jen cron na JODĚ:
       `0 4 * * * /home/oli/MangaPrompts/tgbot/backup.sh`. **Musí být hotové
@@ -72,7 +76,7 @@ Viz `tgbot/README.md` (Docker Compose, `mangabot.env`, testy).
       v appce **a přijde do chatu**.
 - [ ] Bez /start: generování funguje, jen nepřijde zpráva do chatu (log 403).
 - [ ] Shodit ComfyUI → appka ukáže čitelnou chybu.
-- [ ] `curl` z cizího originu → CORS blokuje.
+- [x] `curl` z cizího originu → CORS blokuje.
 
 ## 6. Distribuce („market“)
 
