@@ -39,8 +39,10 @@ Auth: `Authorization: tma <initData>` (oficiální HMAC validace proti
   `/refund <charge_id>` (jen `ADMIN_USER_ID`; zavolá `refundStarPayment`
   a odečte kredity).
 - DB: `data/mangabot.db` (WAL). **Zálohovat** — jsou v ní kredity i platby.
-  Použij `./backup.sh` (denní cron na NAS). Zálohu musí udělat kontejner:
-  `data/` vlastní root a `sqlite3` CLI není ani na hostu, ani v image.
+  `./backup.sh` (denní cron na NAS) dělá snapshot uvnitř kontejneru (`data/`
+  vlastní root a `sqlite3` CLI není ani na hostu, ani v image) a zrcadlí ho na
+  `/pool/Backup/tsumiki` — jiné disky než systémové SSD, kde leží databáze.
+  Obě kopie jsou ale na jednom stroji; off-site cíl zatím chybí.
 
 ## Deploy na JODA (Docker)
 

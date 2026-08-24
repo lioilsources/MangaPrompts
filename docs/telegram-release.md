@@ -54,8 +54,12 @@ Viz `tgbot/README.md` (Docker Compose, `mangabot.env`, testy).
 - [x] Denní záloha `tgbot/data/mangabot.db` (kredity + platby!) — `tgbot/backup.sh`
       běží z cronu na JODĚ ve 4:00, log v `/home/oli/mangabot-backup.log`,
       drží 14 posledních denních.
-- [ ] Kopii záloh dostat *pryč z JODY* — `data/backup/` leží na stejném disku
-      jako originál, takže chrání proti smazání a korupci, ne proti selhání disku.
+- [x] Záloha na jiném disku — `backup.sh` zrcadlí denní snapshot na
+      `/pool/Backup/tsumiki` (raidz1 přes tři disky), zatímco databáze leží na
+      systémovém SSD. Kopie se ověřuje `cmp` proti originálu.
+- [ ] Kopii záloh dostat *pryč z JODY* — obě kopie jsou pořád na jednom stroji,
+      takže mrtvá NAS, požár nebo krádež vezme obojí. **V DB už jsou reálné
+      Stars platby**, takže tohle není teoretické.
 
 ## 4. BotFather — Mini App konfigurace
 
