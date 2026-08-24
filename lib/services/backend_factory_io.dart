@@ -40,7 +40,7 @@ ImageGenerationService? createActiveImageService(Ref ref) {
     final cfId = _effectiveCfId(ref);
     final cfSecret = _effectiveCfSecret(ref);
     if (cfId.isEmpty || cfSecret.isEmpty) return null;
-    final wfStr = ref.watch(comfyWorkflowProvider);
+    final wfStr = ref.watch(effectiveWorkflowProvider);
     final wf = switch (wfStr) {
       'pony' => ComfyWorkflow.pony,
       'juggernaut' => ComfyWorkflow.juggernaut,

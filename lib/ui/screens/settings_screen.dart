@@ -238,22 +238,38 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
   /// and the local-ComfyUI section stay in sync when a model is added.
   Widget _workflowSelector(String current) {
     const options = {
+      'auto': 'Automaticky — podle zvolené šablony',
       'flux': 'Flux — malířské a fotorealistické styly',
       'pony': 'Pony Diffusion — anime, Danbooru tagy',
       'juggernaut': 'Juggernaut XL Lightning — rychlý fotoreal',
       'wai': 'WAI Illustrious — anime, novější než Pony',
     };
-    return DropdownButtonFormField<String>(
-      initialValue: options.containsKey(current) ? current : 'flux',
-      decoration: const InputDecoration(border: OutlineInputBorder()),
-      isExpanded: true,
-      items: [
-        for (final e in options.entries)
-          DropdownMenuItem(value: e.key, child: Text(e.value)),
+    final effective = ref.watch(effectiveWorkflowProvider);
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        DropdownButtonFormField<String>(
+          initialValue: options.containsKey(current) ? current : 'auto',
+          decoration: const InputDecoration(border: OutlineInputBorder()),
+          isExpanded: true,
+          items: [
+            for (final e in options.entries)
+              DropdownMenuItem(value: e.key, child: Text(e.value)),
+          ],
+          onChanged: (wf) {
+            if (wf != null) _setComfyWorkflow(wf);
+          },
+        ),
+        // Auto must never be silent: show which model it landed on.
+        if (current == 'auto')
+          Padding(
+            padding: const EdgeInsets.only(top: 8),
+            child: Text(
+              'Šablona vybrala: $effective',
+              style: Theme.of(context).textTheme.bodySmall,
+            ),
+          ),
       ],
-      onChanged: (wf) {
-        if (wf != null) _setComfyWorkflow(wf);
-      },
     );
   }
 

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../providers/api_provider.dart';
 import '../../providers/prompt_provider.dart';
 import '../../providers/selection_provider.dart';
 
@@ -12,6 +13,8 @@ class PromptPreview extends ConsumerWidget {
     final prompt = ref.watch(currentPromptProvider);
     final permCount = ref.watch(permutationCountProvider);
     final permIndex = ref.watch(permutationIndexProvider);
+    final workflow = ref.watch(effectiveWorkflowProvider);
+    final isAuto = ref.watch(comfyWorkflowProvider) == 'auto';
 
     return Container(
       margin: const EdgeInsets.all(12),
@@ -40,6 +43,32 @@ class PromptPreview extends ConsumerWidget {
                   'Prompt',
                   style: Theme.of(context).textTheme.labelMedium?.copyWith(
                     color: Theme.of(context).colorScheme.primary,
+                  ),
+                ),
+                const SizedBox(width: 8),
+                // Which model this prompt will run on. Auto-selection must be
+                // visible, otherwise output quality looks random to the user.
+                Tooltip(
+                  message: isAuto
+                      ? 'Model zvolený automaticky podle šablony.\n'
+                          'Změníš ho v Nastavení.'
+                      : 'Model zvolený ručně v Nastavení.',
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(
+                        isAuto ? Icons.auto_awesome : Icons.tune,
+                        size: 12,
+                        color: Theme.of(context).colorScheme.outline,
+                      ),
+                      const SizedBox(width: 3),
+                      Text(
+                        workflow,
+                        style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                          color: Theme.of(context).colorScheme.outline,
+                        ),
+                      ),
+                    ],
                   ),
                 ),
                 const Spacer(),

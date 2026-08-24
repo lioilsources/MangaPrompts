@@ -15,6 +15,9 @@ class PromptTemplate with _$PromptTemplate {
     @Default(', ') String separator,
     @JsonKey(name: 'required_slots') @Default([]) List<String> requiredSlots,
     @JsonKey(name: 'optional_slots') @Default([]) List<String> optionalSlots,
+    /// ComfyUI workflow this template's prompt language is written for.
+    /// Empty means 'no opinion' and the engine falls back to flux.
+    @Default('') String workflow,
   }) = _PromptTemplate;
 
   factory PromptTemplate.fromJson(Map<String, dynamic> json) =>
