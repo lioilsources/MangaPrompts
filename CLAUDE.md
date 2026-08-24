@@ -1,4 +1,4 @@
-# MangaPrompts — CLAUDE.md
+# Tsumiki — CLAUDE.md
 
 ## Overview
 

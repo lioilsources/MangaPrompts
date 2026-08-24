@@ -65,7 +65,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             ),
             const SizedBox(height: 4),
             Text(
-              'Obrázky generuje MangaPrompts bot (ComfyUI). '
+              'Obrázky generuje Tsumiki bot (ComfyUI). '
               'Hotový obrázek ti přijde i do chatu s botem.',
               style: Theme.of(context).textTheme.bodySmall,
             ),

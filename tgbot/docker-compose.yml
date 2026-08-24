@@ -1,4 +1,4 @@
-# MangaPrompts bot backend on the JODA NAS.
+# Tsumiki bot backend on the JODA NAS.
 #   cp mangabot.env.example mangabot.env   # fill in tokens
 #   docker compose up -d --build
 services:

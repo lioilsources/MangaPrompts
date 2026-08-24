@@ -62,6 +62,6 @@ class IoImageService implements ImageService {
 
   @override
   Future<void> saveToGallery(String filePath) async {
-    await Gal.putImage(filePath, album: 'MangaPrompts');
+    await Gal.putImage(filePath, album: 'Tsumiki');
   }
 }

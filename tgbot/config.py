@@ -1,4 +1,4 @@
-"""Environment-driven configuration for the MangaPrompts Telegram bot backend.
+"""Environment-driven configuration for the Tsumiki Telegram bot backend.
 
 All values come from the environment (see mangabot.service EnvironmentFile);
 BOT_TOKEN is the only required one.

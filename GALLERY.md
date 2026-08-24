@@ -1,6 +1,6 @@
 # Gallery
 
-Visual history of MangaPrompts development. See [README.md](README.md) for project overview.
+Visual history of Tsumiki development. See [README.md](README.md) for project overview.
 
 ---
 

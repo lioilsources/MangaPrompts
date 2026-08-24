@@ -1,4 +1,4 @@
-"""MangaPrompts Telegram bot backend (runs on the JODA NAS).
+"""Tsumiki Telegram bot backend (runs on the JODA NAS).
 
 One asyncio process serving both:
 - FastAPI REST API for the Mini App (generate → poll → download image,
@@ -69,7 +69,7 @@ async def on_start(message: Message) -> None:
         inline_keyboard=[
             [
                 InlineKeyboardButton(
-                    text="🎨 Otevřít MangaPrompts",
+                    text="🎨 Otevřít Tsumiki",
                     web_app=WebAppInfo(url=config.MINIAPP_URL),
                 )
             ]
@@ -179,7 +179,7 @@ async def lifespan(app: FastAPI):
     await bot.session.close()
 
 
-app = FastAPI(title="MangaPrompts bot backend", lifespan=lifespan)
+app = FastAPI(title="Tsumiki bot backend", lifespan=lifespan)
 
 app.add_middleware(
     CORSMiddleware,
@@ -253,7 +253,7 @@ async def create_invoice(req: InvoiceRequest, user_id: int = Depends(current_use
         raise HTTPException(status_code=400, detail="unknown package")
     link = await bot.create_invoice_link(
         title=package["label"],
-        description="Kredity na generování obrázků v MangaPrompts.",
+        description="Kredity na generování obrázků v Tsumiki.",
         payload=payments.build_payload(user_id, req.package),
         currency="XTR",
         prices=[LabeledPrice(label=package["label"], amount=package["stars"])],
