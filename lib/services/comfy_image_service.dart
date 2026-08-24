@@ -200,7 +200,7 @@ class ComfyImageService implements ImageGenerationService {
               if (pid == promptId) {
                 final t = data['exception_type'] ?? '';
                 final m = data['exception_message'] ?? 'unknown';
-                throw Exception('ComfyUI chyba — $t: $m');
+                throw Exception('ComfyUI error — $t: $m');
               }
             case 'execution_interrupted':
               if (pid == promptId) throw Exception('Cancelled');

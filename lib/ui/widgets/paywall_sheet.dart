@@ -45,7 +45,7 @@ class _PaywallSheetState extends ConsumerState<PaywallSheet> {
       // 'cancelled' / 'pending' → keep the sheet open without noise
     } catch (e) {
       if (mounted) {
-        messenger.showSnackBar(SnackBar(content: Text('Chyba: $e')));
+        messenger.showSnackBar(SnackBar(content: Text('Error: $e')));
       }
     } finally {
       if (mounted) setState(() => _buyingId = null);
@@ -70,7 +70,7 @@ class _PaywallSheetState extends ConsumerState<PaywallSheet> {
               const SizedBox(height: 12),
               OutlinedButton(
                 onPressed: () => ref.invalidate(accountProvider),
-                child: const Text('Zkusit znovu'),
+                child: const Text('Try again'),
               ),
             ],
           ),

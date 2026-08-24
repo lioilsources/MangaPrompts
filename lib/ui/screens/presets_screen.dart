@@ -11,10 +11,10 @@ class PresetsScreen extends ConsumerWidget {
     final presetsAsync = ref.watch(presetsProvider);
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Presety')),
+      appBar: AppBar(title: const Text('Presets')),
       body: presetsAsync.when(
         loading: () => const Center(child: CircularProgressIndicator()),
-        error: (e, _) => Center(child: Text('Chyba: $e')),
+        error: (e, _) => Center(child: Text('Error: $e')),
         data: (presets) => ListView.builder(
           padding: const EdgeInsets.all(8),
           itemCount: presets.length,
