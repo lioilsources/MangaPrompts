@@ -9,6 +9,13 @@
 #   crontab -e:   0 4 * * *  /home/oli/MangaPrompts/tgbot/backup.sh
 set -eu
 
+# cron runs with PATH=/usr/bin:/bin, which on this NAS does not contain docker
+# (it lives in /snap/bin). Without this the job dies on "command not found"
+# and, since cron has nowhere to mail the output, does so silently — the worst
+# possible failure for a backup.
+PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/snap/bin
+export PATH
+
 KEEP=14  # daily backups to retain
 
 docker exec -i mangabot python - "$KEEP" <<'PY'
