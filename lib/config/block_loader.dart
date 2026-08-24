@@ -13,6 +13,7 @@ class BlockLoader {
     'nationality',
     'body_type',
     'style',
+    'art_tradition',
     'face',
     'eyes',
     'eyebrows',

@@ -167,6 +167,8 @@ class BlockPicker extends ConsumerWidget {
         return Icons.block;
       case 'face_retouching_natural':
         return Icons.face_retouching_natural;
+      case 'museum':
+        return Icons.museum;
       default:
         return Icons.category;
     }
