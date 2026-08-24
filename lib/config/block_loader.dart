@@ -20,6 +20,7 @@ class BlockLoader {
     'hair',
     'expression',
     'pose',
+    'pose_duo',
     'clothing_outfit',
     'clothing_top',
     'clothing_bottom',
