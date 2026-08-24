@@ -50,6 +50,8 @@ class BlockLoader {
     // score_N quality ladder, which is Pony-only.
     'wai_quality',
     'wai_negative',
+    // Shared tag axis; tag_ prefix because it is not Pony-specific.
+    'tag_pose_duo',
   ];
 
   static Map<String, dynamic> _yamlToMap(YamlMap yaml) {

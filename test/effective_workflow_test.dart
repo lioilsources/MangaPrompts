@@ -116,6 +116,29 @@ void main() {
       }
     });
 
+    test('no pose axis carries framing', () async {
+      // pose.yaml states the rule in its own header: poses describe body and
+      // contact only, framing lives in its own axis. Breaking it produces
+      // prompts that contradict themselves — "full body" inside a pose while
+      // the framing slot asks for a close-up.
+      const framingWords = ['full body', 'full-body', 'close-up', 'closeup',
+                            'cowboy shot', 'upper body', 'upper-body',
+                            'portrait,', 'framed from'];
+      final categories = await BlockLoader.loadAllCategories();
+      final poseAxes = categories.where((c) => c.category.contains('pose'));
+      expect(poseAxes, isNotEmpty);
+
+      for (final axis in poseAxes) {
+        for (final block in axis.blocks) {
+          final value = block.value.toLowerCase();
+          for (final word in framingWords) {
+            expect(value.contains(word), isFalse,
+                reason: '${axis.category}/${block.id} carries framing "$word"');
+          }
+        }
+      }
+    });
+
     test('the tag templates never mix in prose axes', () async {
       // pony_* and wai_* templates speak Danbooru tags; the prose axes would
       // pollute the prompt with sentences.
