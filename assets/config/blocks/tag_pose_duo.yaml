@@ -1,0 +1,160 @@
+category: tag_pose_duo
+label: "Duo pose (tags)"
+icon: people
+required: false
+# Danbooru-tag counterpart of `pose_duo`, for the tag-based templates (Pony and
+# WAI). Not a translation of it: prose like "his right hand flat on her
+# shoulder blade" is what a T5 encoder wants, while these models want the
+# established booru tag for the same idea, and the two do not convert into each
+# other.
+#
+# Naming note: the shared tag axes are still called pony_* for historical
+# reasons even though WAI uses them too (their labels now say "(tags)"). New
+# shared axes use the tag_ prefix instead; renaming the older ten is a separate
+# change, since their ids appear in every tag template's slot_order.
+#
+# Same rules as the other pose axes: contact and body only, never framing —
+# no "full body", no "close-up", those belong to pony_framing.
+blocks:
+  # ── Dance ─────────────────────────────────────────────────────────────────
+  - id: dt_ballroom
+    label: "Ballroom dance"
+    tags: [dance, ballroom, duo]
+    value: "dancing, holding hands, hand on another's waist, facing each other, eye contact"
+    mood: [sweet, nostalgic]
+    incompatible: [ps_1girl, ps_1girl_mature, ps_1boy]
+
+  - id: dt_dance_dip
+    label: "Dance dip"
+    tags: [dance, dip, duo]
+    value: "dancing, leaning back, arched back, supporting another, dramatic pose"
+    mood: [dark, technical]
+    incompatible: [ps_1girl, ps_1girl_mature, ps_1boy]
+
+  - id: dt_spin
+    label: "Spin / twirl"
+    tags: [dance, spinning, duo]
+    value: "dancing, spinning, holding hands, arms up, floating hair, motion lines"
+    mood: [sweet, surreal]
+    incompatible: [ps_1girl, ps_1girl_mature, ps_1boy]
+
+  # ── Sport and action ──────────────────────────────────────────────────────
+  - id: dt_spar
+    label: "Sparring"
+    tags: [sport, martial_arts, action, duo]
+    value: "fighting stance, martial arts, punching, dodging, action pose, motion lines"
+    mood: [dark, technical]
+    incompatible: [ps_1girl, ps_1girl_mature, ps_1boy]
+
+  - id: dt_partner_stretch
+    label: "Partner stretch"
+    tags: [sport, stretching, duo]
+    value: "stretching, sitting, hand on another's back, training, sportswear"
+    mood: [technical, sweet]
+    incompatible: [ps_1girl, ps_1girl_mature, ps_1boy]
+
+  - id: dt_running
+    label: "Running together"
+    tags: [sport, running, duo]
+    value: "running, side by side, motion lines, sportswear, open mouth"
+    mood: [technical, sweet]
+    incompatible: [ps_1girl, ps_1girl_mature, ps_1boy]
+
+  # ── Tender and affectionate ───────────────────────────────────────────────
+  - id: dt_hug
+    label: "Hug"
+    tags: [hug, tender, duo]
+    value: "hug, arms around neck, closed eyes, facing each other"
+    mood: [sweet, nostalgic]
+    incompatible: [ps_1girl, ps_1girl_mature, ps_1boy]
+
+  - id: dt_hug_behind
+    label: "Hug from behind"
+    tags: [hug, behind, tender, duo]
+    value: "hug from behind, arms around waist, head on shoulder, closed eyes"
+    mood: [sweet, nostalgic]
+    incompatible: [ps_1girl, ps_1girl_mature, ps_1boy]
+
+  - id: dt_holding_hands
+    label: "Holding hands"
+    tags: [hands, walking, tender, duo]
+    value: "holding hands, interlocked fingers, walking, side by side"
+    mood: [sweet, nostalgic]
+    incompatible: [ps_1girl, ps_1girl_mature, ps_1boy]
+
+  - id: dt_forehead
+    label: "Forehead touch"
+    tags: [tender, quiet, duo]
+    value: "forehead-to-forehead, closed eyes, hand on another's cheek, facing each other"
+    mood: [sweet]
+    incompatible: [ps_1girl, ps_1girl_mature, ps_1boy]
+
+  - id: dt_princess_carry
+    label: "Princess carry"
+    tags: [carry, tender, duo]
+    value: "princess carry, carrying, arms around neck, eye contact"
+    mood: [sweet, nostalgic]
+    incompatible: [ps_1girl, ps_1girl_mature, ps_1boy]
+
+  - id: dt_piggyback
+    label: "Piggyback"
+    tags: [carry, playful, duo]
+    value: "piggyback, carrying, arms around neck, smile, open mouth"
+    mood: [sweet]
+    incompatible: [ps_1girl, ps_1girl_mature, ps_1boy]
+
+  - id: dt_back_to_back
+    label: "Back to back"
+    tags: [back_to_back, confident, duo]
+    value: "back-to-back, crossed arms, standing, serious"
+    mood: [dark, technical]
+    incompatible: [ps_1girl, ps_1girl_mature, ps_1boy]
+
+  - id: dt_head_on_shoulder
+    label: "Head on shoulder"
+    tags: [tender, seated, duo]
+    value: "head on shoulder, sitting, arm around shoulder, closed eyes"
+    mood: [sweet, nostalgic]
+    incompatible: [ps_1girl, ps_1girl_mature, ps_1boy]
+
+  - id: dt_umbrella
+    label: "Shared umbrella"
+    tags: [umbrella, rain, tender, duo]
+    value: "shared umbrella, rain, holding umbrella, standing, wet"
+    mood: [nostalgic, sweet]
+    incompatible: [ps_1girl, ps_1girl_mature, ps_1boy]
+
+  - id: dt_lap_sitting
+    label: "Sitting on lap"
+    tags: [seated, tender, duo]
+    value: "sitting on lap, arms around neck, facing each other, blush"
+    mood: [sweet]
+    incompatible: [ps_1girl, ps_1girl_mature, ps_1boy]
+
+  - id: dt_headpat
+    label: "Headpat"
+    tags: [headpat, playful, duo]
+    value: "headpat, hand on another's head, smile, height difference"
+    mood: [sweet]
+    incompatible: [ps_1girl, ps_1girl_mature, ps_1boy]
+
+  - id: dt_leaning
+    label: "Leaning on each other"
+    tags: [seated, quiet, duo]
+    value: "leaning on person, sitting, closed eyes, relaxed"
+    mood: [sweet, nostalgic]
+    incompatible: [ps_1girl, ps_1girl_mature, ps_1boy]
+
+  - id: dt_eye_contact
+    label: "Eye contact"
+    tags: [tender, facing, duo]
+    value: "eye contact, facing each other, hand on another's cheek, blush"
+    mood: [sweet, surreal]
+    incompatible: [ps_1girl, ps_1girl_mature, ps_1boy]
+
+  - id: dt_lift
+    label: "Lifted up"
+    tags: [carry, joyful, duo]
+    value: "carrying, lifting person, arms up, smile, floating hair"
+    mood: [sweet]
+    incompatible: [ps_1girl, ps_1girl_mature, ps_1boy]
