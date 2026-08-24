@@ -2,13 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'ui/screens/home_screen.dart';
 
-class MangaPromptsApp extends ConsumerWidget {
-  const MangaPromptsApp({super.key});
+class TsumikiApp extends ConsumerWidget {
+  const TsumikiApp({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return MaterialApp(
-      title: 'MangaPrompts',
+      title: 'Tsumiki',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(

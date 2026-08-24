@@ -1,4 +1,4 @@
-package com.mangaprompts.manga_prompts
+package com.ol1n.tsumiki
 
 import io.flutter.embedding.android.FlutterActivity
 

@@ -12,7 +12,7 @@
     <string>manual</string>
     <key>provisioningProfiles</key>
     <dict>
-        <key>com.ol1n.MangaPrompts</key>
+        <key>com.ol1n.Tsumiki</key>
         <string>REPLACE_WITH_YOUR_ADHOC_PROFILE_NAME</string>
     </dict>
 </dict>

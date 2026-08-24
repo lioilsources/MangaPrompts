@@ -1,4 +1,4 @@
-# MangaPrompts
+# Tsumiki
 
 LEGO-style prompt builder for AI image generation (Grok). Users compose manga-style character prompts by selecting from building blocks in a cross-matrix format, generating complete image prompts for head styles, manga styles, and historical styles.
 

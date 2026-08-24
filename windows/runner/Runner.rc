@@ -89,13 +89,13 @@ BEGIN
     BEGIN
         BLOCK "040904e4"
         BEGIN
-            VALUE "CompanyName", "com.mangaprompts" "\0"
-            VALUE "FileDescription", "manga_prompts" "\0"
+            VALUE "CompanyName", "com.ol1n" "\0"
+            VALUE "FileDescription", "Tsumiki" "\0"
             VALUE "FileVersion", VERSION_AS_STRING "\0"
-            VALUE "InternalName", "manga_prompts" "\0"
-            VALUE "LegalCopyright", "Copyright (C) 2026 com.mangaprompts. All rights reserved." "\0"
-            VALUE "OriginalFilename", "manga_prompts.exe" "\0"
-            VALUE "ProductName", "manga_prompts" "\0"
+            VALUE "InternalName", "tsumiki" "\0"
+            VALUE "LegalCopyright", "Copyright (C) 2026 com.ol1n. All rights reserved." "\0"
+            VALUE "OriginalFilename", "tsumiki.exe" "\0"
+            VALUE "ProductName", "Tsumiki" "\0"
             VALUE "ProductVersion", VERSION_AS_STRING "\0"
         END
     END

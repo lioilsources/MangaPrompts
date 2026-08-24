@@ -1,4 +1,4 @@
-# MangaPrompts Telegram bot backend
+# Tsumiki Telegram bot backend
 
 FastAPI + aiogram služba běžící na **NAS JODA**. Mini App (Flutter web na
 Cloudflare Pages) sem posílá prompty; služba je pouští do **ComfyUI na SPARKu**

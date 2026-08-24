@@ -38,7 +38,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('MangaPrompts'),
+        title: const Text('Tsumiki'),
         actions: [
           if (kIsWeb) _creditsChip(),
           if (!kIsWeb)

@@ -1,4 +1,4 @@
-# Plán: Mikroplatby v MangaPrompts Mini Appce (Telegram Stars)
+# Plán: Mikroplatby v Tsumiki Mini Appce (Telegram Stars)
 
 > **Stav: NAIMPLEMENTOVÁNO** (P1–P4). API běží na NAS **JODA** (Docker),
 > SPARK dělá jen ComfyUI. Zbývají manuální kroky P5 (Fragment/TON peněženka)

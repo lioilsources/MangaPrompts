@@ -14,7 +14,7 @@ void main() async {
       overrides: [
         sharedPreferencesProvider.overrideWithValue(prefs),
       ],
-      child: const MangaPromptsApp(),
+      child: const TsumikiApp(),
     ),
   );
 

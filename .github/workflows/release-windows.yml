@@ -39,14 +39,14 @@ jobs:
         shell: pwsh
         run: |
           $src = ".\build\windows\x64\runner\Debug"
-          $dest = "MangaPrompts-${{ github.ref_name }}-Windows.zip"
+          $dest = "Tsumiki-${{ github.ref_name }}-Windows.zip"
           Compress-Archive -Path "$src\*" -DestinationPath $dest
 
       - name: Upload to GitHub Release
         uses: softprops/action-gh-release@v2
         with:
-          files: MangaPrompts-${{ github.ref_name }}-Windows.zip
-          name: MangaPrompts ${{ github.ref_name }}
+          files: Tsumiki-${{ github.ref_name }}-Windows.zip
+          name: Tsumiki ${{ github.ref_name }}
           tag_name: ${{ github.ref_name }}
           draft: false
           prerelease: true

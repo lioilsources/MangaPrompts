@@ -46,14 +46,14 @@ jobs:
 
       - name: Package as tar.gz
         run: |
-          tar -czf "MangaPrompts-${{ github.ref_name }}-Linux.tar.gz" \
+          tar -czf "Tsumiki-${{ github.ref_name }}-Linux.tar.gz" \
             -C ./build/linux/x64/debug/bundle .
 
       - name: Package as AppImage (icon + .desktop)
         run: |
           set -e
           APP_DIR="."
-          APP_NAME="MangaPrompts"
+          APP_NAME="Tsumiki"
           BUNDLE="$APP_DIR/build/linux/x64/debug/bundle"
           BIN=$(grep -m1 'set(BINARY_NAME' "$APP_DIR/linux/CMakeLists.txt" | sed -E 's/.*"([^"]+)".*/\1/')
           echo "Binary: $BIN"
@@ -93,9 +93,9 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           files: |
-            MangaPrompts-${{ github.ref_name }}-Linux.tar.gz
-            MangaPrompts-${{ github.ref_name }}-x86_64.AppImage
-          name: MangaPrompts ${{ github.ref_name }}
+            Tsumiki-${{ github.ref_name }}-Linux.tar.gz
+            Tsumiki-${{ github.ref_name }}-x86_64.AppImage
+          name: Tsumiki ${{ github.ref_name }}
           tag_name: ${{ github.ref_name }}
           draft: false
           prerelease: true

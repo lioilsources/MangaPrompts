@@ -1,4 +1,4 @@
-name: manga_prompts
+name: tsumiki
 description: "LEGO Prompt Builder for AI Image Generation"
 publish_to: 'none'
 version: 1.0.0+1

@@ -35,13 +35,13 @@ jobs:
       - name: Package as ZIP
         run: |
           cd "./build/macos/Build/Products/Debug"
-          zip -r "$OLDPWD/MangaPrompts-${{ github.ref_name }}-macOS.zip" "manga_prompts.app"
+          zip -r "$OLDPWD/Tsumiki-${{ github.ref_name }}-macOS.zip" "tsumiki.app"
 
       - name: Upload to GitHub Release
         uses: softprops/action-gh-release@v2
         with:
-          files: MangaPrompts-${{ github.ref_name }}-macOS.zip
-          name: MangaPrompts ${{ github.ref_name }}
+          files: Tsumiki-${{ github.ref_name }}-macOS.zip
+          name: Tsumiki ${{ github.ref_name }}
           tag_name: ${{ github.ref_name }}
           draft: false
           prerelease: true

@@ -18,16 +18,16 @@ Tyhle kroky vyžadují tvoje účty a jdou udělat jen ručně. Pořadí je záv
 
 ## 1. Boti u @BotFather
 
-- [ ] `/newbot` → **prod bot** (např. `MangaPromptsBot`) — token do
+- [ ] `/newbot` → **prod bot** (např. `TsumikiMangaBot`) — token do
       `tgbot/mangabot.env` na JODĚ (`BOT_TOKEN=`), nikdy do repa.
-- [ ] `/newbot` → **dev bot** (např. `MangaPromptsDevBot`) — token pro dev
+- [ ] `/newbot` → **dev bot** (např. `TsumikiMangaDevBot`) — token pro dev
       instanci backendu.
 - [ ] Prod bot: `/setuserpic` (z `assets/icon/app_icon.png`), `/setdescription`,
       `/setabouttext`.
 
 ## 2. Cloudflare Pages
 
-- [ ] Vytvořit Pages projekt **`manga-prompts`** (Direct Upload / wrangler,
+- [ ] Vytvořit Pages projekt **`tsumiki`** (Direct Upload / wrangler,
       ne Git integration — deploy dělá GitHub Actions).
 - [ ] Připojit custom doménu, např. **`app.ol1n.com`** (URL v BotFatherovi se
       pak už nikdy nemění).

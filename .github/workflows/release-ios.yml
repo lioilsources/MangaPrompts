@@ -113,7 +113,7 @@ jobs:
           TEAM_ID: ${{ secrets.IOS_TEAM_ID }}
         run: |
           /usr/libexec/PlistBuddy -c "Set :teamID $TEAM_ID" ./ios/ExportOptions.plist
-          /usr/libexec/PlistBuddy -c "Set :provisioningProfiles:com.ol1n.MangaPrompts $PROFILE_NAME" ./ios/ExportOptions.plist
+          /usr/libexec/PlistBuddy -c "Set :provisioningProfiles:com.ol1n.Tsumiki $PROFILE_NAME" ./ios/ExportOptions.plist
           xcodebuild -exportArchive \
             -archivePath $RUNNER_TEMP/Runner.xcarchive \
             -exportOptionsPlist ./ios/ExportOptions.plist \
@@ -138,7 +138,7 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           files: ${{ runner.temp }}/ipa/*.ipa
-          name: MangaPrompts ${{ github.ref_name }}
+          name: Tsumiki ${{ github.ref_name }}
           tag_name: ${{ github.ref_name }}
           generate_release_notes: true
           prerelease: ${{ contains(github.ref_name, 'alpha') || contains(github.ref_name, 'beta') || contains(github.ref_name, 'rc') }}

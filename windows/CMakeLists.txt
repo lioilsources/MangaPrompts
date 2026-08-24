@@ -1,6 +1,6 @@
 # Project-level configuration.
 cmake_minimum_required(VERSION 3.14)
-project(manga_prompts LANGUAGES CXX)
+project(tsumiki LANGUAGES CXX)
 
 # Silence STL1011 on newer MSVC: the `gal` plugin still includes
 # <experimental/coroutine>, whose static_assert aborts the build unless this is
@@ -9,7 +9,7 @@ add_compile_definitions(_SILENCE_EXPERIMENTAL_COROUTINE_DEPRECATION_WARNINGS)
 
 # The name of the executable created for the application. Change this to change
 # the on-disk name of your application.
-set(BINARY_NAME "manga_prompts")
+set(BINARY_NAME "tsumiki")
 
 # Explicitly opt in to modern CMake behaviors to avoid warnings with recent
 # versions of CMake.
