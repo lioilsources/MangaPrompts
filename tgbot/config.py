@@ -65,4 +65,6 @@ PACKAGES = {
 WORKFLOW_FILES = {
     "flux": "flux_manga_txt2img.api.json",
     "pony": "pony_txt2img.api.json",
+    "juggernaut": "juggernaut_lightning_txt2img.api.json",
+    "wai": "wai_txt2img.api.json",
 }

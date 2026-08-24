@@ -13,7 +13,7 @@ import 'package:uuid/uuid.dart';
 
 import 'image_generation_service.dart';
 
-enum ComfyWorkflow { flux, pony }
+enum ComfyWorkflow { flux, pony, juggernaut, wai }
 
 class ComfyImageService implements ImageGenerationService {
   static const _baseUrl = 'https://comfyui.ol1n.com';
@@ -23,6 +23,9 @@ class ComfyImageService implements ImageGenerationService {
   static const _fluxImg2img = 'assets/comfyui/flux_manga_img2img.api.json';
   static const _ponyTxt2img = 'assets/comfyui/pony_txt2img.api.json';
   static const _ponyImg2img = 'assets/comfyui/pony_img2img.api.json';
+  static const _juggernautTxt2img =
+      'assets/comfyui/juggernaut_lightning_txt2img.api.json';
+  static const _waiTxt2img = 'assets/comfyui/wai_txt2img.api.json';
 
   /// Repose mode (face + pose depth template → image). Standalone workflow,
   /// independent of the flux/pony selection above.
@@ -66,9 +69,14 @@ class ComfyImageService implements ImageGenerationService {
       };
 
   String get _txt2imgAsset =>
-      workflow == ComfyWorkflow.pony ? _ponyTxt2img : _fluxTxt2img;
+      switch (workflow) {
+        ComfyWorkflow.pony => _ponyTxt2img,
+        ComfyWorkflow.juggernaut => _juggernautTxt2img,
+        ComfyWorkflow.wai => _waiTxt2img,
+        ComfyWorkflow.flux => _fluxTxt2img,
+      };
   String get _img2imgAsset =>
-      workflow == ComfyWorkflow.pony ? _ponyImg2img : _fluxImg2img;
+      workflow == ComfyWorkflow.flux ? _fluxImg2img : _ponyImg2img;
 
   @override
   Future<GeneratedImage> generateImage({
