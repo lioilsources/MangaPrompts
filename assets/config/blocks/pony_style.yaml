@@ -1,5 +1,5 @@
 category: pony_style
-label: "Style (Pony)"
+label: "Style (tags)"
 icon: palette
 required: false
 blocks:
