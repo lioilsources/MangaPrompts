@@ -16,6 +16,7 @@ templates:
       - hair
       - expression
       - pose
+      - pose_duo
       - clothing_outfit
       - clothing_top
       - clothing_bottom
@@ -34,6 +35,7 @@ templates:
       - subject
       - framing
     optional_slots:
+      - pose_duo
       - art_tradition
       - nationality
       - body_type
@@ -69,6 +71,7 @@ templates:
       - style
       - expression
       - pose
+      - pose_duo
       - clothing_outfit
       - clothing_top
       - clothing_bottom
@@ -87,6 +90,7 @@ templates:
       - framing
       - pose
     optional_slots:
+      - pose_duo
       - art_tradition
       - nationality
       - body_type
@@ -163,6 +167,7 @@ templates:
       - style
       - expression
       - pose
+      - pose_duo
       - clothing_outfit
       - clothing_top
       - clothing_bottom
@@ -179,6 +184,7 @@ templates:
       - subject
       - framing
     optional_slots:
+      - pose_duo
       - art_tradition
       - style
       - expression
@@ -208,6 +214,7 @@ templates:
       - eyes
       - expression
       - pose
+      - pose_duo
       - clothing_outfit
       - clothing_top
       - clothing_bottom
@@ -226,6 +233,7 @@ templates:
       - subject
       - framing
     optional_slots:
+      - pose_duo
       - art_tradition
       - nationality
       - body_type
@@ -262,6 +270,7 @@ templates:
       - hair
       - expression
       - pose
+      - pose_duo
       - clothing_outfit
       - clothing_top
       - clothing_bottom
@@ -281,6 +290,7 @@ templates:
       - framing
       - background
     optional_slots:
+      - pose_duo
       - art_tradition
       - nationality
       - body_type
@@ -317,6 +327,7 @@ templates:
       - hair
       - expression
       - pose
+      - pose_duo
       - clothing_outfit
       - clothing_top
       - clothing_bottom
@@ -335,6 +346,7 @@ templates:
       - framing
       - background
     optional_slots:
+      - pose_duo
       - art_tradition
       - nationality
       - body_type
