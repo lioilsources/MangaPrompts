@@ -47,7 +47,12 @@ Viz `tgbot/README.md` (Docker Compose, `mangabot.env`, testy).
       hostname `tg.ol1n.com → http://mangabot:8090` (bez CF Access!).
 - [ ] Smoke: `curl https://tg.ol1n.com/healthz` → ok;
       `curl -X POST https://tg.ol1n.com/api/generate` → 401 (bez auth hlavičky).
-- [ ] Denní záloha `tgbot/data/mangabot.db` (kredity + platby!).
+- [ ] Denní záloha `tgbot/data/mangabot.db` (kredity + platby!) — skript je
+      `tgbot/backup.sh`, chybí už jen cron na JODĚ:
+      `0 4 * * * /home/oli/MangaPrompts/tgbot/backup.sh`. **Musí být hotové
+      dřív, než dorazí první reálná platba.**
+- [ ] Kopii záloh dostat *pryč z JODY* — `data/backup/` leží na stejném disku
+      jako originál, takže chrání proti smazání a korupci, ne proti selhání disku.
 
 ## 4. BotFather — Mini App konfigurace
 
