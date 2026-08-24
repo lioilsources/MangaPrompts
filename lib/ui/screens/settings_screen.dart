@@ -72,14 +72,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             const SizedBox(height: 16),
             Text('Workflow', style: Theme.of(context).textTheme.labelLarge),
             const SizedBox(height: 8),
-            SegmentedButton<String>(
-              segments: const [
-                ButtonSegment(value: 'flux', label: Text('Flux')),
-                ButtonSegment(value: 'pony', label: Text('Pony Diffusion')),
-              ],
-              selected: {comfyWorkflow},
-              onSelectionChanged: (s) => _setComfyWorkflow(s.first),
-            ),
+            _workflowSelector(comfyWorkflow),
           ],
         ),
       );
@@ -167,21 +160,14 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             ),
             const SizedBox(height: 4),
             Text(
-              'Lokální ComfyUI (Flux / Pony workflow). '
+              'Lokální ComfyUI (výběr modelu níže). '
               'Sdílí CF Access token s llm.ol1n.com.',
               style: Theme.of(context).textTheme.bodySmall,
             ),
             const SizedBox(height: 16),
             Text('Workflow', style: Theme.of(context).textTheme.labelLarge),
             const SizedBox(height: 8),
-            SegmentedButton<String>(
-              segments: const [
-                ButtonSegment(value: 'flux', label: Text('Flux')),
-                ButtonSegment(value: 'pony', label: Text('Pony Diffusion')),
-              ],
-              selected: {comfyWorkflow},
-              onSelectionChanged: (s) => _setComfyWorkflow(s.first),
-            ),
+            _workflowSelector(comfyWorkflow),
             const SizedBox(height: 20),
             ..._cfCredentialFields(context, cfId),
             const SizedBox(height: 8),
@@ -246,6 +232,29 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     final prefs = ref.read(sharedPreferencesProvider);
     prefs.setString('provider_type', type);
     ref.read(providerTypeProvider.notifier).state = type;
+  }
+
+  /// Model / ComfyUI workflow picker. Kept as one widget so both the Telegram
+  /// and the local-ComfyUI section stay in sync when a model is added.
+  Widget _workflowSelector(String current) {
+    const options = {
+      'flux': 'Flux — malířské a fotorealistické styly',
+      'pony': 'Pony Diffusion — anime, Danbooru tagy',
+      'juggernaut': 'Juggernaut XL Lightning — rychlý fotoreal',
+      'wai': 'WAI Illustrious — anime, novější než Pony',
+    };
+    return DropdownButtonFormField<String>(
+      initialValue: options.containsKey(current) ? current : 'flux',
+      decoration: const InputDecoration(border: OutlineInputBorder()),
+      isExpanded: true,
+      items: [
+        for (final e in options.entries)
+          DropdownMenuItem(value: e.key, child: Text(e.value)),
+      ],
+      onChanged: (wf) {
+        if (wf != null) _setComfyWorkflow(wf);
+      },
+    );
   }
 
   void _setComfyWorkflow(String wf) {
