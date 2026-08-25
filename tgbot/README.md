@@ -39,10 +39,18 @@ Auth: `Authorization: tma <initData>` (oficiální HMAC validace proti
   `/refund <charge_id>` (jen `ADMIN_USER_ID`; zavolá `refundStarPayment`
   a odečte kredity).
 - DB: `data/mangabot.db` (WAL). **Zálohovat** — jsou v ní kredity i platby.
-  `./backup.sh` (denní cron na NAS) dělá snapshot uvnitř kontejneru (`data/`
-  vlastní root a `sqlite3` CLI není ani na hostu, ani v image) a zrcadlí ho na
-  `/pool/Backup/tsumiki` — jiné disky než systémové SSD, kde leží databáze.
-  Obě kopie jsou ale na jednom stroji; off-site cíl zatím chybí.
+  `./backup.sh` (denní cron na NAS) dělá tři kopie:
+  1. snapshot uvnitř kontejneru (`data/` vlastní root a `sqlite3` CLI není ani
+     na hostu, ani v image) — 14 denních,
+  2. zrcadlo na `/pool/Backup/tsumiki` (raidz1, jiné disky než systémové SSD,
+     kde leží databáze) — 30 denních, ověřené `cmp`,
+  3. off-site na Cloudflare R2 přes `rclone` — 90 dní, ověřené MD5.
+
+  R2 krok se přeskočí s hláškou, pokud remote `r2:` není nastavený, takže
+  nedodělaná konfigurace degraduje na dvě lokální kopie místo selhání.
+  Nastavení remote: `~/bin/rclone config create r2 s3 provider=Cloudflare
+  access_key_id=… secret_access_key=… endpoint=https://<acct>.r2.cloudflarestorage.com
+  region=auto`.
 
 ## Deploy na JODA (Docker)
 
