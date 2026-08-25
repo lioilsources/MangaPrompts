@@ -31,14 +31,14 @@ jobs:
         working-directory: .
         run: flutter pub get
 
-      - name: Build Windows (debug)
+      - name: Build Windows (release)
         working-directory: .
-        run: flutter build windows --debug
+        run: flutter build windows --release
 
       - name: Package as ZIP
         shell: pwsh
         run: |
-          $src = ".\build\windows\x64\runner\Debug"
+          $src = ".\build\windows\x64\runner\Release"
           $dest = "Tsumiki-${{ github.ref_name }}-Windows.zip"
           Compress-Archive -Path "$src\*" -DestinationPath $dest
 
