@@ -6,9 +6,11 @@
 #      someone deletes the file, corruption of the live db).
 #   2. a mirror on /pool, which is a raidz1 across three spindles while the
 #      database itself sits on the root SSD. That is what covers losing a disk.
+#   3. Cloudflare R2, which is the only copy that survives the machine itself —
+#      a dead NAS, fire or theft takes both of the local ones.
 #
-# Neither copy leaves the machine, so a dead NAS, fire or theft still takes
-# both. An off-site target is the remaining gap.
+# The R2 step is skipped with a log line if the remote is not configured, so a
+# half-finished setup degrades to the two local copies rather than failing.
 #
 #   crontab -e:   0 4 * * *  /home/oli/MangaPrompts/tgbot/backup.sh
 set -eu
@@ -22,8 +24,11 @@ export PATH
 
 KEEP_LOCAL=14
 KEEP_MIRROR=30
+KEEP_R2_DAYS=90
 SRC_DIR=/home/oli/MangaPrompts/tgbot/data/backup
 MIRROR_DIR=/pool/Backup/tsumiki
+RCLONE=/home/oli/bin/rclone
+R2_REMOTE=r2:tsumiki-backups
 
 # --- 1. snapshot, taken inside the container ---------------------------------
 # data/ is root-owned (the container writes it) and neither the host nor the
@@ -76,3 +81,24 @@ ls -1t "$MIRROR_DIR"/mangabot-*.db 2>/dev/null | tail -n +$((KEEP_MIRROR + 1)) |
     rm -f "$old"
     echo "pruned mirror: $old"
 done
+
+# --- 3. off-site copy to Cloudflare R2 ---------------------------------------
+if [ ! -x "$RCLONE" ] || ! "$RCLONE" listremotes 2>/dev/null | grep -q '^r2:'; then
+    echo "r2: remote not configured — off-site copy skipped"
+    exit 0
+fi
+
+"$RCLONE" copyto "$SRC_DIR/$FILE" "$R2_REMOTE/$FILE" --s3-no-check-bucket
+
+# rclone verifies its own transfers, but this file is a payment ledger, so
+# compare the hashes explicitly rather than trusting the exit code alone.
+LOCAL_MD5=$(md5sum "$SRC_DIR/$FILE" | cut -d' ' -f1)
+REMOTE_MD5=$("$RCLONE" hashsum md5 "$R2_REMOTE/$FILE" 2>/dev/null | awk '{print $1}')
+if [ -n "$REMOTE_MD5" ] && [ "$LOCAL_MD5" = "$REMOTE_MD5" ]; then
+    echo "r2: $R2_REMOTE/$FILE (verified)"
+else
+    echo "r2: HASH MISMATCH for $FILE (local=$LOCAL_MD5 remote=$REMOTE_MD5)" >&2
+    exit 1
+fi
+
+"$RCLONE" delete "$R2_REMOTE" --min-age "${KEEP_R2_DAYS}d" --rmdirs 2>/dev/null || true

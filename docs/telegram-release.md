@@ -57,8 +57,10 @@ Viz `tgbot/README.md` (Docker Compose, `mangabot.env`, testy).
 - [x] Záloha na jiném disku — `backup.sh` zrcadlí denní snapshot na
       `/pool/Backup/tsumiki` (raidz1 přes tři disky), zatímco databáze leží na
       systémovém SSD. Kopie se ověřuje `cmp` proti originálu.
-- [ ] Kopii záloh dostat *pryč z JODY* — obě kopie jsou pořád na jednom stroji,
-      takže mrtvá NAS, požár nebo krádež vezme obojí. **V DB už jsou reálné
+- [ ] Kopii záloh dostat *pryč z JODY* — `backup.sh` už umí nahrát na
+      Cloudflare R2 (`rclone` remote `r2:`, bucket `tsumiki-backups`, 90 dní),
+      ale remote na JODĚ zatím není nakonfigurovaný, takže se krok přeskakuje.
+      Chybí: R2 bucket + API token s Object Read & Write. **V DB už jsou reálné
       Stars platby**, takže tohle není teoretické.
 
 ## 4. BotFather — Mini App konfigurace
