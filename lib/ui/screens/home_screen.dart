@@ -85,11 +85,15 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                       : IconButton(
                           icon: const Icon(Icons.movie_creation_outlined),
                           tooltip: 'Animate a photo',
-                          onPressed: () => Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (_) => const AnimateScreen()),
-                          ),
+                          // Normally we got here *from* the animate screen, so
+                          // go back instead of stacking a second copy of it.
+                          onPressed: () => Navigator.canPop(context)
+                              ? Navigator.pop(context)
+                              : Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (_) => const AnimateScreen()),
+                                ),
                         ),
                   orElse: () => const SizedBox.shrink(),
                 ),
