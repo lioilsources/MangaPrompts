@@ -72,6 +72,19 @@ video = VideoClient(config.VIDEO_URL, headers=_video_headers)
 _scenes_cache: tuple[float, list[dict]] | None = None
 
 
+def _english(scene: dict) -> dict:
+    """The catalog is shared with Ol1nLLM, whose UI is Czech: label/desc are
+    Czech and label_en/desc_en carry the English copy. Tsumiki is sold to a
+    global market, so serve English under the plain keys — that way neither
+    the Mini App nor the chat caption needs to know about the split."""
+    out = dict(scene)
+    out["label"] = scene.get("label_en") or scene["label"]
+    out["desc"] = scene.get("desc_en") or scene.get("desc", "")
+    out.pop("label_en", None)
+    out.pop("desc_en", None)
+    return out
+
+
 async def _get_scenes() -> list[dict]:
     """Scene catalog with a TTL cache; a stale copy beats an error while the
     video-api restarts."""
@@ -85,6 +98,7 @@ async def _get_scenes() -> list[dict]:
         if _scenes_cache is not None:
             return _scenes_cache[1]
         raise
+    scenes = [_english(sc) for sc in scenes]
     _scenes_cache = (time.time(), scenes)
     return scenes
 
