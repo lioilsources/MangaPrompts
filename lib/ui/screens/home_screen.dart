@@ -16,6 +16,8 @@ import 'result_screen.dart';
 import 'settings_screen.dart';
 import 'presets_screen.dart';
 import 'repose_entry.dart';
+import 'animate_screen.dart';
+import '../../providers/video_scenes_provider.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});
@@ -74,6 +76,23 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         title: const Text('Tsumiki'),
         actions: [
           if (kIsWeb) _creditsChip(),
+          // Photo animation lives behind the bot backend; the button only
+          // shows when the scene catalog is reachable (mirrors Ol1nLLM).
+          if (kIsWeb)
+            ref.watch(videoScenesProvider).maybeWhen(
+                  data: (scenes) => scenes.isEmpty
+                      ? const SizedBox.shrink()
+                      : IconButton(
+                          icon: const Icon(Icons.movie_creation_outlined),
+                          tooltip: 'Animate a photo',
+                          onPressed: () => Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (_) => const AnimateScreen()),
+                          ),
+                        ),
+                  orElse: () => const SizedBox.shrink(),
+                ),
           if (!kIsWeb)
             IconButton(
               icon: const Icon(Icons.accessibility_new),

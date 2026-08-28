@@ -24,6 +24,14 @@ COMFY_URL = os.environ.get("COMFY_URL", "http://spark:8188")
 COMFY_CF_ID = os.environ.get("COMFY_CF_ID", "")
 COMFY_CF_SECRET = os.environ.get("COMFY_CF_SECRET", "")
 
+# video-api (video-stack/serve.py) also runs on the SPARK box — photo→video
+# rendering (Wan 2.2 I2V). Reach it over the LAN (http://<spark-ip>:8096/v1/video)
+# or through the public hostname (https://llm.ol1n.com/v1/video) with the CF
+# Access service-token pair below.
+VIDEO_URL = os.environ.get("VIDEO_URL", "http://spark:8096/v1/video")
+VIDEO_CF_ID = os.environ.get("VIDEO_CF_ID", "")
+VIDEO_CF_SECRET = os.environ.get("VIDEO_CF_SECRET", "")
+
 # Directory with the *.api.json workflow templates (the repo's assets/comfyui).
 WORKFLOW_DIR = Path(
     os.environ.get("WORKFLOW_DIR", Path(__file__).resolve().parent.parent / "assets" / "comfyui")
@@ -46,9 +54,16 @@ MINIAPP_URL = os.environ.get("MINIAPP_URL", "https://app.ol1n.com")
 
 # Free generations per rolling 24 h; beyond that 1 generation = 1 credit.
 FREE_DAILY_LIMIT = _int_env("FREE_DAILY_LIMIT", 3)
+# Free photo animations per rolling 24 h; beyond that 1 animation = 1 video credit.
+VIDEO_FREE_DAILY_LIMIT = _int_env("VIDEO_FREE_DAILY_LIMIT", 1)
 AUTH_MAX_AGE = _int_env("AUTH_MAX_AGE", 3600)
 MAX_PROMPT_CHARS = _int_env("MAX_PROMPT_CHARS", 4000)
 JOB_TIMEOUT = _int_env("JOB_TIMEOUT", 300)
+# A 5-beat render is ~13 min on the single GPU worker, plus queue wait.
+VIDEO_JOB_TIMEOUT = _int_env("VIDEO_JOB_TIMEOUT", 1800)
+VIDEO_SCENES_TTL = _int_env("VIDEO_SCENES_TTL", 300)
+# Uploaded photo cap in base64 chars; video-api itself caps bodies at 32 MB.
+MAX_IMAGE_B64_CHARS = _int_env("MAX_IMAGE_B64_CHARS", 24_000_000)
 
 # Telegram user id allowed to run admin commands (/refund). 0 = disabled.
 ADMIN_USER_ID = _int_env("ADMIN_USER_ID", 0)
@@ -60,6 +75,8 @@ PACKAGES = {
     "s": {"credits": 10, "stars": 25, "label": "10 credits"},
     "m": {"credits": 50, "stars": 100, "label": "50 credits"},
     "l": {"credits": 250, "stars": 400, "label": "250 credits"},
+    # video: True routes the credit to users.video_credits (photo animations).
+    "v1": {"credits": 1, "stars": 10, "label": "1 animation", "video": True},
 }
 
 WORKFLOW_FILES = {

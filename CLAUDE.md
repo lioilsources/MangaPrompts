@@ -38,6 +38,10 @@ iOS, Android, macOS, Linux, Web.
 Web ships as a **Telegram Mini App**: generation goes through `tgbot/`
 (FastAPI + aiogram on the JODA NAS → ComfyUI on the SPARK box over
 LAN/CF-Access), never through the direct xAI/ol1n/ComfyUI clients.
+Photo animation follows the same path against the **video-api on SPARK:8096**
+(video-stack repo; Wan 2.2 I2V): Mini App uploads a photo + scene, the bot
+delivers the mp4 into the chat. Separate video ledger (users.video_credits,
+package `v1` = 10⭐/animation, VIDEO_FREE_DAILY_LIMIT=1/day free).
 Monetization: Telegram Stars credits (SQLite ledger in tgbot/db.py, packages
 in tgbot/config.py, paywall UI in lib/ui/widgets/paywall_sheet.dart). Platform seams use conditional imports
 (`backend_factory.dart`, `image_service.dart`, `repose_entry.dart`,

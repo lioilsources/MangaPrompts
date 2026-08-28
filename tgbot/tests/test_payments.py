@@ -32,3 +32,17 @@ def test_pre_checkout_wrong_payer():
 def test_pre_checkout_wrong_amount():
     raw = payments.build_payload(42, "s")
     assert payments.validate_pre_checkout(raw, payer_id=42, total_amount=1) is not None
+
+
+def test_video_package_payload_roundtrip():
+    raw = payments.build_payload(123456789, "v1")
+    assert len(raw.encode()) <= 128
+    assert payments.parse_payload(raw) == (123456789, "v1")
+
+
+def test_video_package_pre_checkout():
+    raw = payments.build_payload(42, "v1")
+    stars = config.PACKAGES["v1"]["stars"]
+    assert stars == 10
+    assert payments.validate_pre_checkout(raw, payer_id=42, total_amount=stars) is None
+    assert payments.validate_pre_checkout(raw, payer_id=42, total_amount=25) is not None

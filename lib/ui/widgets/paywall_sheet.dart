@@ -7,13 +7,16 @@ import '../../services/telegram_backend_service.dart';
 
 /// Bottom sheet with Telegram Stars credit packages. Opened from the balance
 /// chip and automatically when generation answers "payment required".
+/// With [video] it sells animation credits instead of image credits.
 class PaywallSheet extends ConsumerStatefulWidget {
-  const PaywallSheet({super.key});
+  const PaywallSheet({super.key, this.video = false});
 
-  static Future<void> show(BuildContext context) {
+  final bool video;
+
+  static Future<void> show(BuildContext context, {bool video = false}) {
     return showModalBottomSheet(
       context: context,
-      builder: (_) => const PaywallSheet(),
+      builder: (_) => PaywallSheet(video: video),
     );
   }
 
@@ -35,7 +38,11 @@ class _PaywallSheetState extends ConsumerState<PaywallSheet> {
         ref.invalidate(accountProvider);
         Navigator.pop(context);
         messenger.showSnackBar(
-          SnackBar(content: Text('${package.credits} credits added 🎉')),
+          SnackBar(
+            content: Text(widget.video
+                ? '${package.credits} animation credit added 🎉'
+                : '${package.credits} credits added 🎉'),
+          ),
         );
       } else if (status == 'failed') {
         messenger.showSnackBar(
@@ -78,16 +85,22 @@ class _PaywallSheetState extends ConsumerState<PaywallSheet> {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text('Credits', style: Theme.of(context).textTheme.titleLarge),
+              Text(widget.video ? 'Animations' : 'Credits',
+                  style: Theme.of(context).textTheme.titleLarge),
               const SizedBox(height: 4),
               Text(
-                '${a.freeRemaining} of ${a.freeLimit} free generations today · '
-                'credits: ${a.credits}. 1 credit = 1 image, paid '
-                'in Telegram Stars.',
+                widget.video
+                    ? '${a.videoFreeRemaining} of ${a.videoFreeLimit} free '
+                        'animation today · animation credits: '
+                        '${a.videoCredits}. 1 credit = 1 video, paid '
+                        'in Telegram Stars.'
+                    : '${a.freeRemaining} of ${a.freeLimit} free generations today · '
+                        'credits: ${a.credits}. 1 credit = 1 image, paid '
+                        'in Telegram Stars.',
                 style: Theme.of(context).textTheme.bodySmall,
               ),
               const SizedBox(height: 12),
-              for (final p in a.packages)
+              for (final p in widget.video ? a.videoPackages : a.packages)
                 ListTile(
                   contentPadding: EdgeInsets.zero,
                   title: Text(p.label),
