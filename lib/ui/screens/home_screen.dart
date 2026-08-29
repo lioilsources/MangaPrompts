@@ -12,12 +12,11 @@ import '../widgets/block_picker.dart';
 import '../widgets/prompt_preview.dart';
 import '../widgets/image_base_picker.dart';
 import '../widgets/paywall_sheet.dart';
+import '../widgets/tsumiki_app_bar.dart';
 import 'result_screen.dart';
 import 'settings_screen.dart';
 import 'presets_screen.dart';
 import 'repose_entry.dart';
-import 'animate_screen.dart';
-import '../../providers/video_scenes_provider.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});
@@ -72,31 +71,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     final apiService = ref.watch(activeImageServiceProvider);
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Tsumiki'),
-        actions: [
-          if (kIsWeb) _creditsChip(),
-          // Photo animation lives behind the bot backend; the button only
-          // shows when the scene catalog is reachable (mirrors Ol1nLLM).
-          if (kIsWeb)
-            ref.watch(videoScenesProvider).maybeWhen(
-                  data: (scenes) => scenes.isEmpty
-                      ? const SizedBox.shrink()
-                      : IconButton(
-                          icon: const Icon(Icons.movie_creation_outlined),
-                          tooltip: 'Animate a photo',
-                          // Normally we got here *from* the animate screen, so
-                          // go back instead of stacking a second copy of it.
-                          onPressed: () => Navigator.canPop(context)
-                              ? Navigator.pop(context)
-                              : Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (_) => const AnimateScreen()),
-                                ),
-                        ),
-                  orElse: () => const SizedBox.shrink(),
-                ),
+      appBar: TsumikiAppBar(
+        video: false,
+        extraActions: [
           if (!kIsWeb)
             IconButton(
               icon: const Icon(Icons.accessibility_new),
@@ -112,14 +89,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             onPressed: () => Navigator.push(
               context,
               MaterialPageRoute(builder: (_) => const PresetsScreen()),
-            ),
-          ),
-          IconButton(
-            icon: const Icon(Icons.settings),
-            tooltip: 'Settings',
-            onPressed: () => Navigator.push(
-              context,
-              MaterialPageRoute(builder: (_) => const SettingsScreen()),
             ),
           ),
         ],
@@ -249,26 +218,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         label: Text(_isGenerating ? 'Generating…' : 'Generate'),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
-    );
-  }
-
-  Widget _creditsChip() {
-    final account = ref.watch(accountProvider);
-    final label = account.when(
-      data: (a) => '⚡ ${a.totalRemaining}',
-      loading: () => '⚡ …',
-      error: (_, _) => '⚡ ?',
-    );
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.only(right: 4),
-        child: ActionChip(
-          label: Text(label),
-          visualDensity: VisualDensity.compact,
-          tooltip: 'Credits and packages',
-          onPressed: () => PaywallSheet.show(context),
-        ),
-      ),
     );
   }
 

@@ -9,7 +9,7 @@ import '../../providers/account_provider.dart';
 import '../../providers/video_scenes_provider.dart';
 import '../../services/telegram_backend_service.dart';
 import '../widgets/paywall_sheet.dart';
-import 'home_screen.dart';
+import '../widgets/tsumiki_app_bar.dart';
 
 /// Photo → short video animation (Wan 2.2 on SPARK, via the bot backend).
 /// The finished mp4 is delivered by the bot into the user's chat — this screen
@@ -121,23 +121,7 @@ class _AnimateScreenState extends ConsumerState<AnimateScreen> {
     final account = ref.watch(accountProvider);
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Animate a photo'),
-        actions: [
-          // Only when this is the app's front door — pushed from the prompt
-          // builder it already has a back arrow, and a second HomeScreen on
-          // the stack would just be confusing.
-          if (!Navigator.of(context).canPop())
-            IconButton(
-              icon: const Icon(Icons.auto_awesome),
-              tooltip: 'Generate images',
-              onPressed: () => Navigator.push(
-                context,
-                MaterialPageRoute(builder: (_) => const HomeScreen()),
-              ),
-            ),
-        ],
-      ),
+      appBar: const TsumikiAppBar(video: true),
       body: scenesAsync.when(
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (e, _) => Center(
