@@ -35,3 +35,35 @@ def test_english_falls_back_to_czech():
     out = _english({"id": "x", "label": "Tanec", "desc": "Popis.", "beats": 5})
     assert out["label"] == "Tanec"
     assert out["desc"] == "Popis."
+
+
+def test_video_timeout_floors_short_scenes():
+    from app import _video_timeout
+    import config
+
+    # a 1-beat scene estimates ~4 min; the floor still applies
+    assert _video_timeout({"minutes_est": 4}) == config.VIDEO_JOB_TIMEOUT
+
+
+def test_video_timeout_follows_long_scenes():
+    from app import _video_timeout
+
+    # 12-beat scene: 35 min estimated, 38.6 min observed — the fixed 30 min
+    # deadline used to drop the finished render on the floor
+    assert _video_timeout({"minutes_est": 35}) == 35 * 60 * 2
+    assert _video_timeout({"minutes_est": 35}) > 39 * 60
+
+
+def test_video_timeout_survives_a_missing_estimate():
+    from app import _video_timeout
+    import config
+
+    assert _video_timeout({}) == config.VIDEO_JOB_TIMEOUT
+    assert _video_timeout({"minutes_est": None}) == config.VIDEO_JOB_TIMEOUT
+
+
+def test_video_timeout_is_capped():
+    from app import _video_timeout
+    import config
+
+    assert _video_timeout({"minutes_est": 10_000}) == config.VIDEO_JOB_TIMEOUT_MAX

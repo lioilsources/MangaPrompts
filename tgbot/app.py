@@ -234,7 +234,7 @@ async def lifespan(app: FastAPI):
             user_id=row["user_id"], prompt="", workflow="video",
             id=row["job_id"], status="running", kind="video",
             scene_label=row["scene_label"], remote_id=row["remote_id"],
-            created=row["created"],
+            created=row["created"], timeout=row["timeout"],
         )
         jobs.add(job)
         asyncio.create_task(_watch_video_job(job, row["usage_id"]))
@@ -410,6 +410,18 @@ async def video_scenes(user_id: int = Depends(current_user_id)):
         raise HTTPException(status_code=502, detail="video server is unavailable") from e
 
 
+def _video_timeout(submit_resp: dict) -> float:
+    """Seconds to allow for a render. video-api sizes every scene up front
+    (minutes_est), but that estimate is the pure render time and runs short —
+    it excludes the queue wait and the assemble/audio tail — so it is doubled
+    and floored at the configured minimum."""
+    minutes = submit_resp.get("minutes_est") or 0
+    return min(
+        max(float(minutes) * 60 * config.VIDEO_TIMEOUT_FACTOR, config.VIDEO_JOB_TIMEOUT),
+        float(config.VIDEO_JOB_TIMEOUT_MAX),
+    )
+
+
 @app.post("/api/animate")
 async def animate(req: AnimateRequest, user_id: int = Depends(current_user_id)):
     if jobs.active_count(user_id, "video") >= 1:
@@ -445,11 +457,17 @@ async def animate(req: AnimateRequest, user_id: int = Depends(current_user_id)):
         user_id=user_id, prompt="", workflow="video",
         kind="video", scene_label=scene["label"],
         remote_id=resp["job_id"], beats=int(resp.get("beats", 0)),
+        timeout=_video_timeout(resp),
     )
     jobs.add(job)
-    db.video_job_add(job.id, job.remote_id, user_id, usage_id, job.scene_label)
+    db.video_job_add(
+        job.id, job.remote_id, user_id, usage_id, job.scene_label, job.timeout
+    )
     asyncio.create_task(_watch_video_job(job, usage_id))
-    log.info("video job %s queued for user %s (remote %s)", job.id, user_id, job.remote_id)
+    log.info(
+        "video job %s queued for user %s (remote %s, est %s min, deadline %d min)",
+        job.id, user_id, job.remote_id, resp.get("minutes_est"), job.timeout // 60,
+    )
     return {
         "job_id": job.id,
         "beats": resp.get("beats"),
@@ -505,8 +523,12 @@ async def _watch_job(job: Job, usage_id: int) -> None:
             log.warning("job %s: send_photo failed: %s", job.id, e)
 
 
-def _fail_video_job(job: Job, usage_id: int, message: str) -> None:
-    """Single terminal-failure path so the refund can never run twice."""
+async def _fail_video_job(job: Job, usage_id: int, message: str) -> None:
+    """Single terminal-failure path so the refund can never run twice.
+
+    A render can outlive the Mini App session by half an hour, so job.error
+    alone reaches nobody — by then the chat is the only channel the user is
+    still watching."""
     if job.status == "error":
         return
     job.status = "error"
@@ -514,32 +536,49 @@ def _fail_video_job(job: Job, usage_id: int, message: str) -> None:
     db.undo_usage(usage_id)  # a failed render must not cost anything
     db.video_job_delete(job.id)
     log.error("video job %s failed: %s", job.id, message)
+    await _tell_user(
+        job,
+        f"🎬 {job.scene_label}: the animation failed — {message}. "
+        "Nothing was charged for it.",
+    )
+
+
+async def _tell_user(job: Job, text: str) -> None:
+    """Best-effort chat message about a job; never raises into the watcher."""
+    if job.user_id <= 0:
+        return
+    try:
+        await bot.send_message(job.user_id, text)
+    except TelegramForbiddenError:
+        log.info("video job %s: user %s has not started the bot", job.id, job.user_id)
+    except Exception as e:  # noqa: BLE001
+        log.warning("video job %s: send_message failed: %s", job.id, e)
 
 
 async def _watch_video_job(job: Job, usage_id: int) -> None:
     """Polls the video-api until the render finishes, then downloads the mp4
     and delivers it to the user's chat. Every terminal failure goes through
     _fail_video_job (refund exactly once)."""
-    deadline = job.created + config.VIDEO_JOB_TIMEOUT
+    deadline = job.created + (job.timeout or config.VIDEO_JOB_TIMEOUT)
     failures = 0
     try:
         async with aiohttp.ClientSession() as session:
             while True:
                 await asyncio.sleep(5)
                 if time.time() > deadline:
-                    _fail_video_job(job, usage_id, "the render timed out, please try again")
+                    await _fail_video_job(job, usage_id, "the render timed out, please try again")
                     return
                 try:
                     st = await video.status(session, job.remote_id)
                 except VideoJobGone:
-                    _fail_video_job(
+                    await _fail_video_job(
                         job, usage_id, "the render server restarted, please try again"
                     )
                     return
                 except (VideoError, aiohttp.ClientError, asyncio.TimeoutError) as e:
                     failures += 1
                     if failures >= 6:
-                        _fail_video_job(job, usage_id, "lost contact with the render server")
+                        await _fail_video_job(job, usage_id, "lost contact with the render server")
                         return
                     log.warning("video job %s poll failed (%d/6): %s", job.id, failures, e)
                     continue
@@ -554,7 +593,12 @@ async def _watch_video_job(job: Job, usage_id: int) -> None:
                     job.phase = st.get("phase")
                     job.position = None
                 elif status == "error":
-                    _fail_video_job(job, usage_id, st.get("error") or "render failed")
+                    # video-api reports a raw traceback line; that belongs in
+                    # the log, not in the user's chat.
+                    log.error("video job %s: video-api said %s", job.id, st.get("error"))
+                    await _fail_video_job(
+                        job, usage_id, "the render server could not finish it, please try again"
+                    )
                     return
                 elif status == "done":
                     break
@@ -562,11 +606,11 @@ async def _watch_video_job(job: Job, usage_id: int) -> None:
             try:
                 mp4 = await video.download(session, job.remote_id)
             except (VideoError, aiohttp.ClientError, asyncio.TimeoutError) as e:
-                _fail_video_job(job, usage_id, f"downloading the video failed: {e}")
+                await _fail_video_job(job, usage_id, f"downloading the video failed: {e}")
                 return
     except Exception as e:  # noqa: BLE001 — watcher must never crash silently
         log.exception("video job %s crashed: %s", job.id, e)
-        _fail_video_job(job, usage_id, "internal error")
+        await _fail_video_job(job, usage_id, "internal error")
         return
 
     path = config.DATA_DIR / "outputs" / f"{job.id}.mp4"
@@ -577,6 +621,19 @@ async def _watch_video_job(job: Job, usage_id: int) -> None:
     log.info("video job %s done (%d bytes)", job.id, len(mp4))
 
     if job.user_id > 0:
+        if len(mp4) > config.TELEGRAM_VIDEO_LIMIT:
+            # Bot API would reject the upload. The file stays fetchable from
+            # the Mini App (GET /api/jobs/{id}/video), so point the user there
+            # rather than let a finished render end in a log line.
+            log.warning(
+                "video job %s: %d bytes over the sendVideo limit", job.id, len(mp4)
+            )
+            await _tell_user(
+                job,
+                f"🎬 {job.scene_label} is ready, but at {len(mp4) // (1024 * 1024)} MB "
+                "it is too large for chat — open Tsumiki to download it.",
+            )
+            return
         try:
             await bot.send_video(
                 job.user_id, FSInputFile(path), caption=f"🎬 {job.scene_label}"

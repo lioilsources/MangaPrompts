@@ -167,3 +167,33 @@ def test_video_job_roundtrip(db):
     assert rows[0]["scene_label"] == "Dance"
     db.video_job_delete("j1")
     assert db.video_jobs_pending() == []
+
+
+def test_video_job_roundtrip_keeps_the_timeout(db):
+    # a watcher re-attached after a restart must keep the deadline the scene
+    # was sized for, not fall back to the floor
+    db.video_job_add("j1", "r1", USER, usage_id=7, scene_label="Belly dance", timeout=4200.0)
+    (row,) = db.video_jobs_pending()
+    assert row["remote_id"] == "r1" and row["timeout"] == 4200.0
+    db.video_job_delete("j1")
+    assert db.video_jobs_pending() == []
+
+
+def test_video_jobs_table_migrates_to_timeout(db, tmp_path):
+    import sqlite3
+
+    # a DB created before the column existed must still open
+    path = tmp_path / "old.db"
+    conn = sqlite3.connect(path)
+    conn.execute(
+        "CREATE TABLE video_jobs(job_id TEXT PRIMARY KEY, remote_id TEXT NOT NULL,"
+        " user_id INTEGER NOT NULL, usage_id INTEGER NOT NULL,"
+        " scene_label TEXT NOT NULL, created REAL NOT NULL)"
+    )
+    conn.execute("INSERT INTO video_jobs VALUES('old', 'r0', 1, 1, 'Wink', 0)")
+    conn.commit()
+    conn.close()
+
+    migrated = Database(path)
+    (row,) = migrated.video_jobs_pending()
+    assert row["timeout"] == 0  # falls back to the configured floor

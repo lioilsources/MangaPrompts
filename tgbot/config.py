@@ -59,11 +59,23 @@ VIDEO_FREE_DAILY_LIMIT = _int_env("VIDEO_FREE_DAILY_LIMIT", 1)
 AUTH_MAX_AGE = _int_env("AUTH_MAX_AGE", 3600)
 MAX_PROMPT_CHARS = _int_env("MAX_PROMPT_CHARS", 4000)
 JOB_TIMEOUT = _int_env("JOB_TIMEOUT", 300)
-# A 5-beat render is ~13 min on the single GPU worker, plus queue wait.
+# Render deadline. One fixed value cannot fit both a 1-beat scene (~6 min) and
+# a 12-beat one (~40 min) on the single GPU worker, so the deadline is derived
+# per job from the estimate video-api returns on submit (minutes_est, which
+# runs 10-60 % short): max(VIDEO_JOB_TIMEOUT, minutes_est * 60 * FACTOR),
+# capped at _MAX. VIDEO_JOB_TIMEOUT is only the floor now — as the whole
+# deadline it cut long renders off minutes before they finished, and the mp4
+# then never left the render box.
 VIDEO_JOB_TIMEOUT = _int_env("VIDEO_JOB_TIMEOUT", 1800)
+VIDEO_JOB_TIMEOUT_MAX = _int_env("VIDEO_JOB_TIMEOUT_MAX", 4 * 3600)
+VIDEO_TIMEOUT_FACTOR = 2.0
 VIDEO_SCENES_TTL = _int_env("VIDEO_SCENES_TTL", 300)
 # Uploaded photo cap in base64 chars; video-api itself caps bodies at 32 MB.
 MAX_IMAGE_B64_CHARS = _int_env("MAX_IMAGE_B64_CHARS", 24_000_000)
+# Bot API ceiling for an uploaded sendVideo file. A longer scene can render
+# past it, and the chat is the animation's only delivery channel, so the size
+# is checked before the upload instead of failing it.
+TELEGRAM_VIDEO_LIMIT = 50 * 1024 * 1024
 
 # Telegram user id allowed to run admin commands (/refund). 0 = disabled.
 ADMIN_USER_ID = _int_env("ADMIN_USER_ID", 0)

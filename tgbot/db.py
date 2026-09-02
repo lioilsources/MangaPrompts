@@ -55,7 +55,8 @@ class Database:
                   user_id INTEGER NOT NULL,
                   usage_id INTEGER NOT NULL,
                   scene_label TEXT NOT NULL,
-                  created REAL NOT NULL
+                  created REAL NOT NULL,
+                  timeout REAL NOT NULL DEFAULT 0
                 );
                 """
             )
@@ -64,6 +65,11 @@ class Database:
             if "video_credits" not in cols:
                 self._conn.execute(
                     "ALTER TABLE users ADD COLUMN video_credits INTEGER NOT NULL DEFAULT 0"
+                )
+            cols = {r["name"] for r in self._conn.execute("PRAGMA table_info(video_jobs)")}
+            if "timeout" not in cols:
+                self._conn.execute(
+                    "ALTER TABLE video_jobs ADD COLUMN timeout REAL NOT NULL DEFAULT 0"
                 )
 
     def ensure_user(self, user_id: int) -> None:
@@ -234,14 +240,22 @@ class Database:
     # --- video job re-attach (survives bot restarts mid-render) --------------
 
     def video_job_add(
-        self, job_id: str, remote_id: str, user_id: int, usage_id: int, scene_label: str
+        self,
+        job_id: str,
+        remote_id: str,
+        user_id: int,
+        usage_id: int,
+        scene_label: str,
+        timeout: float = 0.0,
     ) -> None:
+        """`timeout` is stored so a watcher re-attached after a restart keeps
+        the deadline the scene was sized for, not the configured floor."""
         with self._lock, self._conn:
             self._conn.execute(
                 "INSERT OR REPLACE INTO video_jobs"
-                "(job_id, remote_id, user_id, usage_id, scene_label, created)"
-                " VALUES(?, ?, ?, ?, ?, ?)",
-                (job_id, remote_id, user_id, usage_id, scene_label, time.time()),
+                "(job_id, remote_id, user_id, usage_id, scene_label, created, timeout)"
+                " VALUES(?, ?, ?, ?, ?, ?, ?)",
+                (job_id, remote_id, user_id, usage_id, scene_label, time.time(), timeout),
             )
 
     def video_job_delete(self, job_id: str) -> None:

@@ -36,6 +36,22 @@ Auth: `Authorization: tma <initData>` (oficiální HMAC validace proti
 `BOT_TOKEN`; identita = Telegram user id). Pro vývoj mimo Telegram
 `Authorization: dev <DEV_TOKEN>` (jen když je `DEV_TOKEN` v env).
 
+### Doručení animace
+
+Render trvá od ~6 min (1 beat) po ~40 min (12 beatů), takže Mini App u toho
+většinou nezůstane otevřená — **chat je jediný kanál, který se uživateli
+dostane do ruky**. Proto:
+
+- Deadline se počítá per job z `minutes_est`, který video-api vrátí při
+  submitu (`_video_timeout`: `minutes_est × VIDEO_TIMEOUT_FACTOR`, podlaha
+  `VIDEO_JOB_TIMEOUT`, strop `VIDEO_JOB_TIMEOUT_MAX`) a ukládá se do
+  `video_jobs.timeout`, aby ho re-attach po restartu neztratil. Fixních 30 min
+  usekávalo dlouhé scény pár minut před koncem — mp4 pak zůstalo na SPARKu.
+- Každý terminální fail (`_fail_video_job`) pošle hlášku do chatu; samotné
+  `job.error` uvidí jen appka, která už dávno nepollí.
+- mp4 nad `TELEGRAM_VIDEO_LIMIT` (50 MB, strop Bot API) se neposílá — uživatel
+  dostane zprávu, ať si ho stáhne v appce přes `GET /api/jobs/{id}/video`.
+
 ## Platby (Telegram Stars)
 
 - Balíčky v `config.PACKAGES` (10/50/250 kreditů za 25/100/400 ⭐; navíc
