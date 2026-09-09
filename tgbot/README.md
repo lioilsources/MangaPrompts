@@ -84,6 +84,17 @@ generace na uživatele. Liší se jen tím, co jde do ComfyUI:
   uživatel viděl „no face detected“, ne jen „generation failed“. Spend se
   vrací jako u každého selhání.
 
+Před prvním ostrým během (a po každém update custom nodes na SPARKu) jede
+pre-flight, který porovná workflow s `GET /object_info` — třídy uzlů, názvy
+vstupů i názvy souborů modelů:
+
+```bash
+python3 tools/check_workflow.py ../assets/comfyui/sdxl_restyle.api.json \
+    --url http://<spark-ip>:8188 --ckpt Juggernaut-XL_v9_RunDiffusionPhoto_v2.safetensors
+```
+
+Celý postup uvedení do provozu a E2E testu v Telegramu: `docs/restyle-rollout.md`.
+
 Custom nodes, které workflow potřebuje na SPARKu: comfyui_controlnet_aux
 (DepthAnythingV2Preprocessor), KJNodes (ImageResizeKJv2), ComfyUI_InstantID,
 Impact Pack (FaceDetailer + UltralyticsDetectorProvider); váhy `ip-adapter.bin`,
