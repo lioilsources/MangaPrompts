@@ -1,5 +1,13 @@
 # Changelog
 
+## [09/09/2026] — Restyle a photo (Mini App card)
+- New card **Restyle a photo**: upload a photo, pick a style, get the same person in the same pose in that style (InstantID keeps the face, a depth ControlNet keeps the pose)
+- **Photo / Illustration** toggle — the medium leads the prompt, the style block follows; negatives push away from the other medium
+- 48 styles in five groups (the measured art-tradition set from Ol1nLLM plus contemporary looks)
+- Billed exactly like image generation (same free quota, credits, one job at a time); the result also lands in the Telegram chat
+- Backend: `POST /api/restyle`, ComfyUI image upload, SDXL bucket snap from the photo header, node exception surfaced as the job error ("no face detected")
+- Title bar: card switcher (prompt builder / restyle / animate) replaces the two-way toggle
+
 ## [03/06/2026] — Prompt builder redesign (orthogonal axes)
 - Removed cross-block collisions that confused FLUX (photo + manga signals at once)
 - New master axis **medium** (photoreal / anime / manga / comic) — declared once, front-loaded

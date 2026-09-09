@@ -42,7 +42,12 @@ Photo animation follows the same path against the **video-api on SPARK:8096**
 (video-stack repo; Wan 2.2 I2V): Mini App uploads a photo + scene, the bot
 delivers the mp4 into the chat. Separate video ledger (users.video_credits,
 package `v1` = 10⭐/animation, VIDEO_FREE_DAILY_LIMIT=1/day free).
-Monetization: Telegram Stars credits (SQLite ledger in tgbot/db.py, packages
+The third card, **Restyle a photo** (`restyle_screen.dart`, `POST /api/restyle`),
+keeps the face (InstantID) and pose (depth ControlNet) of an uploaded photo
+and renders it in a picked style (`lib/config/restyle_styles.dart`, medium
+toggle photo/illustration); it is billed as an ordinary image generation.
+The cards share `TsumikiAppBar` (`TsumikiScreen` enum drives the shop chip
+and the card switcher). Monetization: Telegram Stars credits (SQLite ledger in tgbot/db.py, packages
 in tgbot/config.py, paywall UI in lib/ui/widgets/paywall_sheet.dart). Platform seams use conditional imports
 (`backend_factory.dart`, `image_service.dart`, `repose_entry.dart`,
 `local_image.dart`, `platform/telegram_webapp.dart`) — anything importing
@@ -88,4 +93,5 @@ auto-selection must never be silent.
 Workflows live in `assets/comfyui/*.api.json` and are registered twice: in
 `WORKFLOW_FILES` (`tgbot/config.py`, the web path) and in `ComfyWorkflow`
 (`comfy_image_service.dart`, the native path). Currently flux, pony,
-juggernaut, wai.
+juggernaut, wai. `sdxl_restyle.api.json` is web-only (`RESTYLE_WORKFLOW_FILE`)
+— its checkpoint comes from `RESTYLE_CHECKPOINTS[medium]`, not from a template.

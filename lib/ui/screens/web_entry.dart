@@ -2,8 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../providers/video_scenes_provider.dart';
-import 'animate_screen.dart';
+import '../../services/telegram_backend_service.dart';
+import '../widgets/tsumiki_app_bar.dart';
 import 'home_screen.dart';
+
+/// The card the Mini App opens on, given the animation catalog: animation
+/// when there is something to animate with, otherwise the prompt builder.
+/// The card switcher uses the same rule to know which card is the root.
+TsumikiScreen webRootScreen(List<TgVideoScene> scenes) =>
+    scenes.isEmpty ? TsumikiScreen.builder : TsumikiScreen.animate;
 
 /// Landing screen inside the Telegram Mini App.
 ///
@@ -21,8 +28,7 @@ class WebEntry extends ConsumerWidget {
             body: Center(child: CircularProgressIndicator()),
           ),
           error: (_, _) => const HomeScreen(),
-          data: (scenes) =>
-              scenes.isEmpty ? const HomeScreen() : const AnimateScreen(),
+          data: (scenes) => webRootScreen(scenes).build(),
         );
   }
 }
