@@ -71,6 +71,16 @@ def test_unwired_required_link_is_reported():
     assert not [p for p in problems if "'steps'" in p]
 
 
+def test_frontend_only_upload_widget_is_not_drift():
+    """Exported graphs carry LoadImage's `upload` button even though the node
+    never declares it; ComfyUI drops it, so it must not read as a rename."""
+    info = {**OBJECT_INFO, "LoadImage": {"input": {"required": {"image": [["p.png"]]}}}}
+    wf = _wf(
+        **{"3": {"class_type": "LoadImage", "inputs": {"image": "p.png", "upload": "image"}}}
+    )
+    assert check_workflow(wf, info) == []
+
+
 def test_placeholders_are_never_flagged():
     wf = _wf(**{"1": {"class_type": "CheckpointLoaderSimple", "inputs": {"ckpt_name": "__CKPT__"}}})
     assert check_workflow(wf, OBJECT_INFO) == []

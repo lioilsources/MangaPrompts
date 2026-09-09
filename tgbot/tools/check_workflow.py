@@ -26,6 +26,13 @@ import urllib.request
 PLACEHOLDER_PREFIX = "__"
 MODEL_SUFFIXES = (".safetensors", ".ckpt", ".bin", ".pth", ".pt", ".onnx")
 
+# Widget names the ComfyUI *frontend* writes into an exported graph without the
+# node ever declaring them (LoadImage's upload button). `get_input_data` walks
+# the submitted inputs and drops whatever `INPUT_TYPES` does not know, so these
+# are inert — unlike a genuinely renamed input, which silently falls back to a
+# default and is what the unknown-input check exists to catch.
+FRONTEND_ONLY_INPUTS = {"upload", "choose file to upload"}
+
 
 def fetch_object_info(url: str, headers: dict[str, str] | None = None) -> dict:
     req = urllib.request.Request(
@@ -66,7 +73,10 @@ def check_workflow(wf: dict, object_info: dict) -> list[str]:
 
         for key, value in sorted(inputs.items()):
             if key not in known:
-                problems.append(f"{title}: unknown input '{key}' (node version drift?)")
+                if key not in FRONTEND_ONLY_INPUTS:
+                    problems.append(
+                        f"{title}: unknown input '{key}' (node version drift?)"
+                    )
                 continue
             # A [node_id, slot] pair is a link, checked by ComfyUI itself.
             if isinstance(value, list):
