@@ -72,7 +72,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
     return Scaffold(
       appBar: TsumikiAppBar(
-        video: false,
+        screen: TsumikiScreen.builder,
         extraActions: [
           if (!kIsWeb)
             IconButton(

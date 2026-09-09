@@ -14,6 +14,8 @@ Run: uvicorn app:app --host 0.0.0.0 --port 8090  (see docker-compose.yml)
 """
 
 import asyncio
+import base64
+import binascii
 import json
 import logging
 import random
@@ -44,6 +46,7 @@ import payments
 from auth import InvalidInitData, validate_init_data
 from comfy import ComfyClient, ComfyError, prepare_workflow
 from db import Database
+from imagesize import latent_for
 from jobs import Job, JobStore
 from video import VideoClient, VideoError, VideoJobGone, strip_data_uri
 
@@ -122,8 +125,9 @@ async def on_start(message: Message) -> None:
         "I'll send the finished image right here in the chat.\n\n"
         f"You get {config.FREE_DAILY_LIMIT} free generations a day, "
         "beyond that they cost Telegram Stars ⭐ right inside the app.\n\n"
-        "You can also animate a photo into a short video 🎬 — "
-        f"{config.VIDEO_FREE_DAILY_LIMIT} free per day.",
+        "You can also restyle a photo 🖼 — same face, same pose, a new look — "
+        "or animate one into a short video 🎬 "
+        f"({config.VIDEO_FREE_DAILY_LIMIT} free per day).",
         reply_markup=keyboard,
     )
 
@@ -281,6 +285,18 @@ class AnimateRequest(BaseModel):
     image: str = Field(min_length=1, max_length=config.MAX_IMAGE_B64_CHARS)
 
 
+class RestyleRequest(BaseModel):
+    """Restyle a photo. The app composes `prompt`/`negative_prompt` from the
+    medium toggle and the chosen style; `medium` only routes the checkpoint
+    server-side, `style` is the label for the chat caption."""
+
+    prompt: str = Field(min_length=1, max_length=config.MAX_PROMPT_CHARS)
+    negative_prompt: str = Field(default="", max_length=config.MAX_PROMPT_CHARS)
+    medium: str = "photo"
+    style: str = Field(default="", max_length=80)
+    image: str = Field(min_length=1, max_length=config.MAX_RESTYLE_IMAGE_B64_CHARS)
+
+
 class InvoiceRequest(BaseModel):
     package: str
 
@@ -289,12 +305,35 @@ def _load_template(workflow: str) -> dict:
     filename = config.WORKFLOW_FILES.get(workflow)
     if filename is None:
         raise HTTPException(status_code=400, detail=f"unknown workflow '{workflow}'")
-    cached = _workflow_cache.get(workflow)
+    return _load_template_file(workflow, filename)
+
+
+def _load_template_file(key: str, filename: str) -> dict:
+    cached = _workflow_cache.get(key)
     if cached is None:
         path = config.WORKFLOW_DIR / filename
         cached = json.loads(path.read_text())
-        _workflow_cache[workflow] = cached
+        _workflow_cache[key] = cached
     return cached
+
+
+def _decode_image(b64: str) -> bytes:
+    """Base64 (optionally a data: URI) → bytes; 400 on garbage, so a broken
+    upload is refused before anything is spent."""
+    try:
+        data = base64.b64decode(strip_data_uri(b64), validate=True)
+    except (binascii.Error, ValueError) as e:
+        raise HTTPException(status_code=400, detail="image is not valid base64") from e
+    if not data:
+        raise HTTPException(status_code=400, detail="image is empty")
+    return data
+
+
+def restyle_caption(style: str, medium: str) -> str:
+    """Chat caption for a finished restyle — the style the user picked, not
+    the prompt block behind it."""
+    label = style.strip() or "Restyled"
+    return f"🖼 {label} · {medium}"
 
 
 @app.get("/healthz")
@@ -376,6 +415,61 @@ async def generate(req: GenerateRequest, user_id: int = Depends(current_user_id)
     jobs.add(job)
     asyncio.create_task(_watch_job(job, usage_id))
     log.info("job %s queued for user %s (prompt_id=%s)", job.id, user_id, prompt_id)
+    return {"job_id": job.id, "queue_position": queue_number}
+
+
+@app.post("/api/restyle")
+async def restyle(req: RestyleRequest, user_id: int = Depends(current_user_id)):
+    """Photo → same person, same pose, new style. Priced exactly like
+    /api/generate (same free quota, same credits, same one-at-a-time rule):
+    it is one image job, the model just gets a photo to hold on to."""
+    checkpoint = config.RESTYLE_CHECKPOINTS.get(req.medium)
+    if checkpoint is None:
+        raise HTTPException(status_code=400, detail=f"unknown medium '{req.medium}'")
+    image = _decode_image(req.image)
+    if jobs.active_count(user_id, "image") >= 1:
+        raise HTTPException(status_code=429, detail="wait for your previous generation to finish")
+
+    spend = db.spend_generation(user_id, config.FREE_DAILY_LIMIT)
+    if spend is None:
+        raise HTTPException(
+            status_code=402,
+            detail="your free daily limit is used up and you have no credits",
+        )
+    _, usage_id = spend
+
+    template = _load_template_file("restyle", config.RESTYLE_WORKFLOW_FILE)
+    job = Job(
+        user_id=user_id, prompt=req.prompt, workflow="restyle",
+        caption=restyle_caption(req.style, req.medium),
+    )
+    async with aiohttp.ClientSession() as session:
+        try:
+            # Per-job filename: ComfyUI's input folder is shared by every
+            # user, and a fixed name would let two uploads race.
+            image_name = await comfy.upload_image(session, image, f"tsumiki_restyle_{job.id}.png")
+            wf = prepare_workflow(
+                template,
+                prompt=req.prompt,
+                negative=req.negative_prompt,
+                batch=1,
+                image_name=image_name,
+                checkpoint=checkpoint,
+                latent=latent_for(image),
+            )
+            prompt_id, queue_number = await comfy.queue_prompt(session, wf)
+        except (ComfyError, aiohttp.ClientError, asyncio.TimeoutError) as e:
+            db.undo_usage(usage_id)
+            log.error("restyle submit failed: %s", e)
+            raise HTTPException(status_code=502, detail="ComfyUI is unavailable") from e
+    job.prompt_id = prompt_id
+    job.status = "running"
+    jobs.add(job)
+    asyncio.create_task(_watch_job(job, usage_id))
+    log.info(
+        "restyle job %s queued for user %s (prompt_id=%s, %s/%s)",
+        job.id, user_id, prompt_id, req.medium, req.style or "-",
+    )
     return {"job_id": job.id, "queue_position": queue_number}
 
 
@@ -512,7 +606,8 @@ async def _watch_job(job: Job, usage_id: int) -> None:
     log.info("job %s done (%d bytes)", job.id, len(image))
 
     if job.user_id > 0:
-        caption = job.prompt if len(job.prompt) <= 1000 else job.prompt[:997] + "…"
+        text = job.caption or job.prompt
+        caption = text if len(text) <= 1000 else text[:997] + "…"
         try:
             await bot.send_photo(job.user_id, FSInputFile(path), caption=caption)
         except TelegramForbiddenError:

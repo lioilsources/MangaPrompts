@@ -248,6 +248,43 @@ class TelegramBackendService implements ImageGenerationService {
     return TgVideoJob.fromJson(jsonDecode(resp.body) as Map<String, dynamic>);
   }
 
+  /// Restyle a photo: same person (InstantID), same pose (depth ControlNet),
+  /// new look from [prompt]. Billed exactly like [generateImage] — one image
+  /// credit or a free generation — and resolves with the finished bytes;
+  /// the bot also drops the image into the user's chat.
+  static Future<GeneratedImage> restyleImage({
+    required Uint8List imageBytes,
+    required String prompt,
+    required String negativePrompt,
+    required String medium,
+    required String styleLabel,
+  }) async {
+    final headers = _authHeaders;
+    final resp = await http
+        .post(
+          Uri.parse('$_baseUrl/api/restyle'),
+          headers: {...headers, 'Content-Type': 'application/json'},
+          body: jsonEncode({
+            'prompt': prompt,
+            'negative_prompt': negativePrompt,
+            'medium': medium,
+            'style': styleLabel,
+            'image': base64Encode(imageBytes),
+          }),
+        )
+        // base64 photo through the CF tunnel — same allowance as animate
+        .timeout(const Duration(seconds: 60));
+    if (resp.statusCode == 402) {
+      throw PaymentRequiredException(_errorMessage(resp));
+    }
+    if (resp.statusCode != 200) {
+      throw Exception(_errorMessage(resp));
+    }
+    final jobId =
+        (jsonDecode(resp.body) as Map<String, dynamic>)['job_id'] as String;
+    return _awaitImageJob(jobId, headers);
+  }
+
   static Future<TgVideoStatus> videoJobStatus(String jobId) async {
     final resp = await http
         .get(Uri.parse('$_baseUrl/api/jobs/$jobId'), headers: _authHeaders)
@@ -283,7 +320,14 @@ class TelegramBackendService implements ImageGenerationService {
     }
     final jobId =
         (jsonDecode(resp.body) as Map<String, dynamic>)['job_id'] as String;
+    return _awaitImageJob(jobId, headers);
+  }
 
+  /// Polls an image job to completion and downloads its PNG.
+  static Future<GeneratedImage> _awaitImageJob(
+    String jobId,
+    Map<String, String> headers,
+  ) async {
     final deadline = DateTime.now().add(_jobTimeout);
     while (DateTime.now().isBefore(deadline)) {
       await Future.delayed(_pollInterval);
@@ -305,7 +349,7 @@ class TelegramBackendService implements ImageGenerationService {
     throw Exception('Generation timed out — please try again.');
   }
 
-  Future<GeneratedImage> _downloadResult(
+  static Future<GeneratedImage> _downloadResult(
     String jobId,
     Map<String, String> headers,
   ) async {

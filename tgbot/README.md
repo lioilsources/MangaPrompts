@@ -5,12 +5,15 @@ Cloudflare Pages) sem posílá prompty; služba je pouští do **ComfyUI na SPAR
 (SPARK dělá jen inference), hotový obrázek vrací appce **a zároveň** ho posílá
 botem do chatu. Druhá cesta je **animace fotky**: Mini App nahraje fotku
 a preset, služba ji pošle na **video-api na SPARKu** (Wan 2.2 I2V,
-video-stack/serve.py) a hotové mp4 doručí botem do chatu. Kredity a Telegram
-Stars platby drží v SQLite.
+video-stack/serve.py) a hotové mp4 doručí botem do chatu. Třetí je
+**restyle fotky** (stejná tvář a póza, nový styl) — jde zpátky do ComfyUI
+jako běžný obrázkový job, jen s nahranou fotkou. Kredity a Telegram Stars
+platby drží v SQLite.
 
 ```
 Mini App (Pages) ──POST /api/generate (Authorization: tma <initData>)──▶ mangabot @ JODA:8090
 Mini App        ──POST /api/animate {scene, image b64}──▶ mangabot
+Mini App        ──POST /api/restyle {prompt, medium, image b64}──▶ mangabot
 Mini App        ──POST /api/invoice → openInvoice(⭐)──▶ Telegram ──▶ successful_payment
                                                                         │
 Telegram chat ◀──sendPhoto/sendVideo──┐                                 ▼
@@ -25,6 +28,7 @@ Mini App      ◀──job image/status─────┴── mangabot ──H
 | `POST /api/generate` | `{prompt, negative_prompt, workflow: flux\|pony}` → `{job_id, queue_position}`; **402** = došla free kvóta i kredity |
 | `GET /api/jobs/{id}` | `{status: queued\|running\|done\|error, error, kind, beat, beats, phase, position}` |
 | `GET /api/jobs/{id}/image` | PNG bytes hotového jobu |
+| `POST /api/restyle` | `{prompt, negative_prompt, medium: photo\|illustration, style, image: base64}` → `{job_id, queue_position}`; stejná fronta, kvóta i kredity jako `/api/generate` (**402**, **429**) |
 | `POST /api/animate` | `{scene, image: base64}` → `{job_id, beats, seconds, minutes_est}`; **402** = došla denní animace i video kredity |
 | `GET /api/video/scenes` | `{scenes}` — proxy katalogu presetů z video-api (TTL cache); 502 když video-api neběží |
 | `GET /api/jobs/{id}/video` | mp4 bytes hotové animace (video jde primárně botem do chatu; tohle je fallback/dev) |
@@ -52,12 +56,58 @@ dostane do ruky**. Proto:
 - mp4 nad `TELEGRAM_VIDEO_LIMIT` (50 MB, strop Bot API) se neposílá — uživatel
   dostane zprávu, ať si ho stáhne v appce přes `GET /api/jobs/{id}/video`.
 
+### Restyle fotky
+
+`POST /api/restyle` je **obrázkový job jako každý jiný** — `spend_generation`
+(free kvóta → kredit), `_watch_job`, sendPhoto do chatu, jedna souběžná
+generace na uživatele. Liší se jen tím, co jde do ComfyUI:
+
+- fotka se nahraje přes `POST /upload/image` pod per-job jménem
+  (`tsumiki_restyle_<job>.png`; input složka ComfyUI je společná pro
+  všechny uživatele, pevné jméno by závodilo),
+- workflow `assets/comfyui/sdxl_restyle.api.json`: `DepthAnythingV2 →
+  union-promax-xinsir (depth, 0.75 / end 0.9)` drží pózu,
+  `ApplyInstantIDAdvanced` (ip_weight 0.6, cn_strength 0.8) drží tvář,
+  `FaceDetailer` (denoise 0.4) dotáhne obličej. Hodnoty i pořadí (InstantID
+  **před** hloubkovým ControlNetem, detailer podmíněný zpřed hloubky) jsou
+  převzaté z Ol1nLLM, kde jsou ověřené proti témuž serveru,
+- latent se snapne na SDXL bucket podle poměru fotky (`imagesize.py`,
+  hlavička PNG/JPEG bez Pillow) a fotka se na něj **letterboxuje**
+  (`ImageResizeKJv2`, `pad`) — jinak ControlNet hint ořízne na střed
+  a fotka z telefonu 1:2 přijde o hlavu i chodidla,
+- `medium` vybírá checkpoint (`RESTYLE_CHECKPOINTS`; obojí defaultně
+  Juggernaut XL v9 — InstantID embedding je fotografický a booru modely ho
+  čtou jako šum; přepis přes `RESTYLE_CKPT_PHOTO` / `RESTYLE_CKPT_ILLUSTRATION`),
+  prompt i negativ skládá appka (`lib/config/restyle_styles.dart`),
+- když InsightFace v fotce tvář nenajde, job spadne na `execution_error`;
+  `execution_error_message` vytáhne text výjimky uzlu do `job.error`, aby
+  uživatel viděl „no face detected“, ne jen „generation failed“. Spend se
+  vrací jako u každého selhání.
+
+Před prvním ostrým během (a po každém update custom nodes na SPARKu) jede
+pre-flight, který porovná workflow s `GET /object_info` — třídy uzlů, názvy
+vstupů i názvy souborů modelů:
+
+```bash
+python3 tools/check_workflow.py ../assets/comfyui/sdxl_restyle.api.json \
+    --url http://<spark-ip>:8188 --ckpt Juggernaut-XL_v9_RunDiffusionPhoto_v2.safetensors
+```
+
+Celý postup uvedení do provozu a E2E testu v Telegramu: `docs/restyle-rollout.md`.
+
+Custom nodes, které workflow potřebuje na SPARKu: comfyui_controlnet_aux
+(DepthAnythingV2Preprocessor), KJNodes (ImageResizeKJv2), ComfyUI_InstantID,
+Impact Pack (FaceDetailer + UltralyticsDetectorProvider); váhy `ip-adapter.bin`,
+`instantid-controlnet-sdxl`, `controlnet-union-sdxl-promax-xinsir`,
+`depth_anything_v2_vitl.pth`, `bbox/face_yolov8m.pt`.
+
 ## Platby (Telegram Stars)
 
 - Balíčky v `config.PACKAGES` (10/50/250 kreditů za 25/100/400 ⭐; navíc
   `v1` = 1 animace za 10 ⭐ s flagem `video: True`).
 - Free kvóta `FREE_DAILY_LIMIT` (default 3) za klouzavých 24 h, pak 1 kredit
-  = 1 generování; spend je atomický v SQLite, neúspěšné generování se vrací.
+  = 1 generování (restyle fotky se počítá jako generování); spend je
+  atomický v SQLite, neúspěšné generování se vrací.
 - Animace mají **oddělený ledger**: `users.video_credits` + free kvóta
   `VIDEO_FREE_DAILY_LIMIT` (default 1/24 h, usage kind `video_free`).
   Ledger `payments` je společný — řádek s `package='v1'` připisuje video

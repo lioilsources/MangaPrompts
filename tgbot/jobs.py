@@ -23,6 +23,9 @@ class Job:
     error: str | None = None
     image_path: Path | None = None
     prompt_id: str | None = None
+    # Chat caption when the raw prompt would be noise to the user (restyle
+    # sends a style block, not something they typed); None = use the prompt.
+    caption: str | None = None
     created: float = field(default_factory=time.time)
     # video jobs (kind == "video"); all defaulted so the image path is untouched
     kind: str = "image"  # image | video

@@ -97,3 +97,23 @@ WORKFLOW_FILES = {
     "juggernaut": "juggernaut_lightning_txt2img.api.json",
     "wai": "wai_txt2img.api.json",
 }
+
+# Restyle a photo: depth ControlNet keeps the pose, InstantID keeps the face,
+# the prompt (composed by the app from medium + style) does the rest. One
+# workflow, checkpoint chosen by the requested medium. Both media default to
+# Juggernaut XL v9 on purpose: InstantID's face embedding is trained on
+# photographs and only a photoreal SDXL-base finetune leaves headroom for a
+# style prompt — booru-tag models read the embedding as noise and fall back
+# to their default scene (measured in Ol1nLLM's style matrix). Override per
+# medium via RESTYLE_CKPT_PHOTO / RESTYLE_CKPT_ILLUSTRATION when a better
+# checkpoint lands on the server.
+RESTYLE_WORKFLOW_FILE = "sdxl_restyle.api.json"
+_RESTYLE_DEFAULT_CKPT = "Juggernaut-XL_v9_RunDiffusionPhoto_v2.safetensors"
+RESTYLE_CHECKPOINTS = {
+    "photo": os.environ.get("RESTYLE_CKPT_PHOTO", "").strip() or _RESTYLE_DEFAULT_CKPT,
+    "illustration": os.environ.get("RESTYLE_CKPT_ILLUSTRATION", "").strip()
+    or _RESTYLE_DEFAULT_CKPT,
+}
+# Photo uploads for restyle are downscaled by the app (≤1536 px) — this is a
+# sanity cap for the JSON body, not the video one (which allows 24 M chars).
+MAX_RESTYLE_IMAGE_B64_CHARS = _int_env("MAX_RESTYLE_IMAGE_B64_CHARS", 6_000_000)

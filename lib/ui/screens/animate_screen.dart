@@ -121,7 +121,7 @@ class _AnimateScreenState extends ConsumerState<AnimateScreen> {
     final account = ref.watch(accountProvider);
 
     return Scaffold(
-      appBar: const TsumikiAppBar(video: true),
+      appBar: const TsumikiAppBar(screen: TsumikiScreen.animate),
       body: scenesAsync.when(
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (e, _) => Center(

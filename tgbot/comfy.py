@@ -3,7 +3,9 @@
 `prepare_workflow` is a direct port of ComfyImageService._prepare in
 lib/services/comfy_image_service.dart — keep the two in sync: placeholder
 substitution (__PROMPT__/__NEGATIVE__/__IMAGE__/__POSE__/__CKPT__), forced
-batch size, randomized seed/noise_seed.
+batch size, randomized seed/noise_seed. The `latent` override is server-only:
+the restyle workflow renders into the SDXL bucket that fits the uploaded
+photo, and only this backend runs that workflow.
 """
 
 import asyncio
@@ -26,7 +28,11 @@ def prepare_workflow(
     image_name: str | None = None,
     pose_name: str | None = None,
     checkpoint: str | None = None,
+    latent: tuple[int, int] | None = None,
 ) -> dict:
+    """`latent` = (width, height) forced onto the empty latent *and* onto the
+    reference-fitting resize node, so a depth/face hint is letterboxed onto
+    exactly the canvas it will steer (see assets/comfyui/sdxl_restyle)."""
     wf = copy.deepcopy(template)
     seed = random.randrange(1 << 31)
 
@@ -53,6 +59,10 @@ def prepare_workflow(
         if cls in ("EmptySD3LatentImage", "EmptyLatentImage"):
             if "batch_size" in inputs:
                 inputs["batch_size"] = batch
+            if latent is not None:
+                inputs["width"], inputs["height"] = latent
+        elif cls == "ImageResizeKJv2" and latent is not None:
+            inputs["width"], inputs["height"] = latent
         elif cls == "RepeatLatentBatch":
             if "amount" in inputs:
                 inputs["amount"] = batch
@@ -63,6 +73,23 @@ def prepare_workflow(
             inputs["noise_seed"] = seed
 
     return wf
+
+
+def execution_error_message(status: dict) -> str:
+    """User-facing reason for a failed prompt. ComfyUI leaves the node's own
+    exception in the history status messages; for the restyle workflow that is
+    the difference between "generation failed" and "no face found in the
+    photo", which is the one thing the user can actually act on."""
+    for entry in status.get("messages") or []:
+        if not (isinstance(entry, (list, tuple)) and len(entry) == 2):
+            continue
+        kind, data = entry
+        if kind != "execution_error" or not isinstance(data, dict):
+            continue
+        message = str(data.get("exception_message") or "").strip().splitlines()
+        if message:
+            return f"ComfyUI: {message[0][:160]}"
+    return "generation failed on the ComfyUI side"
 
 
 class ComfyClient:
@@ -89,6 +116,28 @@ class ComfyClient:
         if node_errors:
             raise ComfyError(f"workflow error: {json.dumps(node_errors)[:300]}")
         return data["prompt_id"], int(data.get("number", 0))
+
+    async def upload_image(
+        self, session: aiohttp.ClientSession, data: bytes, filename: str
+    ) -> str:
+        """Uploads a reference image to ComfyUI's input folder; returns the
+        name a LoadImage node takes (`subfolder/name` when nested)."""
+        form = aiohttp.FormData()
+        form.add_field("image", data, filename=filename, content_type="application/octet-stream")
+        form.add_field("overwrite", "true")
+        async with session.post(
+            f"{self.base_url}/upload/image",
+            data=form,
+            headers=self.headers,
+            timeout=aiohttp.ClientTimeout(total=60),
+        ) as resp:
+            body = await resp.text()
+            if resp.status != 200:
+                raise ComfyError(f"/upload/image HTTP {resp.status}: {body[:200]}")
+            info = json.loads(body)
+        name = info["name"]
+        subfolder = info.get("subfolder") or ""
+        return f"{subfolder}/{name}" if subfolder else name
 
     async def get_history(self, session: aiohttp.ClientSession, prompt_id: str) -> dict | None:
         async with session.get(
@@ -133,9 +182,9 @@ class ComfyClient:
                 continue
             if hist is None:
                 continue
-            status = (hist.get("status") or {}).get("status_str")
-            if status == "error":
-                raise ComfyError("generation failed on the ComfyUI side")
+            status_block = hist.get("status") or {}
+            if status_block.get("status_str") == "error":
+                raise ComfyError(execution_error_message(status_block))
 
             outputs = hist.get("outputs") or {}
             refs = [
