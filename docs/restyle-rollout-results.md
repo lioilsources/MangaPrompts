@@ -130,11 +130,34 @@ starší a mimo restyle soubory), `flutter test` (28 prošlo), `flutter build we
 
 Rollback zůstává podle kapitoly 7 plánu: revert merge commitu, CI přenasadí.
 
-## 5. Co zbývá
+## 5. Scénář 3 předběžně ověřen mimo Telegram
 
-E2E scénáře 1–10 potřebují Telegram účet, tedy ruční zásah. Prioritní jsou
-**3 a 7** (fotka bez tváře, shozené ComfyUI) — jediné, co ověří, že se za
-neúspěch nestrhne kredit, a jediné, co suchý běh ověřit nemohl.
+Fotka bez tváře (vygenerovaná krajina 1216×832) prohnaná stejným grafem:
+
+```
+comfy.ComfyError: ComfyUI: Reference Image: No face detected.
+```
+
+Přesně ta čitelná hláška, kterou scénář 3 chtěl — `execution_error_message`
+vytáhne výjimku uzlu z historie a `InstantIDFaceAnalysis` ji formuluje
+srozumitelně. Refund na to navazuje v `_watch_job` (app.py:589): `ComfyError`
+→ `db.undo_usage(usage_id)`. Skutečný zůstatek před/po tím **ověřený není**,
+to chce Telegram účet.
+
+### Nález: neúspěšný restyle uživateli nic neřekne do chatu
+
+`_fail_video_job` u videa pošle do chatu „the animation failed — … Nothing was
+charged for it.". `_watch_job` u obrázku a restyle jen nastaví `job.error`
+a zaloguje. Kdo appku zavře hned po odeslání (scénář 8), se o selhání
+nedozví — a hlavně se nedozví, že se mu nic nestrhlo. U videa to vyhodnotili
+jako problém, protože render přežije session; restyle trvá 66–117 s, což je
+stejná kategorie. Není to bug v tomhle rolloutu, ale stojí za zvážení.
+
+## 6. Co zbývá
+
+E2E scénáře 1–10 potřebují Telegram účet, tedy ruční zásah. Prioritní je
+**7** (shozené ComfyUI) a doměření zůstatku u **3** — jediné, co potvrdí, že
+se za neúspěch opravdu neplatí.
 
 Dvě věci k zvážení mimo tenhle rollout:
 
