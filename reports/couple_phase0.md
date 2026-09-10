@@ -189,6 +189,27 @@ v okamžiku polibku, kdy jsou obličeje u sebe, je pravděpodobnost, že detekto
 najde oba, nejvyšší. P4 musí **směrovat embedding per osoba** (maska nebo
 výřez na jednu detekci), jinak refine identitu nezachrání, ale zničí.
 
+### 4.6 Co už je na téhle mašině změřené
+
+Mezitím proběhlo měření restyle karty proti Sparku
+([`docs/restyle-rollout-results.md`](../docs/restyle-rollout-results.md),
+2026-09-09). Čtyři výsledky platí i pro couple kartu:
+
+- **antelopev2 na Sparku je** — `models/insightface/models/antelopev2/` má
+  všech pět `.onnx`. Doporučení z §4.2 tedy nic nestojí, žádné stahování.
+- **Zvýšení síly identity zabije styl.** Změřeno: `ip_weight` 0.8 proti 0.6
+  podobu zlepší, ale InstantID embedding je fotografický a při 0.8 přebije
+  stylový blok **na postavě** — pozadí grafické, člověk fotka. To je přímo
+  varování pro P4: retry smyčka, která na nízké skóre reaguje přitvrzením
+  identity, si kupuje gate za cenu stylu, a nikdo to nezměří, protože gate
+  měří jen identitu. **P4 musí mít strop síly, ne jen strop iterací.**
+- **Booru modely s InstantID identitu ztrácejí** (Animagine XL 4.0: obecný
+  anime obličej, změněné proporce). Viz §6.
+- **Jediný časový bod ze stejného železa**: SDXL 1 MP s InstantID + depth CN +
+  FaceDetailer = **66–117 s** na obrázek, studený běh 66,5 s. Pro video je to
+  jen dolní mez řádu, ale znamená to, že načtení InstantID a antelopev2 není
+  problém, a že `JOB_TIMEOUT` se u obrázkové cesty měnit nemusel.
+
 ---
 
 ## 5. Co plán neměří: fotometrická konzistence
@@ -217,6 +238,14 @@ Takhle napsané v1 **nejde dokončit**: sada obsahuje anime, gate na anime
 neexistuje. Rozhodnout jedno z dvou — buď `anime` z v1 ven, nebo CLIP/DINO
 varianta gate patří do Fáze 3, ne do Fáze 5.
 
+Měření restyle karty ale posouvá odpověď dál: na booru modelu (Animagine XL
+4.0) se s InstantID **ztratila samotná identita**, ne jen měřitelnost. Když
+anime cesta nedrží tvář, nemá smysl řešit, čím ji měřit. Doporučení: **`anime`
+z v1 ven**, a otevřít ho až s vlastním mechanismem identity, ne s jiným
+gate. (Restyle karta na tohle používá SDXL base, který kreslený výstup zvládne
+a identitu udrží — pro couple kartu je to nejlevnější kandidát na „kreslený"
+režim, ne booru model.)
+
 ---
 
 ## 7. Co plán neřeší na straně Tsumiki
@@ -244,6 +273,11 @@ Tohle v handoffu chybí celé a je to práce, která na kartě stejně bude:
   nechávají ležet** — i moje restyle karta nahrává `tsumiki_restyle_<job>.png`
   do input složky ComfyUI a nikdy ho nemaže. U dvou tváří reálných lidí plus
   jejich videa je to rozhodnutí, které se musí udělat, ne zdědit.
+- **Provoz.** ComfyUI na Sparku dnes **neběží pod systemd** (ruční
+  `python main.py`, viz results doc). Couple job běží desítky minut a plán
+  počítá s re-attachem po restartu bota — ten ale předpokládá, že se render
+  server vrátí. Než tahle karta půjde do provozu, `comfyui.service` musí být
+  enabled, jinak jeden reboot Sparku zabije job, za který se vrací kredit.
 - **Dobrá zpráva:** UI je levné. Čtvrtá karta je dnes jedna položka v enumu
   `TsumikiScreen` (`lib/ui/widgets/tsumiki_app_bar.dart:15`), přepínač i shop
   chip si ji vezmou samy. Jen `bool get video` bude muset být volba ledgeru
