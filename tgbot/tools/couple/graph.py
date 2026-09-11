@@ -31,9 +31,11 @@ two people whenever their apparent sizes swap — the same failure mode as
 facebench taking the largest face in a still.
 
 So each person gets their own detection pass over a copy of the driving video
-with the *other* person painted black; the largest box is then trivially the
-right one. Seeding is manual: one positive point per person on the first frame,
-which SAM2's video segmentor propagates through the clip.
+in which **only that person** is left and everything else is black; the largest
+box is then trivially the right one. Seeding is manual: a few positive points
+down each person on the first frame, which SAM2's video segmentor propagates
+through the clip. Why "keep one" and not "remove the other" — which is the
+obvious move and does not work — is in the comment at that node.
 """
 
 from __future__ import annotations
@@ -74,6 +76,10 @@ def _resize(src, width, height):
         "image": src, "width": width, "height": height, "upscale_method": "lanczos",
         "keep_proportion": "pad_edge_pixel", "pad_color": "0, 0, 0",
         "crop_position": "top", "divisible_by": 16}}
+
+
+def _points(points):
+    return json.dumps([{"x": int(x), "y": int(y)} for x, y in points])
 
 
 def _save(src, prefix, fps):
@@ -179,8 +185,9 @@ def couple(video, ref_a, ref_b, point_a, point_b, width=832, height=480,
            distill=DISTILL_STRENGTH, relight=RELIGHT_STRENGTH, prompt=PROMPT):
     """S3 — the test that decides whether this card can exist locally.
 
-    `point_a` / `point_b` are (x, y) on the first frame **in the resized
-    frame's coordinates**: one click on each person, which SAM2 propagates.
+    `point_a` / `point_b` are lists of (x, y) on the first frame **in the
+    resized frame's coordinates** — a few points down each person, which SAM2's
+    video segmentor propagates through the clip.
     """
     g = _loaders(steps, distill, relight, prompt)
     g["load"] = _video(video, length, fps)
@@ -192,10 +199,19 @@ def couple(video, ref_a, ref_b, point_a, point_b, width=832, height=480,
     g["onnx"] = {"class_type": "OnnxDetectionModelLoader", "inputs": {
         "vitpose_model": VITPOSE, "yolo_model": YOLO, "onnx_device": ONNX_DEVICE}}
 
-    for who, point in (("a", point_a), ("b", point_b)):
+    for who, points, other_points in (("a", point_a, point_b),
+                                      ("b", point_b, point_a)):
+        # One point is not enough: SAM2 answers a single click with whichever
+        # granularity it likes, and a click that lands on hair returns the hair.
+        # Measured on the bench clip — a point on the woman's shoulder gave her
+        # head alone, while the man's chest gave his whole body. Several points
+        # down the body say "this person", and the *other* person's points as
+        # negatives say where this one ends, which is what keeps the two masks
+        # apart once they touch.
         g["seg_" + who] = {"class_type": "Sam2Segmentation", "inputs": {
             "sam2_model": ["sam2", 0], "image": ["src", 0], "keep_model_loaded": True,
-            "coordinates_positive": json.dumps([{"x": int(point[0]), "y": int(point[1])}]),
+            "coordinates_positive": _points(points),
+            "coordinates_negative": _points(other_points),
             "individual_objects": False}}
         # The mask Animate gets: grown and blurred so the seam has room, then
         # blockified onto the latent grid, as in Kijai's reference workflow.
@@ -211,11 +227,31 @@ def couple(video, ref_a, ref_b, point_a, point_b, width=832, height=480,
                                       "%s_mask_%s" % (prefix, who), fps)
 
     for who, other in (("a", "b"), ("b", "a")):
-        # Paint the other person black so the single-person detector cannot
-        # wander onto them. Black, not blurred: YOLO still finds a blurred body.
+        # Keep **only** this person and black out everything else — the frame,
+        # not just the other body.
+        #
+        # Painting the other person black was the obvious move and it does not
+        # work: a crisp black human silhouette is still a person to YOLO, and
+        # once the two embrace it is the *larger* one, so `single_person=True`
+        # picks it and ViTPose then reads pose off a black cut-out. Measured on
+        # the bench clip: blacking out A left the detector on A's silhouette at
+        # frames 40 and 80 (conf 0.72 / 0.79) instead of on B. Filling from a
+        # temporal median of the clip is no better — with two people present in
+        # almost every frame, the median still contains them.
+        #
+        # Keeping only the target leaves exactly one person-shaped thing in the
+        # frame. Same clip, same frames: conf 0.89–0.96 on the right person
+        # throughout, for both people. The black background costs nothing —
+        # ViTPose crops to the box anyway.
+        g["keep_" + who] = {"class_type": "InvertMask", "inputs": {
+            "mask": ["block_" + who, 0]}}
         g["solo_" + who] = {"class_type": "ImageCompositeMasked", "inputs": {
             "destination": ["src", 0], "source": ["black", 0], "x": 0, "y": 0,
-            "resize_source": True, "mask": ["seg_" + other, 0]}}
+            "resize_source": True, "mask": ["keep_" + who, 0]}}
+        # Saved because it is the only way to see *what the pose detector saw*
+        # when a pose stream comes out wrong.
+        g["save_solo_" + who] = _save(["solo_" + who, 0],
+                                      "%s_solo_%s" % (prefix, who), fps)
         _detect(g, who, ["solo_" + who, 0], width, height, fps, prefix)
 
     # P1 replaces A against the original driving video; P2 replaces B against
@@ -224,4 +260,22 @@ def couple(video, ref_a, ref_b, point_a, point_b, width=832, height=480,
           mask=["block_a", 0])
     _pass(g, "b", ref_b, ["out_a", 0], width, height, length, seed, fps, prefix,
           mask=["block_b", 0])
+    return g
+
+
+def preprocess(*args, **kw):
+    """P0 alone — masks, poses and face crops, no sampling.
+
+    Worth its own command: it is the half that runs on CPU, it is what decides
+    whether the two people stay separated during contact, and it can be looked
+    at (and timed) without the 17 GB of Animate weights being present.
+    """
+    g = couple(*args, **kw)
+    for key in list(g):
+        if key.split("_")[0] in ("ref", "wan", "noise", "guider", "sample",
+                                 "trim", "out", "unet", "lora", "clip", "pos",
+                                 "neg", "vae", "sigmas", "sampler"):
+            g.pop(key)
+    g.pop("save_out_a", None)
+    g.pop("save_out_b", None)
     return g

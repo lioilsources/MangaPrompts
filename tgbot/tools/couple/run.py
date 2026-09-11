@@ -6,7 +6,7 @@ Runs on the SPARK box next to ComfyUI (inputs are staged by copying into its
 
     run.py solo   driving.mp4 ref_a.png                      # S2 — how slow is this box
     run.py couple driving.mp4 ref_a.png ref_b.png \
-                  --point-a 260,180 --point-b 570,180        # S3 — the real question
+                  --point-a 200,100;200,280 --point-b 600,170;610,330   # S3
     run.py check  couple                                     # pre-flight only, no GPU
 
 The numbers the report needs (docs/couple-spark-setup.md §9) are per *pass*,
@@ -64,6 +64,12 @@ def stage(path):
     if not (os.path.exists(dst) and os.path.getsize(dst) == os.path.getsize(path)):
         shutil.copy(path, dst)
     return name
+
+
+def points(spec):
+    """"x,y;x,y;…" → [(x, y), …]. Several points down one person, because a
+    single SAM2 click answers with whatever granularity it likes."""
+    return [tuple(int(v) for v in p.split(",")) for p in spec.split(";") if p]
 
 
 def phase_of(node):
@@ -179,9 +185,11 @@ def build(a, dummy=False):
     video = "__VIDEO__" if dummy else stage(a.video)
     ref_a = "__IMAGE__" if dummy else stage(a.ref_a)
     ref_b = "__IMAGE__" if dummy else stage(a.ref_b)
-    pa = (0, 0) if dummy else tuple(int(v) for v in a.point_a.split(","))
-    pb = (0, 0) if dummy else tuple(int(v) for v in a.point_b.split(","))
-    return graph.couple(video, ref_a, ref_b, pa, pb, **kw)
+    pa = [(0, 0)] if dummy else points(a.point_a)
+    pb = [(0, 0)] if dummy else points(a.point_b)
+    build_fn = graph.preprocess if (a.what if dummy else a.cmd) == "preprocess" \
+        else graph.couple
+    return build_fn(video, ref_a, ref_b, pa, pb, **kw)
 
 
 def cmd_run(a):
@@ -206,11 +214,14 @@ if __name__ == "__main__":
     sub = ap.add_subparsers(dest="cmd", required=True)
 
     p = sub.add_parser("solo"); p.add_argument("video"); p.add_argument("ref_a")
-    p = sub.add_parser("couple")
-    p.add_argument("video"); p.add_argument("ref_a"); p.add_argument("ref_b")
-    p.add_argument("--point-a", required=True, help="x,y na první snímku po resize")
-    p.add_argument("--point-b", required=True)
-    p = sub.add_parser("check"); p.add_argument("what", choices=["solo", "couple"])
+    for name in ("couple", "preprocess"):
+        p = sub.add_parser(name)
+        p.add_argument("video"); p.add_argument("ref_a"); p.add_argument("ref_b")
+        p.add_argument("--point-a", required=True,
+                       help="x,y[;x,y…] na prvním snímku po resize, několik po těle")
+        p.add_argument("--point-b", required=True)
+    p = sub.add_parser("check")
+    p.add_argument("what", choices=["solo", "couple", "preprocess"])
 
     a = ap.parse_args()
     if a.prefix is None:

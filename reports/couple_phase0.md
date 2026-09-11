@@ -394,16 +394,44 @@ Plán s tím počítal opačně („přes WanAnimatePreprocess vyrobit `mask_A` 
 Architektura, která to obchází bez patchování uzlu (a je implementovaná
 v `tgbot/tools/couple/graph.py`):
 
-1. SAM2 video segmentor, jeden kladný bod na osobu na prvním snímku →
-   `mask_A`, `mask_B` propagované přes klip.
-2. `driving_A` = driving s **osobou B přemalovanou na černo**
-   (`ImageCompositeMasked` + `mask_B`), a naopak.
+1. SAM2 video segmentor, **několik** kladných bodů po těle na prvním snímku
+   a body té druhé osoby jako záporné → `mask_A`, `mask_B` propagované přes
+   klip.
+2. `driving_A` = driving, ve kterém zbyla **jen osoba A** a všechno ostatní je
+   černé (`InvertMask` + `ImageCompositeMasked`), a naopak.
 3. `PoseAndFaceDetection` běží nad `driving_A` a `driving_B` zvlášť — největší
    osoba je pak triviálně ta správná.
 
-Černá, ne rozostření: YOLO rozostřené tělo pořád najde. Bod na osobu je
-zadaný ručně (`--point-a`, `--point-b`) — pro bench je to poctivé, pro kartu
-to bude potřebovat buď dvě kliknutí v UI, nebo automatický výběr.
+**Obojí je změřené, a obojí vyšlo jinak, než jak to vypadalo na první pohled:**
+
+- *Jeden bod na osobu nestačí.* SAM2 na jeden klik odpoví granularitou, kterou
+  si vybere sám: bod na mužově hrudi dal celé tělo, bod na ženině rameni dal
+  **jen hlavu**. Několik bodů po těle říká „tahle osoba", a body druhé osoby
+  jako záporné říkají, kde tahle končí — což je přesně to, co drží masky od
+  sebe, jakmile se ti dva dotknou.
+- *Začernit druhou osobu nefunguje.* Ostrá černá silueta je pro YOLO pořád
+  člověk, a při objetí je to ta **větší** silueta, takže ji `single_person=True`
+  vybere a ViTPose pak čte pózu z černého výřezu. Naměřeno na benchovém klipu:
+  se začerněným A detektor na snímcích 40 a 80 seděl na A (conf 0,72 / 0,79)
+  místo na B, a pózy B v druhé půlce klipu byly prázdné. Ani výplň časovým
+  mediánem klipu nepomůže — když jsou oba lidé skoro v každém snímku, medián
+  je pořád obsahuje (naměřeno: detekce spadla zpátky na A).
+- *Nechat jen cílovou osobu funguje.* Ve snímku pak zbyde jediná věc tvaru
+  člověka. Týž klip, tytéž snímky: **conf 0,89–0,96** na správné osobě po celý
+  klip, u obou lidí. Černé pozadí nevadí, ViTPose stejně ořezává na bbox.
+
+Vizuální kontrola po opravě: `solo_a`/`solo_b` obsahují právě jednoho člověka,
+`pose_a`/`pose_b` mají skeleton na **všech** vzorkovaných snímcích a
+`face_a`/`face_b` drží tvář té správné osoby napříč klipem (skripty ukládají
+všechny tyhle mezikroky právě proto, aby to šlo zkontrolovat okem).
+
+Bod na osobu je zadaný ručně (`--point-a`, `--point-b`) — pro bench je to
+poctivé, pro kartu to bude potřebovat buď dvě kliknutí v UI, nebo automatický
+výběr.
+
+**Cena P0: ~73 s na 81 snímků a dvě osoby** — SAM2 14 s, ViTPose s obličeji
+56 s (na CPU, viz §11.5), zbytek načtení a ukládání. To je čas navíc *před*
+oběma průchody, a do odhadu `minutes_est` (§7) patří stejně jako gate.
 
 **segment-anything-2 je k dispozici dvakrát** a je dobré vědět, který je který:
 `Sam2Segmentation` + `DownloadAndLoadSAM2Model` z `ComfyUI-segment-anything-2`
