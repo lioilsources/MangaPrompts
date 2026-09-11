@@ -35,9 +35,9 @@ IN, OUT = os.path.join(COMFY, "input"), os.path.join(COMFY, "output")
 # by the prefix `graph.py` gives its nodes.
 PHASES = [("P0 masky (SAM2)", ("sam2", "seg_", "grow_", "block_", "solo_")),
           ("P0 póza a tváře (ViTPose, CPU)", ("onnx", "pose_", "draw_")),
-          ("P1 osoba A", ("ref_a", "bg_a", "wan_a", "noise_a", "guider_a",
+          ("P1 osoba A", ("ref_a", "reffit_a", "bg_a", "wan_a", "noise_a", "guider_a",
                           "sample_a", "trim_a", "out_a")),
-          ("P2 osoba B", ("ref_b", "bg_b", "wan_b", "noise_b", "guider_b",
+          ("P2 osoba B", ("ref_b", "reffit_b", "bg_b", "wan_b", "noise_b", "guider_b",
                           "sample_b", "trim_b", "out_b")),
           ("načtení modelů", ("unet", "lora_", "clip", "pos", "neg", "vae",
                               "sigmas", "sampler", "load", "src", "black")),
@@ -176,7 +176,7 @@ def cmd_check(a):
 def build(a, dummy=False):
     kw = dict(width=a.width, height=a.height, length=a.length, seed=a.seed,
               fps=a.fps, prefix=a.prefix, steps=a.steps, distill=a.distill,
-              cfg=a.cfg, sampler=a.sampler)
+              cfg=a.cfg, sampler=a.sampler, ref_fit=not a.no_ref_fit)
     # `__`-prefixed names are what check_workflow.py treats as substituted at
     # request time, so a pre-flight checks the graph and not the staging.
     if a.cmd == "solo" or (dummy and a.what == "solo"):
@@ -229,6 +229,8 @@ if __name__ == "__main__":
                     help="síla lightx2v distill LoRA; 0 ji z řetězu vyřadí")
     ap.add_argument("--cfg", type=float, default=graph.CFG)
     ap.add_argument("--sampler", help="jinak lcm s distill LoRA, euler bez ní")
+    ap.add_argument("--no-ref-fit", action="store_true",
+                    help="nechat referenci uzlu, ať si ji ořízne sám (ztratí okraje)")
     ap.add_argument("--prefix", default=None)
     sub = ap.add_subparsers(dest="cmd", required=True)
 

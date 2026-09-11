@@ -132,6 +132,15 @@ klip**. Když API řeší dvě identity konstrukcí a lokální cesta jen aproxi
 je legitimní výsledek „karta jede přes API a lokální cesta se zahodí".
 Rozhodnout dřív, než se investuje do Fáze 3.
 
+> **Rozhodnuto 2026-09-11: placené API se nepoužije, karta pojede celá lokálně
+> na SPARKu.** Tím celá tahle sekce i S5 ze setup docu §7 padají — Wan 2.6 R2V
+> se nebude ani měřit, protože i kdyby vyhrál, nasadit se nemá. Praktický
+> důsledek: **„lokální cesta se zahodí" přestává být možný výsledek**, takže
+> nález z §11.8 (Mix režim neunese identitu) není otázka srovnání s API, ale
+> jediná věc, která mezi kartou a v1 stojí. Alternativy jsou proto uvnitř
+> lokálního stacku: jiné rámování reference, jiná implementace Animate
+> (WanVideoWrapper), nebo jiný model s open weights.
+
 ---
 
 ## 4. Identity gate — tři opravy návrhu
@@ -540,6 +549,9 @@ Dvě věci, které z toho plynou a v plánu nejsou:
   identit z jedné fotky je další místo, kde identita tiše umírá (§4.3).
 - **Kolik Strategie B v v1?** Jen jako **levný gate na still** (§4.3), ne jako
   produkční režim. `gaze`/`smile` bez okluze zvládne i hlavní cesta.
+- **Které akce do v1?** Po §11.9 **jen `gaze`** (a případně `smile`). U `kiss`
+  a `hug` jsou oba obličeje z definice v profilu a gate na nich nemá data —
+  buď je odložit, nebo je hodnotit jinak než identitou.
 - **Jeden práh, nebo per action?** **Per action**, a navíc na p10 čistých
   snímků místo minima (§4.1, §4.2). Jeden globální práh nutně buď propustí
   špatné `gaze`, nebo shodí každý `kiss`.
@@ -651,8 +663,9 @@ v Mix režimu nesl tvář z fotky. Co zbývá vyzkoušet, v tomhle pořadí:
 4. Průchod přes `WanVideoWrapper` místo nativního uzlu — jiná implementace téhož
    modelu, jiná cesta pro referenci.
 
-Dokud jeden z nich nezvedne Mix režim k 0,6, **je go/no-go na Wan 2.6 R2V (§3.1)
-dřív, ne později** — lokální cesta zatím dvě identity neumí ani aproximovat.
+Wan 2.6 R2V jako únik **neexistuje** — placené API je rozhodnutím z §3.1 mimo
+hru. Všechno výš proto musí vyjít uvnitř lokálního stacku, jinak couple karta
+v téhle podobě nebude.
 
 ### 11.9 Gate má slepé místo přesně tam, kde karta žije
 

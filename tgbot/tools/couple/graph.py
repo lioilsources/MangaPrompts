@@ -159,17 +159,24 @@ def _detect(g, who, images, width, height, fps, prefix, save=True):
 
 
 def _pass(g, who, ref_image, background, width, height, length, seed, fps, prefix,
-          model, cfg, mask=None):
+          model, cfg, mask=None, ref_fit=True):
     """One Animate pass. Without `mask` this is Move mode (one person, whole
     frame); with it, Mix mode (replace the masked person, keep the rest)."""
-    # No resize on the reference. `WanAnimateToVideo` already scales it to
-    # cover width×height and centre-crops (`common_upscale(..., "center")`),
-    # so letterboxing it first only feeds the node its own black bars.
-    g["ref_" + who] = {"class_type": "LoadImage", "inputs": {"image": ref_image}}
+    # `WanAnimateToVideo` scales the reference to **cover** width×height and
+    # centre-crops it (`common_upscale(..., "center")`), so anything that is not
+    # already the target aspect loses its edges: a 1024² portrait comes out as
+    # an eyes-to-chin band, and a 832×1216 full-body shot loses the head
+    # entirely. `ref_fit` letterboxes it first so the whole person survives —
+    # Kijai's reference workflow resizes the reference for the same reason.
+    ref = "ref_" + who
+    g[ref] = {"class_type": "LoadImage", "inputs": {"image": ref_image}}
+    if ref_fit:
+        g["reffit_" + who] = _resize([ref, 0], width, height)
+        ref = "reffit_" + who
     wan = {"positive": ["pos", 0], "negative": ["neg", 0], "vae": ["vae", 0],
            "width": width, "height": height, "length": length, "batch_size": 1,
            "continue_motion_max_frames": 5, "video_frame_offset": 0,
-           "reference_image": ["ref_" + who, 0],
+           "reference_image": [ref, 0],
            "face_video": ["pose_" + who, 1], "pose_video": ["draw_" + who, 0]}
     if mask is not None:
         # The background must arrive with the person being replaced **painted
@@ -203,7 +210,8 @@ def _pass(g, who, ref_image, background, width, height, length, seed, fps, prefi
 
 def solo(video, reference, width=832, height=480, length=77, seed=42, fps=16.0,
          prefix="couple_solo", steps=STEPS, distill=DISTILL_STRENGTH,
-         relight=RELIGHT_STRENGTH, prompt=PROMPT_SOLO, cfg=CFG, sampler=None):
+         relight=RELIGHT_STRENGTH, prompt=PROMPT_SOLO, cfg=CFG, sampler=None,
+         ref_fit=True):
     """S2 — Move mode, one person, no mask. The cheapest thing that answers
     "how long does this machine take per clip", which every later decision
     depends on (docs/couple-spark-setup.md §4)."""
@@ -214,14 +222,14 @@ def solo(video, reference, width=832, height=480, length=77, seed=42, fps=16.0,
         "vitpose_model": VITPOSE, "yolo_model": YOLO, "onnx_device": ONNX_DEVICE}}
     _detect(g, "a", ["src", 0], width, height, fps, prefix)
     _pass(g, "a", reference, None, width, height, length, seed, fps, prefix,
-          model_edge(distill), cfg)
+          model_edge(distill), cfg, ref_fit=ref_fit)
     return g
 
 
 def couple(video, ref_a, ref_b, point_a, point_b, width=832, height=480,
            length=77, seed=42, fps=16.0, prefix="couple", steps=STEPS,
            distill=DISTILL_STRENGTH, relight=RELIGHT_STRENGTH,
-           prompt=PROMPT_COUPLE, cfg=CFG, sampler=None):
+           prompt=PROMPT_COUPLE, cfg=CFG, sampler=None, ref_fit=True):
     """S3 — the test that decides whether this card can exist locally.
 
     `point_a` / `point_b` are lists of (x, y) on the first frame **in the
@@ -302,9 +310,9 @@ def couple(video, ref_a, ref_b, point_a, point_b, width=832, height=480,
     # P1's output, which is what carries A through the second pass.
     model = model_edge(distill)
     _pass(g, "a", ref_a, ["src", 0], width, height, length, seed, fps, prefix,
-          model, cfg, mask=["block_a", 0])
+          model, cfg, mask=["block_a", 0], ref_fit=ref_fit)
     _pass(g, "b", ref_b, ["out_a", 0], width, height, length, seed, fps, prefix,
-          model, cfg, mask=["block_b", 0])
+          model, cfg, mask=["block_b", 0], ref_fit=ref_fit)
     return g
 
 
