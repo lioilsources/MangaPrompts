@@ -844,13 +844,55 @@ muži v klipu muže z fotky a ženě ženu:
 Křížové hodnoty 0,08 a 0,01 — **žádné přelití identit**, přestože obě tváře byly
 v téže referenci a maska jim neřekla, která je která.
 
-**Co to znamená pro produkt:** uživatel nejspíš nemusí nahrávat dvě fotky, stačí
-jedna společná — což je výrazně lepší UX i jednodušší request. **Ale změřený je
-jeden pár**, a je to pár, kde jsou ti dva lidé na první pohled odlišní (muž/žena,
-jiné vlasy). Riziková je právě opačná situace: dva podobní lidé nebo stejné
-pohlaví, kde se model nemá čeho chytit. **Než se tohle postaví do UI, patří
-změřit přesně ten těžký případ** — jinak se zjistí od uživatelů.
+**Co to znamená pro produkt:** uživatel nemusí nahrávat dvě fotky, stačí jedna
+společná — což je výrazně lepší UX i jednodušší request. **Pozor ale**, že
+změřený je jeden pár, a je to pár, kde jsou ti dva lidé na první pohled odlišní.
+Těžký případ (dva podobní lidé) je v §11.15 a dopadl jinak — doporučení se tam
+mění na „rozřezat společnou fotku na dvě reference".
 
 Zůstává i důvod, proč dvě fotky nezahazovat úplně: společná fotka páru nemusí
 existovat (vztah na dálku, nová dvojice), takže dvě fotky dávají smysl jako
 záložní cesta, ne jako hlavní.
+
+### 11.15 Těžký případ: u podobných lidí rozhoduje **pozice v referenci**, ne kdo to je
+
+§11.14 skončilo tím, že společná fotka páru se páruje podle člověka, ne podle
+pozice — reference byla zrcadlená a model přesto dal muži muže. Tady je ten
+těžký případ, který si §11.14 samo vytklo: **dvě podobné ženy** (vygenerovaný
+klip, obě dlouhé tmavé vlasy, stejný věk; v referenci jsou to podle ArcFace
+jasně dva různí lidé, vzájemná podobnost −0,017).
+
+| klip | žena_A v referenci | žena_B v referenci | komu se přiřadila |
+|---|---|---|---|
+| **reference nezrcadlená** (A vlevo, B vpravo) | | | |
+| vlevo | **0,267** | 0,126 | → A |
+| vpravo | 0,124 | **0,216** | → B |
+| **reference zrcadlená** (A vpravo, B vlevo) | | | |
+| vlevo | 0,167 | **0,276** | → **B** |
+| vpravo | **0,261** | 0,127 | → **A** |
+
+**Zrcadlení reference identity prohodilo.** Osoba vlevo v klipu dostane vždycky
+toho, kdo je vlevo v referenci — ať je to kdokoli. U páru muž/žena (§11.14)
+pozice prohrála s tím, jak ti dva vypadají; tady, kde se model nemá čeho chytit,
+**rozhoduje rozvržení**.
+
+Je to přesně ten typ selhání, který je nejhorší: **nic nespadne**, výsledek
+vypadá dobře, jen jsou ti dva prohození — a uživatel, který nahrál fotku,
+kde stojí jinak než ve výsledném klipu, se to nedozví. Stojí za všimnutí i to,
+že přenos je slabší než u snadného páru (0,22–0,28 proti 0,33–0,41) a přeliv
+je poloviční místo dvacetinového (0,13 proti 0,01).
+
+**Tím se doporučení z §11.14 mění.** Společná fotka páru je dobrý *vstup od
+uživatele*, ale nemá jít do modelu jako společná: **rozřezat ji na dvě
+jednoosobové reference** a každou poslat do svého průchodu. Vyřeší to obojí
+najednou —
+
+- pozice přestane o čemkoli rozhodovat, protože každý průchod vidí jen jednoho
+  člověka;
+- výřez na hlavu a ramena zvedne počet pixelů tváře, což je podle §11.13
+  největší známá páka.
+
+Uživatel pak nahraje jednu fotku (lepší UX než dvě) a **musí jen říct, kdo je
+kdo** — jedno klepnutí na tvář v Mini Appce, které stejně potřebujeme kvůli
+bodům pro SAM2. Dvě samostatné fotky zůstávají jako záložní cesta pro dvojice,
+které společnou fotku nemají.
