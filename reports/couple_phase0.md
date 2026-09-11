@@ -545,8 +545,10 @@ Dvě věci, které z toho plynou a v plánu nejsou:
 
 ## 9. Odpovědi na otevřené otázky z §5 plánu
 
-- **Jedno „couple" foto místo dvou?** Odložit, jak plán navrhuje. Oddělení dvou
-  identit z jedné fotky je další místo, kde identita tiše umírá (§4.3).
+- **Jedno „couple" foto místo dvou?** ~~Odložit~~ — **změřeno a funguje** (§11.14):
+  0,33 / 0,41 nad podlahou 0,06 / −0,00, bez přelití identit, a spáruje se podle
+  člověka, ne podle pozice (reference byla zrcadlená). Varování z §4.3 platilo
+  pro Kontext, ne pro Wan Animate. Zbývá změřit těžký případ — dva podobní lidé.
 - **Kolik Strategie B v v1?** Jen jako **levný gate na still** (§4.3), ne jako
   produkční režim. `gaze`/`smile` bez okluze zvládne i hlavní cesta.
 - **Které akce do v1?** Po §11.9 **jen `gaze`** (a případně `smile`). U `kiss`
@@ -754,3 +756,101 @@ ne cizí — a proti 0,12 z §11.8 je to skok o řád. Couple karta tedy lokáln
 možná je; co zbývá, je posunout se z 0,5 na 0,6+ a zjistit, proč jedna
 reference bere a druhá ne. Další levné páky (relight LoRA na 0,
 `clip_vision_output`, víc referencí v testovací sadě) jsou pořád nevyzkoušené.
+
+### 11.12 Osm referencí místo dvou: „ref2 nebere" byl vzorek dvou
+
+§11.11 skončilo domněnkou, že jedna reference bere a druhá ne. S osmi
+referencemi (`tgbot/tools/couple/refs.py` — čtyři páry, portrét i celotělovka
+**téhož** renderu, podobnost mezi nimi 0,958–0,970) ta domněnka padá. Čelní
+benchový klip, `--ref-fit`, mediány přes klip:
+
+| pár | podlaha muž | **portrét muž** | podlaha žena | **portrét žena** |
+|---|---|---|---|---|
+| c1 | 0,238 | **0,514** | 0,027 | 0,268 |
+| c2 | 0,167 | 0,320 | −0,024 | 0,242 |
+| c3 | 0,088 | 0,239 | −0,000 | **0,479** |
+| c4 | 0,153 | 0,196 | −0,009 | 0,301 |
+
+Průměr muži 0,317, ženy 0,322 — **pohlaví v tom není vůbec**. U c3 je to naopak
+žena, kdo bere silně, a muž slabě. Co zůstává, je **rozptyl mezi referencemi**:
+0,20 až 0,51 podle toho, koho na fotce máte. Dvě reference na takový závěr
+nikdy nestačily a §11.11 to tvrdilo předčasně.
+
+Podlaha se měří u každého páru zvlášť (týž driving klip proti týmž referencím,
+bez nahrazení) — bez ní se nedá odlišit „identita dorazila" od „ten člověk už
+tak trochu vypadal": u c1 je podlaha muže 0,238, u c3 jen 0,088.
+
+### 11.13 Rozhoduje, kolik pixelů **celé** tváře do modelu dorazí
+
+Celotělová reference dopadla hůř, ale ne kvůli rámování jako takovému — kvůli
+tomu, co z ní zbude. Změřeno na týchž souborech (velikost detekované tváře):
+
+| reference | v originále | po dopasování do 832×480 | bez `--ref-fit` |
+|---|---|---|---|
+| portrét (1024²) | 312–369 px | **148–174 px** | 257–299 px, ale **oříznutá** |
+| celá postava (832×1216) | 83–155 px | **32–63 px** | **0 px — tvář tam není vůbec** |
+
+Ten poslední sloupec je pointa: bez dopasování `WanAnimateToVideo` z celotělové
+fotky **uřízne hlavu** a detektor v referenci nenajde žádnou tvář. A u portrétu
+je sice tvář velká, ale bez temene a brady — proto to původní 0,12 z §11.8.
+
+S dopasováním má portrét ~150 px a celotělovka ~35 px, a výsledky to kopírují:
+
+| pár | portrét muž → celotělo | portrét žena → celotělo |
+|---|---|---|
+| c1 | 0,514 → 0,526 | 0,268 → **0,041** |
+| c2 | 0,320 → 0,320 | 0,242 → **0,054** |
+| c3 | 0,239 → **0,027** | 0,479 → 0,206 |
+| c4 | 0,196 → **0,413** | 0,301 → 0,170 |
+
+U žen portrét vyhrál pokaždé (průměrný přírůstek nad podlahu +0,32 proti +0,12).
+U mužů je to smíšené, a **výjimka potvrzuje mechanismus**: `c4m` je jediný
+render, který vyšel jako polocelek místo celé postavy, má proto po dopasování
+117 px místo ~35 — a je to jediný muž, kterému celotělová reference pomohla
+(0,196 → 0,413).
+
+**Doporučení pro kartu:** chtít po uživateli **portrét**, a když pošle
+celotělovou fotku, **oříznout ji na hlavu a ramena** dřív, než se použije jako
+reference. Ten ořez je levný a je to největší jednotlivá páka, kterou zatím
+známe. (Poctivá výhrada: v téhle sadě je portrét upscalovaný výřez z téhož
+renderu, takže nese míň skutečného detailu než nativně vyrenderovaná hlava —
+u opravdové selfie bude výchozí pozice lepší, ne horší.)
+
+### 11.14 Jedna společná fotka páru **funguje** — a líp, než dva portréty
+
+Plán i §9 tuhle možnost odkládaly s odkazem na §4.3 (Kontext se dvěma
+referencemi dal 0,17 a tvář vůbec nevyměnil). Pro Wan Animate to neplatí.
+Vygenerovaná fotka páru (oba do pasu, tváře 101 a 113 px), poslaná jako
+reference do **obou** průchodů:
+
+| | muž | žena |
+|---|---|---|
+| podlaha | 0,058 | −0,004 |
+| **jedna společná fotka** | **0,327** | **0,409** |
+| dva portréty (průměr sady) | 0,317 | 0,322 |
+
+Přírůstek nad podlahu +0,27 a +0,41 — tedy **nejlepší výsledek pro ženu v celé
+sadě** a pro muže v horní polovině.
+
+A hlavně: **nespáruje se to podle pozice, ale podle člověka.** V referenci stála
+žena vlevo a muž vpravo, v driving klipu je to **obráceně**, a model přesto dal
+muži v klipu muže z fotky a ženě ženu:
+
+| výstup | vlevo v referenci (žena) | vpravo v referenci (muž) |
+|---|---|---|
+| vlevo v klipu (muž) | 0,076 | **0,327** |
+| vpravo v klipu (žena) | **0,409** | 0,012 |
+
+Křížové hodnoty 0,08 a 0,01 — **žádné přelití identit**, přestože obě tváře byly
+v téže referenci a maska jim neřekla, která je která.
+
+**Co to znamená pro produkt:** uživatel nejspíš nemusí nahrávat dvě fotky, stačí
+jedna společná — což je výrazně lepší UX i jednodušší request. **Ale změřený je
+jeden pár**, a je to pár, kde jsou ti dva lidé na první pohled odlišní (muž/žena,
+jiné vlasy). Riziková je právě opačná situace: dva podobní lidé nebo stejné
+pohlaví, kde se model nemá čeho chytit. **Než se tohle postaví do UI, patří
+změřit přesně ten těžký případ** — jinak se zjistí od uživatelů.
+
+Zůstává i důvod, proč dvě fotky nezahazovat úplně: společná fotka páru nemusí
+existovat (vztah na dálku, nová dvojice), takže dvě fotky dávají smysl jako
+záložní cesta, ne jako hlavní.
