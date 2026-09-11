@@ -931,3 +931,26 @@ Metodická poznámka, která platí zpětně: měřit každý běh proti *jeho v
 referenci bylo špatně. Přeměření §11.13 proti kanonické referenci čísla
 potvrdilo (muž celotělo 0,517 proti tehdejším 0,526, žena 0,033 proti 0,041),
 takže závěr té sekce padá jen ve **vysvětlení**, ne v datech.
+
+### 11.17 Provozní past: po sérii běhů ComfyUI spadne na CPU
+
+Při téhle vlně se to projevilo naostro a pro kartu je to důležitější než
+kterékoli číslo výš. Po zhruba dvaceti couple bězích za sebou přestal box
+počítat na GPU: v logu
+
+    loaded partially; 0.00 MB usable, 0.00 MB loaded, 16470.43 MB offloaded
+
+GPU na 0 %, RAM 117 ze 121 GB. Job pak nespadne — jen běží na CPU a místo
+sedmi minut trvá hodiny. Je to táž signatura, kterou zná
+`UGCFactory` (proces po dlouhém běhu nabobtná a neuvolní paměť) a před kterou
+varuje komentář v `run.sh`: `--reserve-vram` musí být menší než *aktuálně*
+volná GPU paměť, jinak ComfyUI offlouduje všechno.
+
+`systemctl --user restart comfyui.service` to spolehlivě spraví — po restartu
+73 GB místo 117 a volná VRAM 50,6 GB místo ~17.
+
+**Pro kartu z toho plyne konkrétní požadavek**, který v §7 chyběl: couple job
+trvá sedm minut a spotřebuje hodně paměti, takže **wrapper musí hlídat volnou
+VRAM před zařazením jobu** a při podkročení prahu ComfyUI restartovat — jinak
+se fronta zadrhne na jobu, který běží na CPU, deadline z `minutes_est` vyprší
+a kredit se vrátí za render, který pořád běží. Tiché selhání, ne hlášená chyba.
