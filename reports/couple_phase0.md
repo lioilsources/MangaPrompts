@@ -618,21 +618,38 @@ s nahrazovaným člověkem přemalovaným** (`DrawMaskOnImage`, černá) — př
 dělá i Kijaiův referenční workflow. Po opravě se osoba mění; identita reference
 ale i tak nedorazí.
 
+**Počet kroků to není.** První podezřelý byla destilace: čtyři kroky, hotová
+scéna k opsání a málo prostoru se od ní odchýlit. Změřeno, a hypotéza padá:
+
+| | P1 (ref1 na muže) | P2 (ref2 na ženu) |
+|---|---|---|
+| 4 kroky, distill 1.2 | medián 0,123 | 0,135 |
+| **8 kroků, distill 1.2** | medián 0,127 | 0,060 |
+
+Dvojnásobek kroků nehnul ničím (a stojí 570 s místo 436 s: P1 205 s, P2 180 s).
+
+**Bez destilace to na tomhle buildu vůbec neběží.** `--distill 0 --steps 20
+--cfg 3.5` vrátil klip **úplně černý** (min = max = 0). Napoprvé to vypadalo na
+sampler — `lcm` patří k destilovanému rozvrhu a zůstal zapnutý — ale s `euler`
+je výsledek stejně černý. Ať už je příčinou cfg > 1 nebo relight LoRA bez
+destilace, **plný počet kroků na tomhle fp8 buildu není dostupná cesta** a bylo
+by potřeba to řešit zvlášť, ne cestou k identitě.
+
 Co z toho plyne pro plán: **v1 couple karty na tomhle nastavení nepostavíš.**
 Dvouprůchodová kompozice je hotová a funguje, chybí jediná věc — aby průchod
-v Mix režimu nesl tvář z fotky. Levné experimenty v tomhle pořadí, než se sáhne
-na Wan 2.6 API (§3.1):
+v Mix režimu nesl tvář z fotky. Co zbývá vyzkoušet, v tomhle pořadí:
 
-1. **Bez distill LoRA, 20 kroků, cfg ~3,5.** Čtyři destilované kroky jsou
-   nejpodezřelejší: model má hotovou scénu k opsání a málo kroků na to, aby se
-   od ní odchýlil. `run.py --distill 0 --steps 20 --cfg 3.5` na to je.
-2. **Reference v rámování scény.** `ref1`/`ref2` jsou portréty 1024², které uzel
-   ořízne na 832×480 — zbude tvář přes celý snímek a žádné tělo. Wan Animate
-   čeká referenci postavy, ne hlavy.
-3. **Relight LoRA na 0.** Přebarvuje postavu podle scény; je možné, že přebarví
+1. **Reference v rámování scény.** Teď nejpravděpodobnější. `ref1`/`ref2` jsou
+   portréty 1024², které uzel ořízne na 832×480 — zbude tvář přes celý snímek
+   a žádné tělo, zatímco scéna je polocelek. Wan Animate čeká referenci
+   **postavy**, ne hlavy. (Move režim s touž referencí dá 0,60, ale tam si model
+   scénu staví sám a může si ji k referenci přizpůsobit; v Mix je scéna daná.)
+2. **Relight LoRA na 0.** Přebarvuje postavu podle scény; je možné, že přebarví
    i tvář.
-4. `clip_vision_output` zapojit (Kijaiův referenční workflow ho nechává viset,
-   ale na jeho vlastním buildu).
+3. `clip_vision_output` zapojit (Kijaiův referenční workflow ho nechává viset,
+   ale na svém vlastním buildu).
+4. Průchod přes `WanVideoWrapper` místo nativního uzlu — jiná implementace téhož
+   modelu, jiná cesta pro referenci.
 
 Dokud jeden z nich nezvedne Mix režim k 0,6, **je go/no-go na Wan 2.6 R2V (§3.1)
 dřív, ne později** — lokální cesta zatím dvě identity neumí ani aproximovat.
