@@ -312,11 +312,12 @@ Pořadí je záměrné: první tři body můžou zrušit půlku plánu.
 - [x] **Rozhodnout, která služba veze pipeline** a jestli umí vystavit kontrakt
       video-api (§2.2). Tohle určuje rozsah práce v botu. → kontrakt rozepsaný
       v §11.6; samotné rozhodnutí je produktové.
-- [ ] **Pořídit Wan 2.2 Animate a ověřit Mix režim se dvěma lidmi** — celý
+- [x] **Pořídit Wan 2.2 Animate a ověřit Mix režim se dvěma lidmi** — celý
       postup, soubory a velikosti v [`docs/couple-spark-setup.md`](../docs/couple-spark-setup.md).
       Klíčová otázka: přežije osoba A druhý průchod, když ji nese
-      `background_video`? → uzel i graf hotové a pre-flight čistý (§11.2, §11.4),
-      **běh čeká na doběhnutí vah**.
+      `background_video`? → **ano, přežije** (§11.8). Ale **Mix režim neunese
+      identitu reference** — 0,09–0,19 proti 0,60 v Move režimu na témže klipu
+      a téže referenci. To je nový blokující nález, §11.8.
 - [x] Ověřit WanAnimatePreprocess (výběr osoby, masky per osoba) a relight
       LoRA. → nainstalováno, a **výběr osoby tam není** (§11.3).
 - [x] Ověřit **segment-anything-2** a textové maskování jako alternativu
@@ -550,3 +551,130 @@ Dvě věci, které z toho plynou a v plánu nejsou:
 - https://www.runcomfy.com/comfyui-workflows/wan-animate-2-comfyui-identity-preserving-motion-transfer
 - https://docs.comfy.org/tutorials/video/wan/wan2-2-animate
 - https://wan27.org/blog/wan-2-6-open-source-guide
+
+### 11.7 S2 — kolik to na téhle mašině trvá
+
+Move režim, jedna postava, 832×480, 77 snímků (4,8 s při 16 fps), 4 kroky
+s distill LoRA, cfg 1.0, `lcm`/`simple`:
+
+| | studený běh | druhý běh (model v cache) |
+|---|---|---|
+| P0 (póza + tváře, CPU) | 28 s | 27 s |
+| P1 (sampling + VAE decode) | 130 s | 126 s |
+| načtení modelů | 9 s | 6 s |
+| **celkem** | **170 s** | **213 s** (jiný, delší driving klip) |
+
+Špička: po běhu zbývalo 14,8–33,3 GB ze 130,7 GB unified, takže paměť není
+úzké hrdlo a `--reserve-vram 8` stačí.
+
+**Rozhodovací bod ze setup docu §4 je splněný s velkou rezervou.** Plán říkal:
+když 5 s na 720p přeleze ~10 min, je couple karta přes hodinu na klip. Na
+480p je jeden průchod **130 s**, tedy celá couple karta (§11.8) vyjde na
+~7,5 minuty. 720p změřeno není — na to je potřeba samostatný běh, a je to
+jediný bod ze S2, který zůstává otevřený.
+
+### 11.8 S3 — dvouprůchod funguje, ale identitu neunese
+
+Celý řetězec na jednom prompt: P0 (masky + pózy + tváře pro obě osoby),
+P1 (nahradí A proti původnímu driving), P2 (nahradí B proti výstupu P1).
+832×480, 77 snímků, dva benchové klipy — objetí v profilu a čelní pohled.
+
+| fáze | čas |
+|---|---|
+| P0 masky (SAM2, GPU) | 14 s |
+| P0 pózy a tváře (ViTPose, CPU) | 53 s |
+| P1 osoba A | 126–132 s |
+| P2 osoba B | 106–113 s |
+| **celkem** | **436–458 s** (7,3–7,6 min) |
+
+**Přežil A druhý průchod? Ano.** Na obou klipech je muž nahrazený v P1 po P2
+beze změny, žena se mění jen v P2. Kompozici dělá model uvnitř: v místě dotyku
+není šev, nasvícení obou lidí v jednom snímku sedí, a ruční kompozit přes masku
+(a s ním obava z §5) není potřeba. **Architektura z §3 tedy platí.**
+
+**Ale identita reference se do Mix režimu nepřenese.** Na čelním klipu, kde je
+medián |yaw| 3° a gate má co měřit (32–39 čistých snímků z 39):
+
+| | podobnost k referenci |
+|---|---|
+| Mix P1 (ref1 na muže) | p10 0,093 · medián 0,123 |
+| Mix P2 (ref2 na ženu) | p10 0,061 · medián 0,135 |
+| **Move režim, týž klip, táž ref1** | **medián 0,595 · max 0,646** |
+
+Tohle není chyba měření ani slabá reference: **stejný model, stejné nastavení,
+stejný klip a stejná fotka dají v Move režimu 0,60** — tedy přesně na hraně
+„stejná osoba" podle stupnice facebenche a v řádu dvouprůchodového face
+inpaintu (0,72). Jakmile se připojí `character_mask` a `background_video`, spadne
+to na 0,1. Vizuálně to sedí s čísly: maskovaná osoba se **vymění** (muž dostane
+vousy, žena zrzavé vlasy — atributy z reference), ale je to **někdo jiný**, ne
+člověk z fotky.
+
+Jeden chybný obrat po cestě stojí za zapsání, protože se dá zdědit: nejdřív
+Mix nevracel **vůbec nic** — výstup byl driving klip s barevnými artefakty.
+`character_mask` totiž říká jen „tady něco vygeneruj", ale concat latent pořád
+nese pixely, které v `background_video` na tom místě jsou, a se čtyřmi
+destilovanými kroky si je model prostě nechá. **Background musí přijít
+s nahrazovaným člověkem přemalovaným** (`DrawMaskOnImage`, černá) — přesně to
+dělá i Kijaiův referenční workflow. Po opravě se osoba mění; identita reference
+ale i tak nedorazí.
+
+Co z toho plyne pro plán: **v1 couple karty na tomhle nastavení nepostavíš.**
+Dvouprůchodová kompozice je hotová a funguje, chybí jediná věc — aby průchod
+v Mix režimu nesl tvář z fotky. Levné experimenty v tomhle pořadí, než se sáhne
+na Wan 2.6 API (§3.1):
+
+1. **Bez distill LoRA, 20 kroků, cfg ~3,5.** Čtyři destilované kroky jsou
+   nejpodezřelejší: model má hotovou scénu k opsání a málo kroků na to, aby se
+   od ní odchýlil. `run.py --distill 0 --steps 20 --cfg 3.5` na to je.
+2. **Reference v rámování scény.** `ref1`/`ref2` jsou portréty 1024², které uzel
+   ořízne na 832×480 — zbude tvář přes celý snímek a žádné tělo. Wan Animate
+   čeká referenci postavy, ne hlavy.
+3. **Relight LoRA na 0.** Přebarvuje postavu podle scény; je možné, že přebarví
+   i tvář.
+4. `clip_vision_output` zapojit (Kijaiův referenční workflow ho nechává viset,
+   ale na jeho vlastním buildu).
+
+Dokud jeden z nich nezvedne Mix režim k 0,6, **je go/no-go na Wan 2.6 R2V (§3.1)
+dřív, ne později** — lokální cesta zatím dvě identity neumí ani aproximovat.
+
+### 11.9 Gate má slepé místo přesně tam, kde karta žije
+
+Na prvním benchovém klipu (objetí, oba v profilu) **nezbyl ani jeden čistý
+snímek**: |yaw| je 79–80° po celý klip, tedy nad hranicí 45°, kterou gate
+používá. To není chyba gate, je to jeho správná odpověď — jen znamená, že
+o takovém klipu nemá žádný názor.
+
+A je to horší, než vypadá. Kontrolní měření: stejný klip proti **profilovému**
+výřezu téhož člověka z jeho prvního snímku dá medián 0,52–0,61 (margin 0,50,
+tedy osoby jsou spolehlivě rozlišené) — ArcFace ty tváře číst umí. Proti
+**čelní** referenční fotce ale dá 0,05–0,17 i pro člověka, který na obrázku
+evidentně z reference je. Rozdíl není v identitě, ale v úhlu: čelní reference
+proti 80° profilu je pro antelopev2 cizí člověk.
+
+**Vlajkové akce karty (`kiss`, `hug`) přitom oba obličeje do profilu staví
+z definice.** Gate, jak ho plán popisuje — ArcFace mezi uživatelovou čelní
+fotkou a snímky videa — je tedy na nich slepý, a `gaze` je jediná akce, na které
+dnes měřit jde. Možnosti: měřit jen na snímcích blízkých čelnímu pohledu
+a u `kiss`/`hug` přiznat, že gate nemá data; nebo si z reference vyrobit
+profilovou variantu a měřit proti ní; nebo jiný embedding. **Rozhodnout to
+patří dřív, než se postaví retry smyčka** — ta by jinak na `kiss` běžela
+naslepo.
+
+Prahy čistoty jsou proto v `vidbench.py` nově parametry (`--max-yaw`,
+`--min-det`, `--min-face`), ne konstanty: jsou to odhady a tenhle klip ukázal,
+že se s nimi musí dát hýbat.
+
+### 11.10 Masky ze SAM2 jsou křehčí, než plán čekal
+
+Tři body na osobu nestačí. Na čelním klipu nechal SAM2 muži **díru v pruhovaném
+tričku** — tělo vyšlo ve dvou kusech, ViTPose z toho vyrobil NaN v klíčových
+bodech obličeje a `PoseAndFaceDetection` na tom **spadl** (`cannot convert float
+NaN to integer`, `nodes.py:157` — uzel to nijak neošetřuje). `fill_holes`
+v `GrowMaskWithBlur` to nespravil, díra není topologická; spravilo to až šest
+bodů rozesetých po těle. Tatáž díra se pak objevila u ženy v tmavém tílku,
+dokud i ona nedostala šest bodů.
+
+Pro kartu z toho plyne, že **dvě kliknutí v UI nebudou stačit** a že pád uzlu
+na NaN je reálná cesta, jak couple job spadne uprostřed — v P4/P5 to potřebuje
+buď automatické body (kostra z prvního snímku), nebo kontrolu masky před tím,
+než se pustí 130sekundový průchod.

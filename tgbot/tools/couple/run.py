@@ -35,9 +35,9 @@ IN, OUT = os.path.join(COMFY, "input"), os.path.join(COMFY, "output")
 # by the prefix `graph.py` gives its nodes.
 PHASES = [("P0 masky (SAM2)", ("sam2", "seg_", "grow_", "block_", "solo_")),
           ("P0 póza a tváře (ViTPose, CPU)", ("onnx", "pose_", "draw_")),
-          ("P1 osoba A", ("ref_a", "ref_fit_a", "wan_a", "noise_a", "guider_a",
+          ("P1 osoba A", ("ref_a", "bg_a", "wan_a", "noise_a", "guider_a",
                           "sample_a", "trim_a", "out_a")),
-          ("P2 osoba B", ("ref_b", "ref_fit_b", "wan_b", "noise_b", "guider_b",
+          ("P2 osoba B", ("ref_b", "bg_b", "wan_b", "noise_b", "guider_b",
                           "sample_b", "trim_b", "out_b")),
           ("načtení modelů", ("unet", "lora_", "clip", "pos", "neg", "vae",
                               "sigmas", "sampler", "load", "src", "black")),
@@ -175,7 +175,8 @@ def cmd_check(a):
 
 def build(a, dummy=False):
     kw = dict(width=a.width, height=a.height, length=a.length, seed=a.seed,
-              fps=a.fps, prefix=a.prefix, steps=a.steps)
+              fps=a.fps, prefix=a.prefix, steps=a.steps, distill=a.distill,
+              cfg=a.cfg)
     # `__`-prefixed names are what check_workflow.py treats as substituted at
     # request time, so a pre-flight checks the graph and not the staging.
     if a.cmd == "solo" or (dummy and a.what == "solo"):
@@ -192,11 +193,25 @@ def build(a, dummy=False):
     return build_fn(video, ref_a, ref_b, pa, pb, **kw)
 
 
+FACEBENCH = os.path.expanduser("~/Code/facebench")
+
+
 def cmd_run(a):
     g = build(a)
     open(os.path.join(OUT, a.prefix + ".api.json"), "w").write(json.dumps(g, indent=1))
     marks, total, pid = submit(a.url, g, a.cmd)
-    report(marks, total, a.url, pid)
+    files = report(marks, total, a.url, pid)
+
+    # The clip is only half the answer; the other half is the identity gate,
+    # which lives in Ol1nLLM (tools/facebench/vidbench.py, synced to ~/Code/
+    # facebench). Printed rather than run: it is a separate repo's tool and it
+    # wants the references named, not guessed.
+    final = [p for n, p in files if n == "save_out_b"] or \
+            [p for n, p in files if n == "save_out_a"]
+    if final:
+        print("\n  identita:\n    cd %s && python vidbench.py score %s \\\n"
+              "      --refs a=%s,b=%s --action <akce>"
+              % (FACEBENCH, final[0], a.ref_a, getattr(a, "ref_b", a.ref_a)))
     return 0
 
 
@@ -210,6 +225,9 @@ if __name__ == "__main__":
     ap.add_argument("--fps", type=float, default=16.0)
     ap.add_argument("--seed", type=int, default=42)
     ap.add_argument("--steps", type=int, default=graph.STEPS)
+    ap.add_argument("--distill", type=float, default=graph.DISTILL_STRENGTH,
+                    help="síla lightx2v distill LoRA; 0 ji z řetězu vyřadí")
+    ap.add_argument("--cfg", type=float, default=graph.CFG)
     ap.add_argument("--prefix", default=None)
     sub = ap.add_subparsers(dest="cmd", required=True)
 

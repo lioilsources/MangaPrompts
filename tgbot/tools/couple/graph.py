@@ -66,8 +66,14 @@ RELIGHT_STRENGTH = 1.0
 # pose models run on CPU. A measured property of the install, not a preference.
 ONNX_DEVICE = "CPUExecutionProvider"
 
-PROMPT = ("two people, natural skin texture, soft light, photorealistic, "
-          "sharp focus, stable camera")
+# The prompt is not decoration — at cfg 1.0 with a 4-step distill it is one of
+# the few things steering content, and it decides how many people appear.
+# Measured the hard way: running the solo pass with the couple's "two people…"
+# text produced two dancers that resembled neither the reference nor the driving
+# clip. One prompt per mode, therefore.
+LOOK = "natural skin texture, soft light, photorealistic, sharp focus, stable camera"
+PROMPT_SOLO = "a person, " + LOOK
+PROMPT_COUPLE = "two people, " + LOOK
 
 
 def _resize(src, width, height):
@@ -88,10 +94,20 @@ def _save(src, prefix, fps):
         "format": "video/h264-mp4", "pingpong": False, "save_output": True}}
 
 
+def model_edge(distill):
+    """Which node the model hangs off — the distill LoRA is rewired out, not
+    zeroed, when it is disabled."""
+    return "lora_distill" if distill else "lora_relight"
+
+
 def _loaders(steps, distill, relight, prompt):
     """Everything shared by both passes. Both passes reuse one model, one text
-    encoding and one VAE — loading them twice would dominate the measurement."""
-    return {
+    encoding and one VAE — loading them twice would dominate the measurement.
+
+    `distill` 0 drops the lightx2v LoRA from the model chain entirely, which is
+    what a run at full step count wants; the chain is rewired, not just set to
+    strength 0, so the comparison is clean."""
+    g = {
         "unet": {"class_type": "UNETLoader", "inputs": {
             "unet_name": ANIMATE_UNET, "weight_dtype": "default"}},
         "lora_relight": {"class_type": "LoraLoaderModelOnly", "inputs": {
@@ -111,6 +127,10 @@ def _loaders(steps, distill, relight, prompt):
             "model": ["lora_distill", 0], "scheduler": SCHEDULER,
             "steps": steps, "denoise": 1.0}},
     }
+    if not distill:
+        g.pop("lora_distill")
+        g["sigmas"]["inputs"]["model"] = ["lora_relight", 0]
+    return g
 
 
 def _video(name, length, fps):
@@ -135,24 +155,37 @@ def _detect(g, who, images, width, height, fps, prefix, save=True):
 
 
 def _pass(g, who, ref_image, background, width, height, length, seed, fps, prefix,
-          mask=None):
+          model, cfg, mask=None):
     """One Animate pass. Without `mask` this is Move mode (one person, whole
     frame); with it, Mix mode (replace the masked person, keep the rest)."""
+    # No resize on the reference. `WanAnimateToVideo` already scales it to
+    # cover width×height and centre-crops (`common_upscale(..., "center")`),
+    # so letterboxing it first only feeds the node its own black bars.
     g["ref_" + who] = {"class_type": "LoadImage", "inputs": {"image": ref_image}}
-    g["ref_fit_" + who] = _resize(["ref_" + who, 0], width, height)
     wan = {"positive": ["pos", 0], "negative": ["neg", 0], "vae": ["vae", 0],
            "width": width, "height": height, "length": length, "batch_size": 1,
            "continue_motion_max_frames": 5, "video_frame_offset": 0,
-           "reference_image": ["ref_fit_" + who, 0],
+           "reference_image": ["ref_" + who, 0],
            "face_video": ["pose_" + who, 1], "pose_video": ["draw_" + who, 0]}
     if mask is not None:
-        wan["background_video"] = background
+        # The background must arrive with the person being replaced **painted
+        # out**, not as the untouched frame. `character_mask` only says "make
+        # something new here"; the concat latent still carries whatever pixels
+        # the background holds there, and with four distill steps the model
+        # simply keeps them. Measured: feeding the raw driving clip as
+        # background gave back the driving clip (identity 0.10 / 0.07 against
+        # the references) while the same reference in Move mode transferred
+        # cleanly. Kijai's reference workflow does the same — its
+        # `background_image` comes from `DrawMaskOnImage`.
+        g["bg_" + who] = {"class_type": "DrawMaskOnImage", "inputs": {
+            "image": background, "mask": mask, "color": "0, 0, 0"}}
+        wan["background_video"] = ["bg_" + who, 0]
         wan["character_mask"] = mask
     g["wan_" + who] = {"class_type": "WanAnimateToVideo", "inputs": wan}
     g["noise_" + who] = {"class_type": "RandomNoise", "inputs": {"noise_seed": seed}}
     g["guider_" + who] = {"class_type": "CFGGuider", "inputs": {
-        "model": ["lora_distill", 0], "positive": ["wan_" + who, 0],
-        "negative": ["wan_" + who, 1], "cfg": CFG}}
+        "model": [model, 0], "positive": ["wan_" + who, 0],
+        "negative": ["wan_" + who, 1], "cfg": cfg}}
     g["sample_" + who] = {"class_type": "SamplerCustomAdvanced", "inputs": {
         "noise": ["noise_" + who, 0], "guider": ["guider_" + who, 0],
         "sampler": ["sampler", 0], "sigmas": ["sigmas", 0],
@@ -166,7 +199,7 @@ def _pass(g, who, ref_image, background, width, height, length, seed, fps, prefi
 
 def solo(video, reference, width=832, height=480, length=77, seed=42, fps=16.0,
          prefix="couple_solo", steps=STEPS, distill=DISTILL_STRENGTH,
-         relight=RELIGHT_STRENGTH, prompt=PROMPT):
+         relight=RELIGHT_STRENGTH, prompt=PROMPT_SOLO, cfg=CFG):
     """S2 — Move mode, one person, no mask. The cheapest thing that answers
     "how long does this machine take per clip", which every later decision
     depends on (docs/couple-spark-setup.md §4)."""
@@ -176,13 +209,15 @@ def solo(video, reference, width=832, height=480, length=77, seed=42, fps=16.0,
     g["onnx"] = {"class_type": "OnnxDetectionModelLoader", "inputs": {
         "vitpose_model": VITPOSE, "yolo_model": YOLO, "onnx_device": ONNX_DEVICE}}
     _detect(g, "a", ["src", 0], width, height, fps, prefix)
-    _pass(g, "a", reference, None, width, height, length, seed, fps, prefix)
+    _pass(g, "a", reference, None, width, height, length, seed, fps, prefix,
+          model_edge(distill), cfg)
     return g
 
 
 def couple(video, ref_a, ref_b, point_a, point_b, width=832, height=480,
            length=77, seed=42, fps=16.0, prefix="couple", steps=STEPS,
-           distill=DISTILL_STRENGTH, relight=RELIGHT_STRENGTH, prompt=PROMPT):
+           distill=DISTILL_STRENGTH, relight=RELIGHT_STRENGTH,
+           prompt=PROMPT_COUPLE, cfg=CFG):
     """S3 — the test that decides whether this card can exist locally.
 
     `point_a` / `point_b` are lists of (x, y) on the first frame **in the
@@ -218,7 +253,12 @@ def couple(video, ref_a, ref_b, point_a, point_b, width=832, height=480,
         g["grow_" + who] = {"class_type": "GrowMaskWithBlur", "inputs": {
             "mask": ["seg_" + who, 0], "expand": 10, "incremental_expandrate": 0.0,
             "tapered_corners": True, "flip_input": False, "blur_radius": 1.0,
-            "lerp_alpha": 1.0, "decay_factor": 1.0, "fill_holes": False}}
+            # fill_holes matters: SAM2 left a hole in the man's striped shirt on
+            # the front-facing bench clip, the body came out in two pieces, and
+            # ViTPose then produced NaN face keypoints that crash
+            # PoseAndFaceDetection outright ("cannot convert float NaN to
+            # integer", nodes.py:157 — the node has no guard).
+            "lerp_alpha": 1.0, "decay_factor": 1.0, "fill_holes": True}}
         g["block_" + who] = {"class_type": "BlockifyMask", "inputs": {
             "masks": ["grow_" + who, 0], "block_size": 32}}
         g["maskimg_" + who] = {"class_type": "MaskToImage", "inputs": {
@@ -256,10 +296,11 @@ def couple(video, ref_a, ref_b, point_a, point_b, width=832, height=480,
 
     # P1 replaces A against the original driving video; P2 replaces B against
     # P1's output, which is what carries A through the second pass.
+    model = model_edge(distill)
     _pass(g, "a", ref_a, ["src", 0], width, height, length, seed, fps, prefix,
-          mask=["block_a", 0])
+          model, cfg, mask=["block_a", 0])
     _pass(g, "b", ref_b, ["out_a", 0], width, height, length, seed, fps, prefix,
-          mask=["block_b", 0])
+          model, cfg, mask=["block_b", 0])
     return g
 
 
