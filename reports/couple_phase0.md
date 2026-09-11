@@ -809,10 +809,10 @@ render, který vyšel jako polocelek místo celé postavy, má proto po dopasov�
 117 px místo ~35 — a je to jediný muž, kterému celotělová reference pomohla
 (0,196 → 0,413).
 
-**Doporučení pro kartu:** chtít po uživateli **portrét**, a když pošle
-celotělovou fotku, **oříznout ji na hlavu a ramena** dřív, než se použije jako
-reference. Ten ořez je levný a je to největší jednotlivá páka, kterou zatím
-známe. (Poctivá výhrada: v téhle sadě je portrét upscalovaný výřez z téhož
+**Doporučení pro kartu:** ořezat referenci, a to na **hlavu s horní částí těla**
+— ne na portrét a ne na celou postavu. Přesnou míru dává §11.16; formulace
+„víc pixelů tváře je líp", kterou tahle sekce původně nabízela, **je měřením
+vyvrácená**. (Poctivá výhrada: v téhle sadě je portrét upscalovaný výřez z téhož
 renderu, takže nese míň skutečného detailu než nativně vyrenderovaná hlava —
 u opravdové selfie bude výchozí pozice lepší, ne horší.)
 
@@ -896,3 +896,38 @@ Uživatel pak nahraje jednu fotku (lepší UX než dvě) a **musí jen říct, k
 kdo** — jedno klepnutí na tvář v Mini Appce, které stejně potřebujeme kvůli
 bodům pro SAM2. Dvě samostatné fotky zůstávají jako záložní cesta pro dvojice,
 které společnou fotku nemají.
+
+### 11.16 Optimum ořezu: ne portrét, ne celá postava — **hlava a kus těla**
+
+§11.13 z rozdílu portrét/celotělovka vyvodilo „rozhoduje, kolik pixelů tváře
+dorazí". Sweep přes těsnost výřezu tu formulaci **vyvrací**. Jeden pár (c1),
+týž klip, mění se **jen** těsnost ořezu reference; všechno měřeno proti **téže
+kanonické referenci**, ať se modelu poslalo cokoli — jinak se porovnávají
+i různé měřicí stupnice, ne jen různé vstupy:
+
+| co se poslalo modelu | tvář po dopasování | muž | žena |
+|---|---|---|---|
+| podlaha (bez nahrazení) | — | 0,238 | 0,027 |
+| výřez 1,4× tváře | 289 px | 0,197 | 0,032 |
+| výřez 1,9× | 213 px | 0,432 | 0,162 |
+| portrét (2,6×) | 157 px | 0,514 | 0,268 |
+| **výřez 3,6×** | **113 px** | **0,568** | **0,340** |
+| celá postava | 61 px | 0,517 | 0,033 |
+
+Je to křivka s **vnitřním optimem**, ne monotónní trend. Nejtěsnější výřez —
+tvář přes celý snímek — je **na úrovni podlahy**, tedy identita nedorazí vůbec.
+Nejlepší je výřez kolem **3,6× šířky tváře**, tedy hlava s rameny a kusem
+trupu. Tomu odpovídá 113 px tváře po dopasování do 832×480, ne víc.
+
+Vysvětlení, které tomu sedí: model nepotřebuje **velkou** tvář, potřebuje tvář
+**v kontextu postavy**. Ostatně týž efekt ukazuje i detektor — v nejtěsnějším
+výřezu **nenajde obličej vůbec** (SCRFD potřebuje kolem tváře okraj), takže
+i kdyby model identitu vzal, gate by ji neuměl změřit.
+
+**0,568 je zatím nejlepší naměřená hodnota** (proti 0,514 u portrétu), a je to
+zadarmo — jen jiný ořez. K prahu 0,62 zbývá málo.
+
+Metodická poznámka, která platí zpětně: měřit každý běh proti *jeho vlastní*
+referenci bylo špatně. Přeměření §11.13 proti kanonické referenci čísla
+potvrdilo (muž celotělo 0,517 proti tehdejším 0,526, žena 0,033 proti 0,041),
+takže závěr té sekce padá jen ve **vysvětlení**, ne v datech.
