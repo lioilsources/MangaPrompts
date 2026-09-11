@@ -324,9 +324,9 @@ Pořadí je záměrné: první tři body můžou zrušit půlku plánu.
 - [x] **Pořídit Wan 2.2 Animate a ověřit Mix režim se dvěma lidmi** — celý
       postup, soubory a velikosti v [`docs/couple-spark-setup.md`](../docs/couple-spark-setup.md).
       Klíčová otázka: přežije osoba A druhý průchod, když ji nese
-      `background_video`? → **ano, přežije** (§11.8). Ale **Mix režim neunese
-      identitu reference** — 0,09–0,19 proti 0,60 v Move režimu na témže klipu
-      a téže referenci. To je nový blokující nález, §11.8.
+      `background_video`? → **ano, přežije** (§11.8), a druhý průchod není
+      slabší než první (§11.11). Identita v Mix režimu byla zprvu 0,09–0,19,
+      ale to byl ořez reference — po dopasování **0,49–0,54** (§11.11).
 - [x] Ověřit WanAnimatePreprocess (výběr osoby, masky per osoba) a relight
       LoRA. → nainstalováno, a **výběr osoby tam není** (§11.3).
 - [x] Ověřit **segment-anything-2** a textové maskování jako alternativu
@@ -708,3 +708,49 @@ Pro kartu z toho plyne, že **dvě kliknutí v UI nebudou stačit** a že pád u
 na NaN je reálná cesta, jak couple job spadne uprostřed — v P4/P5 to potřebuje
 buď automatické body (kostra z prvního snímku), nebo kontrolu masky před tím,
 než se pustí 130sekundový průchod.
+
+### 11.11 Rámování reference byl ten hlavní problém — a druhý průchod není slabší
+
+§11.8 nechalo jako nejpravděpodobnějšího viníka rámování reference. Změřeno,
+a **sedí to**: `WanAnimateToVideo` referenci škáluje na *pokrytí* 832×480
+a **ořízne ji na střed** (`common_upscale(..., "center")`). Ze čtvercového
+portrétu 1024² tedy zbude pruh od očí k bradě, a z celopostavové fotky
+832×1216 by nezbyla hlava vůbec. Stačí referenci předem dopasovat s okraji
+(`ImageResizeKJv2`, nově `--ref-fit`, zapnuto defaultně — a je to i důvod, proč
+ji Kijaiův referenční workflow resizuje):
+
+| | podlaha¹ | bez ref-fit | **s ref-fit** |
+|---|---|---|---|
+| muž (ref1), nahrazen v **P1** | 0,272 | 0,123 | **0,489** |
+| muž (ref1), nahrazen v **P2** | 0,272 | — | **0,538** |
+| žena (ref2), nahrazena v P1 | 0,226 | — | 0,213 |
+| žena (ref2), nahrazena v P2 | 0,226 | 0,135 | 0,242 |
+
+¹ podlaha = týž driving klip **bez jakéhokoli nahrazení**, měřeno proti týmž
+referencím. Bez ní se nedá odlišit „identita dorazila" od „ten člověk už tak
+trochu vypadal".
+
+**Druhý průchod není slabší než první.** To bylo první podezření, když žena
+po P2 skončila na 0,24; prohození pořadí (P1 nahradí ženu, P2 muže) ale ukázalo,
+že slabina jde za **osobou, ne za průchodem**: muž dá 0,489 v P1 a **0,538 v P2**,
+žena 0,213 v P1 a 0,242 v P2. Dvouprůchodová architektura je tedy symetrická
+a v P2 se nic neztrácí — což je spolu s tím, že A přežije (§11.8), poslední
+otevřená otázka k architektuře, a je zavřená.
+
+**Celopostavová reference nepomohla.** `srcB` (832×1216, celá postava) místo
+portrétu dala ženě 0,219 proti 0,242 s portrétem. Pákou bylo to oříznutí,
+ne výřez postavy.
+
+**Vizuální verdikt a metrika se u ženy rozcházejí,** a to je samo o sobě nález:
+na výstupu má **zrzavé kudrnaté vlasy a světlejší pleť** z `ref2` — atributy
+dorazily zřetelně — ale ArcFace ji drží na úrovni podlahy. Tvář jako geometrie
+se nepřenesla, barvy a účes ano. U muže dorazilo obojí. Kandidáti na příčinu,
+neověřené: menší obličej v rámu (62 px proti 67 px u muže), méně výrazné rysy
+`ref2` proti vousatému `ref1`, nebo prostě rozptyl mezi referencemi — na to je
+potřeba víc než dvě fotky.
+
+**Stav po téhle vlně:** 0,54 je pod prahem 0,62, ale je to **poznatelný člověk**,
+ne cizí — a proti 0,12 z §11.8 je to skok o řád. Couple karta tedy lokálně
+možná je; co zbývá, je posunout se z 0,5 na 0,6+ a zjistit, proč jedna
+reference bere a druhá ne. Další levné páky (relight LoRA na 0,
+`clip_vision_output`, víc referencí v testovací sadě) jsou pořád nevyzkoušené.
