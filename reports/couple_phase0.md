@@ -88,6 +88,11 @@ Otázka z plánu („ověřit, zda existuje open-weights Wan-Animate-2") má odp
   nemluví; RunComfy explicitně píše „one reference character still".
   ⇒ **Dvouprůchodová architektura z plánu zůstává v platnosti**, stejně jako
   identity gate. Animate 2 řeší přípravu vstupu, ne dvě identity.
+- **A hlavně nemá masku.** `WanAnimate2ToVideo` má vstupy `reference_image`,
+  `pose_video`, `continue_motion`, `pose_strength`, `reference_image_strength`
+  — a **žádný `character_mask` ani `background_video`**, které starší
+  `WanAnimateToVideo` (2.2) má. Bez nich neumí „nahraď jednu osobu a zbytek
+  scény nech být", tedy Mix režim, na kterém couple karta stojí.
 - **Kapacita je otevřená otázka**: model card ladí defaulty na 8× A800 pro
   720p a testuje 480p na 2× A800. Spark je jeden GB10. Distill LoRA
   (lightx2v) a int8 repack jsou přesně to, co z toho dělá otázku měření.
@@ -97,11 +102,24 @@ Co dál stále potřebujeme sami, i s Animate 2: **rozdělení dvou osob**
 to řeší **textovým maskováním přes segment-anything-2**, ne YOLO trackingem —
 levnější cesta k `mask_A`/`mask_B` než co navrhuje Fáze 1.
 
-**Rozhodnutí pro Fázi 0:** změřit obě cesty (Animate 2 nativní vs. Kijai
-Wan 2.2 Animate fp8) na **jednom stejném klipu** a rozhodnout podle času
-a kvality, ne podle čtení. Přechod na Animate 2 zároveň znamená odklon od
-WanVideoWrapper, což se dotkne i té stávající jednopostavové karty, až se
+**Rozhodnutí pro Fázi 0 (revize):** dřívější doporučení „změřit obě cesty
+a vybrat rychlejší" **neplatí** — chybějící maska není otázka výkonu. Pro
+couple kartu je cesta **Wan 2.2 Animate** (nativní `WanAnimateToVideo`,
+Mix režim); Animate 2 je lepší volba pro **jednopostavovou** kartu, až se
 najde (§2.1).
+
+Mix režim navíc dělá dvouprůchod čistěji, než navrhoval plán: P1 nahradí A
+s `background_video` = původní driving, P2 nahradí B s `background_video` =
+výstup P1. Osobu A tedy nese background video a kompozici řeší model uvnitř —
+odpadá ruční kompozit přes masku i obava ze švu a rozdílného nasvícení (§5).
+
+Jeden experiment s Animate 2 přesto stojí za to: `reference_image` je obyčejný
+obrázek, takže **jeden společný snímek obou lidí** jako reference by mohl nést
+obě identity v jednom průchodu a maskování by odpadlo. Levné, a kdyby to vyšlo,
+ruší to celou dvouprůchodovou větev.
+
+Instalace, přesné soubory, velikosti a testy jsou v
+[`docs/couple-spark-setup.md`](../docs/couple-spark-setup.md).
 
 ### 3.1 Wan 2.6/2.7 není jen benchmark, je to produktové rozhodnutí
 
@@ -294,13 +312,13 @@ Pořadí je záměrné: první tři body můžou zrušit půlku plánu.
       toho nemá Definice hotovo základnu.
 - [ ] **Rozhodnout, která služba veze pipeline** a jestli umí vystavit kontrakt
       video-api (§2.2). Tohle určuje rozsah práce v botu.
-- [ ] **Změřit Animate 2 vs. Kijai Wan 2.2 Animate fp8** na jednom klipu:
-      dostupnost nodů (`WanAnimate2ToVideo`, `WanAnimate2Cache`), váhy
-      Comfy-Org repack, čas na 5 s 720p, paměť na GB10, `cache device` na CPU.
-- [ ] Ověřit verze: WanVideoWrapper, WanAnimatePreprocess (výběr osoby indexem,
-      masky per osoba), relight LoRA. Na kontrolu workflow proti serveru je
-      v repu `tgbot/tools/check_workflow.py` (porovná třídy uzlů, názvy vstupů
-      i názvy souborů modelů proti `GET /object_info`).
+- [ ] **Pořídit Wan 2.2 Animate a ověřit Mix režim se dvěma lidmi** — celý
+      postup, soubory a velikosti v [`docs/couple-spark-setup.md`](../docs/couple-spark-setup.md).
+      Klíčová otázka: přežije osoba A druhý průchod, když ji nese
+      `background_video`?
+- [ ] Ověřit WanAnimatePreprocess (výběr osoby, masky per osoba) a relight
+      LoRA. Na kontrolu workflow proti serveru je v repu
+      `tgbot/tools/check_workflow.py`.
 - [ ] Ověřit **segment-anything-2** a textové maskování jako alternativu
       k YOLO trackingu pro `mask_A`/`mask_B`.
 - [ ] InsightFace na ARM64: ONNX runtime v ComfyUI venv, jinak CPU. **Balík
