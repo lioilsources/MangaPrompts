@@ -309,8 +309,9 @@ Pořadí je záměrné: první tři body můžou zrušit půlku plánu.
 
 - [x] **Najít skutečnou jednopostavovou Animate kartu** (video-stack? jiný
       produkt?). → **Neexistuje nikde**, viz §11.1.
-- [ ] **Rozhodnout, která služba veze pipeline** a jestli umí vystavit kontrakt
-      video-api (§2.2). Tohle určuje rozsah práce v botu.
+- [x] **Rozhodnout, která služba veze pipeline** a jestli umí vystavit kontrakt
+      video-api (§2.2). Tohle určuje rozsah práce v botu. → kontrakt rozepsaný
+      v §11.6; samotné rozhodnutí je produktové.
 - [ ] **Pořídit Wan 2.2 Animate a ověřit Mix režim se dvěma lidmi** — celý
       postup, soubory a velikosti v [`docs/couple-spark-setup.md`](../docs/couple-spark-setup.md).
       Klíčová otázka: přežije osoba A druhý průchod, když ji nese
@@ -334,6 +335,16 @@ Výstupem je doplnění tohohle souboru, ne nový dokument.
 
 ComfyUI `~/Code/ComfyUI`, HEAD 2026-08-31 (`v0.19.3-8-ga3bdd979`), torch
 2.11.0+cu130, GB10 sm_121, 130,7 GB unified, 710 GB volných na disku.
+
+**Benchový materiál je syntetický a je to potřeba číst jako omezení.** Skutečné
+záběry páru v domě nejsou, takže driving video vzniklo na témže boxu z Wan 2.2
+T2V (`workflows/t2v_final_14b_lightning.json`, 832×480, 81 snímků, 130 s):
+muž a žena proti sobě v obýváku, přiblíží se a obejmou, oba obličeje v profilu
+vidět po celý klip. Reference jsou `ref1` (muž) a `ref2` (žena) z korpusu
+facebenche, tedy portréty — driving je polocelek, takže **rámování reference
+a rámování scény si neodpovídají** a skóre identity to bude srážet. Testuje se
+tím mechanika (přežije A druhý průchod? drží masky dva lidi při kontaktu?),
+ne kvalita na reálné fotce.
 Oproti §7 a proti `docs/restyle-rollout-results.md` je jedna věc **už opravená**:
 ComfyUI **běží pod systemd** (`comfyui.service`, `run.sh` s `--reserve-vram 8
 --disable-async-offload --disable-pinned-memory --cache-lru 2
@@ -494,6 +505,31 @@ komprese a přeškálování, což je zdravá kontrola stupnice).
 **Čas gate: 69 s na 200 snímků × 2 osoby** (0,35 s/snímek, CPU). Pro pětisekundový
 klip při 16 fps (81 snímků) to vychází na ~28 s. Proti renderu je to malé, ale
 není to zadarmo a do odhadu `minutes_est` (§7) to patří.
+
+### 11.6 Kontrakt, který musí wrapper vystavit (doporučení z §2.2 konkrétně)
+
+Checklist ptá „která služba poveze pipeline". Odpověď z §2.2 zůstává —
+**ať celý řetězec vlastní wrapper a ven vystaví týž tvar jako video-api** —
+ale teď se dá napsat přesně, co to znamená, protože klient v botu je čtyři
+metody (`tgbot/video.py`):
+
+| dnes (video-api) | co musí umět couple wrapper |
+|---|---|
+| `GET /scenes` → `{scenes: [...]}` | katalog akcí (`kiss`, `hug`, `gaze`…) s `label`, `seconds`, `minutes_est` |
+| `POST /jobs` `{scene, image, seed}` → **202** `{job_id, beats, seconds, minutes_est}` | `{action, ref_a, ref_b, driving, seed}`; **ne base64 videa v JSON** (§7) — multipart nebo předpodepsaný upload |
+| `GET /jobs/{id}` → stav | týž tvar; `phase` musí umět P0/P1/P2/gate, ne jen `beat` |
+| `GET /jobs/{id}/result` → mp4 | totéž |
+| 404 na job → `VideoJobGone` | totéž, jinak bot nepozná restart wrapperu |
+
+Dvě věci, které z toho plynou a v plánu nejsou:
+
+- **`minutes_est` musí pokrýt celý řetězec.** Deadline se z něj počítá při
+  submitu a ukládá (`video_jobs.timeout`), takže odhad jen za jeden průchod
+  shodí job na podlahu — přesně chyba, která už jednou u videa nastala. Do
+  odhadu patří P0 (~73 s, §11.3) + oba průchody + gate (~28 s, §11.5).
+- **`video_jobs.remote_id` může zůstat jeden**, pokud wrapper drží stavový
+  stroj u sebe. To je hlavní důvod, proč tenhle tvar ušetří nejvíc práce:
+  jinak migrace schématu a stavový stroj v botu (§2.2).
 
 ---
 
