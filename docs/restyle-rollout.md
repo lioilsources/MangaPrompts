@@ -148,7 +148,12 @@ workflow se mountuje z checkoutu (`../assets/comfyui:/app/workflows:ro`),
 takže **stačí přepnout checkout na větev a rebuildnout**:
 
 ```bash
-cd <checkout> && git fetch origin && git checkout claude/tsumiki-new-card-c182q4
+# Checkout na JODĚ je single-branch klon (refspec jen na main), takže samotné
+# `git fetch origin` tiše nestáhne nic a checkout pak spadne — větev je nutné
+# vyjmenovat:
+cd <checkout> && git fetch origin \
+    claude/tsumiki-new-card-c182q4:claude/tsumiki-new-card-c182q4
+git checkout claude/tsumiki-new-card-c182q4
 cd tgbot && docker compose up -d --build && docker compose logs -f mangabot
 ```
 
