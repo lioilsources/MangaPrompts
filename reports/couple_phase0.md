@@ -307,27 +307,165 @@ Tohle v handoffu chybí celé a je to práce, která na kartě stejně bude:
 
 Pořadí je záměrné: první tři body můžou zrušit půlku plánu.
 
-- [ ] **Najít skutečnou jednopostavovou Animate kartu** (video-stack? jiný
-      produkt?). Zapsat vstupy, workflow JSON, naměřený čas na 5 s klip. Bez
-      toho nemá Definice hotovo základnu.
+- [x] **Najít skutečnou jednopostavovou Animate kartu** (video-stack? jiný
+      produkt?). → **Neexistuje nikde**, viz §11.1.
 - [ ] **Rozhodnout, která služba veze pipeline** a jestli umí vystavit kontrakt
       video-api (§2.2). Tohle určuje rozsah práce v botu.
 - [ ] **Pořídit Wan 2.2 Animate a ověřit Mix režim se dvěma lidmi** — celý
       postup, soubory a velikosti v [`docs/couple-spark-setup.md`](../docs/couple-spark-setup.md).
       Klíčová otázka: přežije osoba A druhý průchod, když ji nese
-      `background_video`?
-- [ ] Ověřit WanAnimatePreprocess (výběr osoby, masky per osoba) a relight
-      LoRA. Na kontrolu workflow proti serveru je v repu
-      `tgbot/tools/check_workflow.py`.
-- [ ] Ověřit **segment-anything-2** a textové maskování jako alternativu
-      k YOLO trackingu pro `mask_A`/`mask_B`.
-- [ ] InsightFace na ARM64: ONNX runtime v ComfyUI venv, jinak CPU. **Balík
+      `background_video`? → uzel i graf hotové a pre-flight čistý (§11.2, §11.4),
+      **běh čeká na doběhnutí vah**.
+- [x] Ověřit WanAnimatePreprocess (výběr osoby, masky per osoba) a relight
+      LoRA. → nainstalováno, a **výběr osoby tam není** (§11.3).
+- [x] Ověřit **segment-anything-2** a textové maskování jako alternativu
+      k YOLO trackingu pro `mask_A`/`mask_B`. → §11.3.
+- [x] InsightFace na ARM64: ONNX runtime v ComfyUI venv, jinak CPU. **Balík
       `antelopev2`, ne `buffalo_l`** (§4.2). Změřit čas na 200 snímků × 2 osoby —
-      gate poběží na každém jobu.
-- [ ] Vzít **jádro facebenche** (`embedding()`/`sim()`) a ověřit ho na snímcích
-      vytažených z videa, aby stupnice zůstala společná (§4.2, §4.4).
+      gate poběží na každém jobu. → **CPU, 69 s** (§11.5).
+- [x] Vzít **jádro facebenche** (`embedding()`/`sim()`) a ověřit ho na snímcích
+      vytažených z videa, aby stupnice zůstala společná (§4.2, §4.4). → §11.5.
 
 Výstupem je doplnění tohohle souboru, ne nový dokument.
+
+---
+
+## 11. Co je naměřené na Sparku (2026-09-11)
+
+ComfyUI `~/Code/ComfyUI`, HEAD 2026-08-31 (`v0.19.3-8-ga3bdd979`), torch
+2.11.0+cu130, GB10 sm_121, 130,7 GB unified, 710 GB volných na disku.
+Oproti §7 a proti `docs/restyle-rollout-results.md` je jedna věc **už opravená**:
+ComfyUI **běží pod systemd** (`comfyui.service`, `run.sh` s `--reserve-vram 8
+--disable-async-offload --disable-pinned-memory --cache-lru 2
+--use-sage-attention`). Provozní riziko „reboot Sparku zabije job, za který se
+vrací kredit" je tím zavřené.
+
+### 11.1 Jednopostavová Animate karta neexistuje ani ve video-stacku
+
+§2.1 nechalo otevřené, jestli karta z handoffu nežije ve video-stacku. Nežije.
+`serve.py` (video-api :8096) bere `{image, scene, seed}`, kde `scene` je preset
+beatů ze `scenes/*.json`, a renderuje `chain.py` → **Wan 2.2 I2V** (nebo LTX)
++ RIFE. Žádný vstup na driving video, žádný `WanAnimate` v celém repu.
+
+Důsledek zůstává ten z §2.1, jen je teď jistý: **„pod 2× času jednopostavové
+karty" nemá v domě základnu.** Základnou musí být měření S2
+(`docs/couple-spark-setup.md` §4), ne existující karta.
+
+### 11.2 Doporučený soubor z plánu se na téhle instalaci nenačte
+
+Plán (setup doc §3) volí `wan2.2_animate_14B_int8_convrot.safetensors`
+(18,41 GB) s odůvodněním, že bf16 na GB10 zamrzá. Hlavička toho souboru ale
+nese klíče `weight_scale` a tenzory I8/U8, zatímco `comfy/quant_ops.py`
+v téhle verzi zná jen `TensorCoreFP8 / MXFP8 / NVFP4` a scaled fp8 pozná podle
+`scale_weight`. Slovo „convrot" není ve zdrojích ComfyUI nikde. **Int8 convrot
+je novější formát, než jaký tahle instalace umí přečíst.**
+
+Náhrada, která nevyžaduje aktualizaci produkčního boxu:
+`Kijai/WanVideo_comfy_fp8_scaled` →
+`Wan22Animate/Wan2_2-Animate-14B_fp8_scaled_e4m3fn_KJ_v2.safetensors`,
+**17,32 GB**, klíče `scale_weight` + F8_E4M3 — tedy přesně tvar, který na boxu
+už funguje (ověřeno proti hlavičce běžícího
+`wan2.2_i2v_high_noise_14B_fp8_scaled.safetensors`). Je navíc o gigabajt menší
+než int8 a jde do **nativního** uzlu, takže masky zůstávají k dispozici.
+
+Co z §3 setup docu na boxu **už bylo** a stahovat se nemuselo:
+`umt5_xxl_fp8_e4m3fn_scaled` a `wan_2.1_vae`. Reálné stahování je tedy
+17,3 GB + relight LoRA 1,44 GB + lightx2v distill 0,03 GB + ViTPose-L 1,23 GB
++ YOLOv10m + SAM2 — ne 27,9 GB z plánu.
+
+**`WanAnimate2ToVideo` na boxu není** (`/object_info` zná 1778 tříd, Animate 2
+mezi nimi ne). Levný experiment ze setup docu §6 tedy není levný: chce
+aktualizaci ComfyUI na stroji, na kterém běží UGC továrna, Tsumiki i video-api,
+a na kterém jsou vlastní patche (`fix: patche pro SPARK — unpin_weight nepadá`).
+Doporučení: **odložit S4 za S3** a udělat ho až na základě čísel, ne místo nich.
+
+### 11.3 WanAnimatePreprocess je jednopostavový — a mlčky
+
+Nejdůležitější nález téhle vlny. `PoseAndFaceDetection` volá detektor a bere
+`[0][0]["bbox"]`, a `Yolo.process_results()` má `single_person=True` a vrací
+**největší** bbox ve snímku (`select_type='max'`). Uzel tedy pro dvojici
+nevyrobí dvě pózy — vyrobí jednu, a ta se mezi lidmi **přepíná podle toho, kdo
+je zrovna větší**. Je to táž chyba jako `bench.py` beroucí největší obličej
+(§4.4), jen ve videu a tím hůř viditelná.
+
+Plán s tím počítal opačně („přes WanAnimatePreprocess vyrobit `mask_A` a
+`mask_B` a odpovídající pózy", setup doc §5). **Takhle to nejde.**
+
+Architektura, která to obchází bez patchování uzlu (a je implementovaná
+v `tgbot/tools/couple/graph.py`):
+
+1. SAM2 video segmentor, jeden kladný bod na osobu na prvním snímku →
+   `mask_A`, `mask_B` propagované přes klip.
+2. `driving_A` = driving s **osobou B přemalovanou na černo**
+   (`ImageCompositeMasked` + `mask_B`), a naopak.
+3. `PoseAndFaceDetection` běží nad `driving_A` a `driving_B` zvlášť — největší
+   osoba je pak triviálně ta správná.
+
+Černá, ne rozostření: YOLO rozostřené tělo pořád najde. Bod na osobu je
+zadaný ručně (`--point-a`, `--point-b`) — pro bench je to poctivé, pro kartu
+to bude potřebovat buď dvě kliknutí v UI, nebo automatický výběr.
+
+**segment-anything-2 je k dispozici dvakrát** a je dobré vědět, který je který:
+`Sam2Segmentation` + `DownloadAndLoadSAM2Model` z `ComfyUI-segment-anything-2`
+(Kijai, doinstalováno; bere body/bboxy, má `segmentor: video` s propagací přes
+klip — tohle používá graf výš) a `SAM2Segment` z `ComfyUI-RMBG`, což je
+**textové** maskování přes GroundingDINO. Textová varianta z §3 („two people"
+→ dvě masky) tedy existuje, ale jako druhá cesta: propagace přes video je
+u kontaktních akcí důležitější než pohodlí promptu.
+
+### 11.4 Nastavení se přebírá z video-stacku, ne vymýšlí
+
+Setup doc §2 se ptal, čím video-stack dosahuje 150 s/beat.
+`workflows/i2v_final_14b_lightning_portrait.json`: fp8_scaled 14B high+low,
+**Seko 4-step distill LoRA** (strength 1.0), `ModelSamplingSD3` shift 5.0,
+`KSamplerAdvanced` **steps 4, cfg 1.0**, euler/simple, 480×832, length 81.
+
+Kijaiův referenční Animate workflow má **stejný tvar**: 4 kroky, cfg 1.0,
+`lcm`/`simple`, `lightx2v_I2V_14B_480p_cfg_step_distill_rank64` na 1.2
+a relight LoRA na 1.0, 832×480, length 77. Bench proto startuje odtud, ne
+z defaultů uzlu — je to jediné nastavení, o kterém se na tomhle železe ví, že
+je rychlé.
+
+Graf pro obě cesty je `tgbot/tools/couple/graph.py`, spouštěč a měření
+`tgbot/tools/couple/run.py`. Preprocess i oba průchody jsou v **jednom** grafu:
+maska vypsaná do h264 a načtená zpátky by přišla s kompresním šumem přesně na
+hraně, na které záleží, a póza s obličeji stojí reálný čas (CPU, §11.5), takže
+počítat ji dvakrát by se prodražilo. Časy per průchod se proto berou z
+websocketu (`run.py` razítkuje každý uzel), ne z `/history` — ten nese jen
+`execution_start` a `execution_success`.
+
+Pre-flight proti běžícímu serveru je čistý: **52 uzlů** pro couple, 25 pro solo,
+všechny třídy nainstalované, žádný neznámý ani nezapojený povinný vstup
+(`run.py check couple`).
+
+### 11.5 Identity gate: hotový, změřený, a jede na CPU
+
+`onnxruntime` v ComfyUI venv hlásí `['AzureExecutionProvider',
+'CPUExecutionProvider']` — **žádné CUDA EP**. Na CPU tedy jede InsightFace
+i celý preprocess (ViTPose, YOLO). Proto se místo ViTPose-H (2,43 GB) stahuje
+**ViTPose-L** (1,23 GB), což je i to, co má Kijaiův referenční workflow
+v loaderu. `onnxruntime-gpu` pro tuhle platformu na PyPI existuje (1.30.0), ale
+instalovat ho znamená přepsat balík, na kterém stojí běžící InstantID —
+sahat na to má smysl až kdyby CPU byl doložitelně úzké hrdlo, ne preventivně.
+
+Gate je `tools/facebench/vidbench.py` v repu **Ol1nLLM** (větev
+`claude/couple-identity-gate`). Doplňuje k `bench.py` jen ty dvě věci, které
+tam chyběly — čtení po snímcích a párování detekcí na osoby — a `embedding()`
+se `sim()` importuje, takže stupnice zůstává společná s 0.48 / 0.72 z face
+inpaintu. Párování je **prostorové** (stopy přes IoU), ne podle podobnosti;
+přiřazovat každý snímek k podobnější referenci by vybíralo maximum z dvojice
+a skóre by se nafouklo. Gate je p10 čistých snímků (§4.1, §4.2), okludované
+snímky nerozhodují.
+
+Ověřeno na syntetickém klipu (dvě různé tváře z `facebench/bench`, křížení
+uprostřed, změna velikosti, mp4 komprese): stopy přežily přiblížení
+**200/200 snímků**, přiřazení nezávisí na pořadí `--refs`, margin 0.78,
+cross-podobnost 0.17–0.20, vlastní podobnost 0.93–0.96 (ne 1.0 — sráží ji
+komprese a přeškálování, což je zdravá kontrola stupnice).
+
+**Čas gate: 69 s na 200 snímků × 2 osoby** (0,35 s/snímek, CPU). Pro pětisekundový
+klip při 16 fps (81 snímků) to vychází na ~28 s. Proti renderu je to malé, ale
+není to zadarmo a do odhadu `minutes_est` (§7) to patří.
 
 ---
 
