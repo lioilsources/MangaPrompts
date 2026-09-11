@@ -100,7 +100,7 @@ def model_edge(distill):
     return "lora_distill" if distill else "lora_relight"
 
 
-def _loaders(steps, distill, relight, prompt):
+def _loaders(steps, distill, relight, prompt, sampler=None):
     """Everything shared by both passes. Both passes reuse one model, one text
     encoding and one VAE — loading them twice would dominate the measurement.
 
@@ -122,7 +122,11 @@ def _loaders(steps, distill, relight, prompt):
         # cfg is 1.0, so the negative only has to be a well-formed empty one.
         "neg": {"class_type": "ConditioningZeroOut", "inputs": {"conditioning": ["pos", 0]}},
         "vae": {"class_type": "VAELoader", "inputs": {"vae_name": VAE}},
-        "sampler": {"class_type": "KSamplerSelect", "inputs": {"sampler_name": SAMPLER}},
+        # `lcm` belongs to the distilled schedule. Running it without the
+        # distill LoRA diverged into an all-black clip on the first try, so the
+        # sampler follows the LoRA rather than being a constant.
+        "sampler": {"class_type": "KSamplerSelect", "inputs": {
+            "sampler_name": sampler or (SAMPLER if distill else "euler")}},
         "sigmas": {"class_type": "BasicScheduler", "inputs": {
             "model": ["lora_distill", 0], "scheduler": SCHEDULER,
             "steps": steps, "denoise": 1.0}},
@@ -199,11 +203,11 @@ def _pass(g, who, ref_image, background, width, height, length, seed, fps, prefi
 
 def solo(video, reference, width=832, height=480, length=77, seed=42, fps=16.0,
          prefix="couple_solo", steps=STEPS, distill=DISTILL_STRENGTH,
-         relight=RELIGHT_STRENGTH, prompt=PROMPT_SOLO, cfg=CFG):
+         relight=RELIGHT_STRENGTH, prompt=PROMPT_SOLO, cfg=CFG, sampler=None):
     """S2 — Move mode, one person, no mask. The cheapest thing that answers
     "how long does this machine take per clip", which every later decision
     depends on (docs/couple-spark-setup.md §4)."""
-    g = _loaders(steps, distill, relight, prompt)
+    g = _loaders(steps, distill, relight, prompt, sampler)
     g["load"] = _video(video, length, fps)
     g["src"] = _resize(["load", 0], width, height)
     g["onnx"] = {"class_type": "OnnxDetectionModelLoader", "inputs": {
@@ -217,14 +221,14 @@ def solo(video, reference, width=832, height=480, length=77, seed=42, fps=16.0,
 def couple(video, ref_a, ref_b, point_a, point_b, width=832, height=480,
            length=77, seed=42, fps=16.0, prefix="couple", steps=STEPS,
            distill=DISTILL_STRENGTH, relight=RELIGHT_STRENGTH,
-           prompt=PROMPT_COUPLE, cfg=CFG):
+           prompt=PROMPT_COUPLE, cfg=CFG, sampler=None):
     """S3 — the test that decides whether this card can exist locally.
 
     `point_a` / `point_b` are lists of (x, y) on the first frame **in the
     resized frame's coordinates** — a few points down each person, which SAM2's
     video segmentor propagates through the clip.
     """
-    g = _loaders(steps, distill, relight, prompt)
+    g = _loaders(steps, distill, relight, prompt, sampler)
     g["load"] = _video(video, length, fps)
     g["src"] = _resize(["load", 0], width, height)
     g["sam2"] = {"class_type": "DownloadAndLoadSAM2Model", "inputs": {

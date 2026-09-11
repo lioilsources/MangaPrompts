@@ -176,7 +176,7 @@ def cmd_check(a):
 def build(a, dummy=False):
     kw = dict(width=a.width, height=a.height, length=a.length, seed=a.seed,
               fps=a.fps, prefix=a.prefix, steps=a.steps, distill=a.distill,
-              cfg=a.cfg)
+              cfg=a.cfg, sampler=a.sampler)
     # `__`-prefixed names are what check_workflow.py treats as substituted at
     # request time, so a pre-flight checks the graph and not the staging.
     if a.cmd == "solo" or (dummy and a.what == "solo"):
@@ -228,6 +228,7 @@ if __name__ == "__main__":
     ap.add_argument("--distill", type=float, default=graph.DISTILL_STRENGTH,
                     help="síla lightx2v distill LoRA; 0 ji z řetězu vyřadí")
     ap.add_argument("--cfg", type=float, default=graph.CFG)
+    ap.add_argument("--sampler", help="jinak lcm s distill LoRA, euler bez ní")
     ap.add_argument("--prefix", default=None)
     sub = ap.add_subparsers(dest="cmd", required=True)
 
