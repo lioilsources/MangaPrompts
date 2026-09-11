@@ -927,6 +927,20 @@ i kdyby model identitu vzal, gate by ji neuměl změřit.
 **0,568 je zatím nejlepší naměřená hodnota** (proti 0,514 u portrétu), a je to
 zadarmo — jen jiný ořez. K prahu 0,62 zbývá málo.
 
+**Na druhém páru je ale efekt menší,** a je poctivé to napsat rovnou, protože
+sweep je z jednoho páru: u c3 zvedl širší výřez muže (0,239 → 0,296) a ženu
+naopak o kousek srazil (0,479 → 0,462). Přes obě dvojice:
+
+| | portrét 157 px | výřez 3,6× 113 px |
+|---|---|---|
+| c1 muž / žena | 0,514 / 0,268 | **0,568 / 0,340** |
+| c3 muž / žena | 0,239 / **0,479** | 0,296 / 0,462 |
+| průměr | 0,375 | **0,417** |
+
+Tedy **+0,04 v průměru, tři zlepšení ze čtyř a jedno malé zhoršení**. Směr
+platí, velikost z c1 samotného byla nadsazená. Že nejtěsnější výřez identitu
+zabije úplně (0,197 proti podlaze 0,238), zůstává jednoznačné.
+
 Metodická poznámka, která platí zpětně: měřit každý běh proti *jeho vlastní*
 referenci bylo špatně. Přeměření §11.13 proti kanonické referenci čísla
 potvrdilo (muž celotělo 0,517 proti tehdejším 0,526, žena 0,033 proti 0,041),
