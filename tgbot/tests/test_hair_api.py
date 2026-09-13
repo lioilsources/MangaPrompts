@@ -234,3 +234,12 @@ def test_hair_kontext_engine_gets_an_instruction(client, monkeypatch):
     assert "Keep the brown hair colour" in text
     composite = next(n for n in inpaint.values() if n["class_type"] == "ImageCompositeMasked")
     assert composite["inputs"]["destination"] == ["4", 0]  # the untouched portrait
+
+
+def test_hair_broken_analysis_output_is_502_and_free(client, monkeypatch):
+    image, masks = _portrait_and_masks()
+    masks = {k: b"not a png" for k in masks}
+    monkeypatch.setattr(appmod, "comfy", FakeComfy(masks))
+    resp = client.post("/api/hair", json=_body(image), headers=USER_HEADERS)
+    assert resp.status_code == 502
+    assert appmod.db.free_used_today(0) == 0

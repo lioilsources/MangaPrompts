@@ -546,6 +546,11 @@ async def hair(req: HairRequest, user_id: int = Depends(current_user_id)):
                 mask_png, colour = await asyncio.to_thread(hairmask.prepare, image, masks, shape)
             except hairmask.HairMaskError as e:
                 raise HTTPException(status_code=400, detail=e.message) from e
+            except (ValueError, OSError, KeyError) as e:
+                # a truncated or foreign mask file from the analysis — the
+                # server's fault, not the photo's, and nothing was billed yet
+                log.error("hair mask failed: %s", e)
+                raise HTTPException(status_code=502, detail="could not read the photo analysis") from e
 
             spend = db.spend_generation(user_id, config.FREE_DAILY_LIMIT)
             if spend is None:
