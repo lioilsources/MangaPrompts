@@ -29,11 +29,11 @@ class TgPackage {
   });
 
   factory TgPackage.fromJson(Map<String, dynamic> json) => TgPackage(
-        id: json['id'] as String,
-        credits: json['credits'] as int,
-        stars: json['stars'] as int,
-        label: json['label'] as String,
-      );
+    id: json['id'] as String,
+    credits: json['credits'] as int,
+    stars: json['stars'] as int,
+    label: json['label'] as String,
+  );
 }
 
 class TgAccount {
@@ -61,19 +61,19 @@ class TgAccount {
   int get videoTotalRemaining => videoCredits + videoFreeRemaining;
 
   factory TgAccount.fromJson(Map<String, dynamic> json) => TgAccount(
-        credits: json['credits'] as int,
-        freeRemaining: json['free_remaining'] as int,
-        freeLimit: json['free_limit'] as int,
-        packages: (json['packages'] as List)
-            .map((p) => TgPackage.fromJson((p as Map).cast<String, dynamic>()))
-            .toList(),
-        videoCredits: json['video_credits'] as int? ?? 0,
-        videoFreeRemaining: json['video_free_remaining'] as int? ?? 0,
-        videoFreeLimit: json['video_free_limit'] as int? ?? 0,
-        videoPackages: (json['video_packages'] as List? ?? const [])
-            .map((p) => TgPackage.fromJson((p as Map).cast<String, dynamic>()))
-            .toList(),
-      );
+    credits: json['credits'] as int,
+    freeRemaining: json['free_remaining'] as int,
+    freeLimit: json['free_limit'] as int,
+    packages: (json['packages'] as List)
+        .map((p) => TgPackage.fromJson((p as Map).cast<String, dynamic>()))
+        .toList(),
+    videoCredits: json['video_credits'] as int? ?? 0,
+    videoFreeRemaining: json['video_free_remaining'] as int? ?? 0,
+    videoFreeLimit: json['video_free_limit'] as int? ?? 0,
+    videoPackages: (json['video_packages'] as List? ?? const [])
+        .map((p) => TgPackage.fromJson((p as Map).cast<String, dynamic>()))
+        .toList(),
+  );
 }
 
 /// A server-defined animation preset (the catalog lives on the video-api;
@@ -96,13 +96,13 @@ class TgVideoScene {
   });
 
   factory TgVideoScene.fromJson(Map<String, dynamic> json) => TgVideoScene(
-        id: json['id'] as String,
-        label: json['label'] as String,
-        desc: json['desc'] as String? ?? '',
-        beats: json['beats'] as int? ?? 0,
-        seconds: (json['seconds'] as num?)?.toDouble() ?? 0,
-        minutesEst: json['minutes_est'] as int? ?? 0,
-      );
+    id: json['id'] as String,
+    label: json['label'] as String,
+    desc: json['desc'] as String? ?? '',
+    beats: json['beats'] as int? ?? 0,
+    seconds: (json['seconds'] as num?)?.toDouble() ?? 0,
+    minutesEst: json['minutes_est'] as int? ?? 0,
+  );
 }
 
 /// The accepted animation job (POST /api/animate 200 body).
@@ -120,11 +120,11 @@ class TgVideoJob {
   });
 
   factory TgVideoJob.fromJson(Map<String, dynamic> json) => TgVideoJob(
-        jobId: json['job_id'] as String,
-        beats: json['beats'] as int? ?? 0,
-        seconds: (json['seconds'] as num?)?.toDouble() ?? 0,
-        minutesEst: json['minutes_est'] as int? ?? 0,
-      );
+    jobId: json['job_id'] as String,
+    beats: json['beats'] as int? ?? 0,
+    seconds: (json['seconds'] as num?)?.toDouble() ?? 0,
+    minutesEst: json['minutes_est'] as int? ?? 0,
+  );
 }
 
 /// Poll snapshot of an animation job (GET /api/jobs/{id}).
@@ -146,13 +146,13 @@ class TgVideoStatus {
   });
 
   factory TgVideoStatus.fromJson(Map<String, dynamic> json) => TgVideoStatus(
-        status: json['status'] as String? ?? 'error',
-        error: json['error'] as String?,
-        beat: json['beat'] as int? ?? 0,
-        beats: json['beats'] as int? ?? 0,
-        phase: json['phase'] as String?,
-        position: json['position'] as int?,
-      );
+    status: json['status'] as String? ?? 'error',
+    error: json['error'] as String?,
+    beat: json['beat'] as int? ?? 0,
+    beats: json['beats'] as int? ?? 0,
+    phase: json['phase'] as String?,
+    position: json['position'] as int?,
+  );
 }
 
 /// Web (Telegram Mini App) backend: the bot service on JODA queues the ComfyUI
@@ -285,6 +285,42 @@ class TelegramBackendService implements ImageGenerationService {
     return _awaitImageJob(jobId, headers);
   }
 
+  /// New haircut on a portrait (`POST /api/hair`). The request itself waits
+  /// for the bot's free analysis pass (face parsing in the shared ComfyUI
+  /// queue, up to HAIR_ANALYSE_TIMEOUT), so it gets a longer allowance than a
+  /// plain submit; a 400 carries a message the user can act on ("no face").
+  static Future<GeneratedImage> hairImage({
+    required Uint8List imageBytes,
+    required String prompt,
+    required String negativePrompt,
+    required String styleLabel,
+    required Map<String, Object> shape,
+  }) async {
+    final headers = _authHeaders;
+    final resp = await http
+        .post(
+          Uri.parse('$_baseUrl/api/hair'),
+          headers: {...headers, 'Content-Type': 'application/json'},
+          body: jsonEncode({
+            'prompt': prompt,
+            'negative_prompt': negativePrompt,
+            'style': styleLabel,
+            'shape': shape,
+            'image': base64Encode(imageBytes),
+          }),
+        )
+        .timeout(const Duration(seconds: 180));
+    if (resp.statusCode == 402) {
+      throw PaymentRequiredException(_errorMessage(resp));
+    }
+    if (resp.statusCode != 200) {
+      throw Exception(_errorMessage(resp));
+    }
+    final jobId =
+        (jsonDecode(resp.body) as Map<String, dynamic>)['job_id'] as String;
+    return _awaitImageJob(jobId, headers);
+  }
+
   static Future<TgVideoStatus> videoJobStatus(String jobId) async {
     final resp = await http
         .get(Uri.parse('$_baseUrl/api/jobs/$jobId'), headers: _authHeaders)
@@ -292,7 +328,9 @@ class TelegramBackendService implements ImageGenerationService {
     if (resp.statusCode != 200) {
       throw Exception(_errorMessage(resp));
     }
-    return TgVideoStatus.fromJson(jsonDecode(resp.body) as Map<String, dynamic>);
+    return TgVideoStatus.fromJson(
+      jsonDecode(resp.body) as Map<String, dynamic>,
+    );
   }
 
   @override
@@ -343,7 +381,8 @@ class TelegramBackendService implements ImageGenerationService {
           return _downloadResult(jobId, headers);
         case 'error':
           throw Exception(
-              'Generation failed: ${status['error'] ?? 'unknown error'}');
+            'Generation failed: ${status['error'] ?? 'unknown error'}',
+          );
       }
     }
     throw Exception('Generation timed out — please try again.');

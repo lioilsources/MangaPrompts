@@ -4,37 +4,45 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 
-import '../../config/restyle_styles.dart';
+import '../../config/hairstyles.dart';
 import '../../providers/account_provider.dart';
 import '../../services/telegram_backend_service.dart';
 import '../widgets/paywall_sheet.dart';
 import '../widgets/tsumiki_app_bar.dart';
 import 'result_screen.dart';
 
-/// Photo → the same person in the same pose, rendered in a chosen style.
+/// Portrait → the same photo with a new haircut.
 ///
-/// The bot backend runs one SDXL job with a depth ControlNet (pose) and
-/// InstantID (face) on the uploaded photo; the app only composes the prompt
-/// from the medium toggle + style and shows the result. Priced like a
-/// generation from the prompt builder — same free quota, same credits.
-class RestyleScreen extends ConsumerStatefulWidget {
-  const RestyleScreen({super.key});
+/// The bot reads the face and hair off the photo first (free), builds an
+/// inpaint mask from the chosen style's shape and keeps the hair colour; only
+/// then is the generation billed — same free quota and credits as the prompt
+/// builder. The face pixels sit outside the mask, so identity is kept by
+/// construction rather than by an adapter.
+class HairScreen extends ConsumerStatefulWidget {
+  const HairScreen({super.key, this.catalog = kHairstyles});
+
+  /// Injectable for tests; the app always shows [kHairstyles].
+  final List<Hairstyle> catalog;
 
   @override
-  ConsumerState<RestyleScreen> createState() => _RestyleScreenState();
+  ConsumerState<HairScreen> createState() => _HairScreenState();
 }
 
-class _RestyleScreenState extends ConsumerState<RestyleScreen> {
+class _HairScreenState extends ConsumerState<HairScreen> {
   Uint8List? _imageBytes;
-  RestyleMedium _medium = RestyleMedium.photo;
+  String _group = kHairGroupWomen;
   String? _styleId;
-  String _query = '';
   bool _busy = false;
   String? _error;
 
+  Hairstyle? get _style {
+    for (final s in widget.catalog) {
+      if (s.id == _styleId) return s;
+    }
+    return null;
+  }
+
   Future<void> _pickPhoto() async {
-    // InstantID and the depth map both work at ≤1 MP; 1536 px keeps the
-    // base64 upload small without costing the face any detail.
     final file = await ImagePicker().pickImage(
       source: ImageSource.gallery,
       maxWidth: 1536,
@@ -51,20 +59,19 @@ class _RestyleScreenState extends ConsumerState<RestyleScreen> {
 
   Future<void> _submit() async {
     final bytes = _imageBytes;
-    final style = restyleStyleById(_styleId);
+    final style = _style;
     if (bytes == null || style == null) return;
     setState(() {
       _busy = true;
       _error = null;
     });
-    final medium = _medium;
     try {
-      final result = await TelegramBackendService.restyleImage(
+      final result = await TelegramBackendService.hairImage(
         imageBytes: bytes,
-        prompt: restylePrompt(style, medium),
-        negativePrompt: restyleNegative(medium),
-        medium: medium.wire,
+        prompt: hairPrompt(style),
+        negativePrompt: kHairNegative,
         styleLabel: style.label,
+        shape: style.shape.toJson(),
       );
       ref.invalidate(accountProvider);
       if (!mounted) return;
@@ -73,7 +80,7 @@ class _RestyleScreenState extends ConsumerState<RestyleScreen> {
         MaterialPageRoute(
           builder: (_) => ResultScreen(
             imageUrl: result.url,
-            prompt: '${style.label} · ${medium.label}',
+            prompt: style.label,
             imageBytes: result.bytes,
           ),
         ),
@@ -94,10 +101,13 @@ class _RestyleScreenState extends ConsumerState<RestyleScreen> {
   Widget build(BuildContext context) {
     final account = ref.watch(accountProvider);
     final theme = Theme.of(context);
-    final canSubmit = _imageBytes != null && _styleId != null && !_busy;
+    final canSubmit = _imageBytes != null && _style != null && !_busy;
+    final groups = kHairGroups.where(
+      (g) => widget.catalog.any((s) => s.group == g),
+    );
 
     return Scaffold(
-      appBar: const TsumikiAppBar(screen: TsumikiScreen.restyle),
+      appBar: const TsumikiAppBar(screen: TsumikiScreen.hair),
       body: ListView(
         padding: const EdgeInsets.fromLTRB(16, 16, 16, 96),
         children: [
@@ -116,57 +126,44 @@ class _RestyleScreenState extends ConsumerState<RestyleScreen> {
           Padding(
             padding: const EdgeInsets.only(top: 6),
             child: Text(
-              'Keeps your face and pose. Works best with a clear, '
-              'front-facing photo of one person.',
+              'Keeps your face and hair colour. Works best with a front-facing '
+              'portrait, hair fully visible, no hat.',
               style: theme.textTheme.bodySmall,
             ),
           ),
           const SizedBox(height: 16),
-          Text('Medium', style: theme.textTheme.titleMedium),
-          const SizedBox(height: 8),
-          SegmentedButton<RestyleMedium>(
-            segments: [
-              for (final m in RestyleMedium.values)
-                ButtonSegment(
-                  value: m,
-                  label: Text(m.label),
-                  icon: Icon(m == RestyleMedium.photo
-                      ? Icons.photo_camera_outlined
-                      : Icons.brush_outlined),
-                ),
-            ],
-            selected: {_medium},
-            onSelectionChanged: _busy
-                ? null
-                : (s) => setState(() => _medium = s.first),
-          ),
-          const SizedBox(height: 16),
-          Text('Style', style: theme.textTheme.titleMedium),
-          const SizedBox(height: 8),
-          // 90 styles in six sections is a long scroll on a phone; the filter
-          // matches labels and section names ("painters" lists that section).
-          TextField(
-            decoration: const InputDecoration(
-              prefixIcon: Icon(Icons.search),
-              hintText: 'Filter styles',
-              isDense: true,
-              border: OutlineInputBorder(),
-            ),
-            onChanged: (v) => setState(() => _query = v),
-          ),
-          for (final group in kRestyleGroups)
-            if (restyleStylesIn(group)
-                .any((s) => restyleStyleMatchesQuery(s, _query))) ...[
-              Padding(
-                padding: const EdgeInsets.only(top: 12, bottom: 6),
-                child: Text(group, style: theme.textTheme.labelLarge),
+          if (widget.catalog.isEmpty)
+            Text(
+              'No hairstyles yet — check back soon.',
+              style: theme.textTheme.bodyMedium,
+            )
+          else ...[
+            if (groups.length > 1)
+              SegmentedButton<String>(
+                segments: [
+                  for (final g in groups)
+                    ButtonSegment(value: g, label: Text(g)),
+                ],
+                selected: {_group},
+                onSelectionChanged: _busy
+                    ? null
+                    : (s) => setState(() => _group = s.first),
               ),
-              Wrap(
-                spacing: 8,
-                runSpacing: 4,
-                children: [
-                  for (final s in restyleStylesIn(group))
-                    if (restyleStyleMatchesQuery(s, _query))
+            for (final section in kHairSections)
+              if (hairstylesIn(_group, section, widget.catalog).isNotEmpty) ...[
+                Padding(
+                  padding: const EdgeInsets.only(top: 12, bottom: 6),
+                  child: Text(section, style: theme.textTheme.labelLarge),
+                ),
+                Wrap(
+                  spacing: 8,
+                  runSpacing: 4,
+                  children: [
+                    for (final s in hairstylesIn(
+                      _group,
+                      section,
+                      widget.catalog,
+                    ))
                       ChoiceChip(
                         label: Text(s.label),
                         selected: s.id == _styleId,
@@ -174,9 +171,10 @@ class _RestyleScreenState extends ConsumerState<RestyleScreen> {
                             ? null
                             : (_) => setState(() => _styleId = s.id),
                       ),
-                ],
-              ),
-            ],
+                  ],
+                ),
+              ],
+          ],
           if (_error != null)
             Padding(
               padding: const EdgeInsets.only(top: 16),
@@ -195,8 +193,8 @@ class _RestyleScreenState extends ConsumerState<RestyleScreen> {
                 height: 20,
                 child: CircularProgressIndicator(strokeWidth: 2),
               )
-            : const Icon(Icons.face_retouching_natural),
-        label: Text(_busy ? 'Restyling…' : 'Restyle'),
+            : const Icon(Icons.content_cut),
+        label: Text(_busy ? 'Cutting…' : 'New haircut'),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
     );
@@ -217,7 +215,7 @@ class _RestyleScreenState extends ConsumerState<RestyleScreen> {
                     children: [
                       Icon(Icons.add_photo_alternate_outlined, size: 40),
                       SizedBox(height: 8),
-                      Text('Pick a photo'),
+                      Text('Pick a portrait'),
                     ],
                   ),
                 ),
@@ -239,8 +237,8 @@ class _RestyleScreenState extends ConsumerState<RestyleScreen> {
                           CircularProgressIndicator(),
                           SizedBox(height: 12),
                           Text(
-                            'Restyling… about a minute.\n'
-                            'The image also arrives in your chat.',
+                            'Cutting… about a minute.\n'
+                            'The photo also arrives in your chat.',
                             textAlign: TextAlign.center,
                           ),
                         ],

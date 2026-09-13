@@ -66,4 +66,45 @@ void main() {
     expect(RestyleMedium.photo.wire, 'photo');
     expect(RestyleMedium.illustration.wire, 'illustration');
   });
+
+  test('painters are the measured Ol1nLLM set, copied by id', () {
+    // Pinned list: a typo in a ported id would silently cut the link to the
+    // measurement in Ol1nLLM's docs/style-matrix.md.
+    const measured = {
+      'davinci', 'davinci-chalk', 'picasso-blue', 'picasso-rose',
+      'picasso-cubist', 'basquiat', 'hockney-pool', 'monet', 'kahlo',
+      'goya-black', 'goya-caprichos', 'kandinsky-early', 'vangogh-arles',
+      'vangogh-saintremy', 'lautrec-poster', 'lautrec-cabaret',
+      'mucha-slav-epic', 'kubista', 'schiele', 'klimt-golden', 'vermeer',
+      'botticelli', 'elgreco', 'munch', 'matisse-fauve', 'matisse-cutout',
+      'gauguin', 'cezanne', 'seurat', 'hopper', 'warhol', 'lichtenstein',
+      'haring', 'bacon', 'rivera', 'chagall', 'dali', 'magritte', 'lempicka',
+      'beardsley', 'lada', 'josef-capek',
+    };
+    final painters = restyleStylesIn(kRestyleGroupPainters);
+    expect(painters.map((s) => s.id).toSet(), measured);
+    expect(kRestyleGroups.indexOf(kRestyleGroupPainters),
+        kRestyleGroups.indexOf(kRestyleGroupPopular) + 1);
+  });
+
+  test('painter blocks never declare a render medium', () {
+    // The medium sentence owns photo vs. drawn; a painter block that said
+    // "photograph" would argue with the toggle.
+    for (final s in restyleStylesIn(kRestyleGroupPainters)) {
+      final b = s.block.toLowerCase();
+      for (final word in ['photograph', 'photorealistic', 'anime']) {
+        expect(b, isNot(contains(word)), reason: '${s.id} says $word');
+      }
+    }
+  });
+
+  test('restyleStyleMatchesQuery filters by label, case-insensitively', () {
+    final vg = restyleStyleById('vangogh-arles')!;
+    expect(restyleStyleMatchesQuery(vg, ''), isTrue);
+    expect(restyleStyleMatchesQuery(vg, 'gogh'), isTrue);
+    expect(restyleStyleMatchesQuery(vg, 'VAN G'), isTrue);
+    expect(restyleStyleMatchesQuery(vg, 'monet'), isFalse);
+    // the group name matches too, so "painters" lists the whole section
+    expect(restyleStyleMatchesQuery(vg, 'painters'), isTrue);
+  });
 }

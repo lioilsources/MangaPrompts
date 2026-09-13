@@ -22,6 +22,7 @@ import random
 import time
 import uuid
 from contextlib import asynccontextmanager
+from typing import Literal
 
 import aiohttp
 from aiogram import Bot, Dispatcher, F
@@ -42,6 +43,7 @@ from fastapi.responses import FileResponse
 from pydantic import BaseModel, Field
 
 import config
+import hairmask
 import payments
 from auth import InvalidInitData, validate_init_data
 from comfy import ComfyClient, ComfyError, prepare_workflow
@@ -126,7 +128,8 @@ async def on_start(message: Message) -> None:
         f"You get {config.FREE_DAILY_LIMIT} free generations a day, "
         "beyond that they cost Telegram Stars ⭐ right inside the app.\n\n"
         "You can also restyle a photo 🖼 — same face, same pose, a new look — "
-        "or animate one into a short video 🎬 "
+        "try a new haircut on your own portrait 💇, "
+        "or animate a photo into a short video 🎬 "
         f"({config.VIDEO_FREE_DAILY_LIMIT} free per day).",
         reply_markup=keyboard,
     )
@@ -297,6 +300,31 @@ class RestyleRequest(BaseModel):
     image: str = Field(min_length=1, max_length=config.MAX_RESTYLE_IMAGE_B64_CHARS)
 
 
+class HairShapeIn(BaseModel):
+    """Where the new hair may grow — drives the inpaint mask, not the prompt."""
+
+    length: Literal["keep", "short", "medium", "long"]
+    bangs: Literal["none", "full", "side", "curtain", "wispy"] = "none"
+    updo: bool = False
+
+
+# The app writes this token where the hair colour goes; the backend reads the
+# colour off the photo and substitutes it.
+HAIR_COLOUR_TOKEN = "__HAIRCOLOR__"
+
+
+class HairRequest(BaseModel):
+    """A new haircut on the user's own portrait. The app composes `prompt`
+    from the hairstyle (with HAIR_COLOUR_TOKEN in it); `shape` sizes the mask;
+    `style` is the label for the chat caption."""
+
+    prompt: str = Field(min_length=1, max_length=config.MAX_PROMPT_CHARS)
+    negative_prompt: str = Field(default="", max_length=config.MAX_PROMPT_CHARS)
+    style: str = Field(default="", max_length=80)
+    shape: HairShapeIn
+    image: str = Field(min_length=1, max_length=config.MAX_HAIR_IMAGE_B64_CHARS)
+
+
 class InvoiceRequest(BaseModel):
     package: str
 
@@ -334,6 +362,10 @@ def restyle_caption(style: str, medium: str) -> str:
     the prompt block behind it."""
     label = style.strip() or "Restyled"
     return f"🖼 {label} · {medium}"
+
+
+def hair_caption(style: str) -> str:
+    return f"💇 {style.strip() or 'New haircut'}"
 
 
 @app.get("/healthz")
@@ -423,9 +455,11 @@ async def restyle(req: RestyleRequest, user_id: int = Depends(current_user_id)):
     """Photo → same person, same pose, new style. Priced exactly like
     /api/generate (same free quota, same credits, same one-at-a-time rule):
     it is one image job, the model just gets a photo to hold on to."""
-    checkpoint = config.RESTYLE_CHECKPOINTS.get(req.medium)
-    if checkpoint is None:
+    engine = config.RESTYLE_ENGINES.get(req.medium)
+    if engine is None:
         raise HTTPException(status_code=400, detail=f"unknown medium '{req.medium}'")
+    # Only the SDXL graph has a checkpoint slot; FLUX loads its unet by name.
+    checkpoint = config.RESTYLE_CHECKPOINTS[req.medium] if engine == "sdxl" else None
     image = _decode_image(req.image)
     if jobs.active_count(user_id, "image") >= 1:
         raise HTTPException(status_code=429, detail="wait for your previous generation to finish")
@@ -438,9 +472,9 @@ async def restyle(req: RestyleRequest, user_id: int = Depends(current_user_id)):
         )
     _, usage_id = spend
 
-    template = _load_template_file("restyle", config.RESTYLE_WORKFLOW_FILE)
+    template = _load_template_file(f"restyle_{engine}", config.RESTYLE_WORKFLOW_FILES[engine])
     job = Job(
-        user_id=user_id, prompt=req.prompt, workflow="restyle",
+        user_id=user_id, prompt=req.prompt, workflow=f"restyle-{engine}",
         caption=restyle_caption(req.style, req.medium),
     )
     async with aiohttp.ClientSession() as session:
@@ -467,10 +501,93 @@ async def restyle(req: RestyleRequest, user_id: int = Depends(current_user_id)):
     jobs.add(job)
     asyncio.create_task(_watch_job(job, usage_id))
     log.info(
-        "restyle job %s queued for user %s (prompt_id=%s, %s/%s)",
-        job.id, user_id, prompt_id, req.medium, req.style or "-",
+        "restyle job %s queued for user %s (prompt_id=%s, %s/%s on %s)",
+        job.id, user_id, prompt_id, req.medium, req.style or "-", engine,
     )
     return {"job_id": job.id, "queue_position": queue_number}
+
+
+# Users whose hair analysis is still running: the analysis is not a Job yet
+# (nothing is billed before it succeeds), so the one-image-at-a-time rule has
+# to see it some other way.
+_hair_analysing: set[int] = set()
+
+
+@app.post("/api/hair")
+async def hair(req: HairRequest, user_id: int = Depends(current_user_id)):
+    """Portrait + hairstyle → the same photo with a new cut.
+
+    Two ComfyUI prompts. The analysis (face parsing, no diffusion, seconds)
+    runs first and is free: it builds the inpaint mask and reads the hair
+    colour, and a photo without a usable face is refused here, before any
+    credit moves. Then it is billed exactly like /api/generate."""
+    if HAIR_COLOUR_TOKEN not in req.prompt:
+        raise HTTPException(status_code=400, detail=f"prompt must contain {HAIR_COLOUR_TOKEN}")
+    image = _decode_image(req.image)
+    if user_id in _hair_analysing or jobs.active_count(user_id, "image") >= 1:
+        raise HTTPException(status_code=429, detail="wait for your previous generation to finish")
+    shape = hairmask.HairShape(**req.shape.model_dump())
+    engine = config.HAIR_ENGINE
+    token = uuid.uuid4().hex
+
+    _hair_analysing.add(user_id)
+    try:
+        async with aiohttp.ClientSession() as session:
+            try:
+                src_name = await comfy.upload_image(session, image, f"tsumiki_hair_src_{token}.png")
+                analyse = prepare_workflow(
+                    _load_template_file("hair_analyse", config.HAIR_ANALYSE_WORKFLOW_FILE),
+                    prompt="", image_name=src_name,
+                )
+                analyse_id, _ = await comfy.queue_prompt(session, analyse)
+                masks = await comfy.wait_for_images(
+                    session, analyse_id, tuple(hairmask.ANALYSE_OUTPUTS),
+                    timeout=config.HAIR_ANALYSE_TIMEOUT,
+                )
+            except (ComfyError, aiohttp.ClientError, asyncio.TimeoutError) as e:
+                log.error("hair analysis failed: %s", e)
+                raise HTTPException(status_code=502, detail="ComfyUI is unavailable") from e
+            try:
+                mask_png, colour = await asyncio.to_thread(hairmask.prepare, image, masks, shape)
+            except hairmask.HairMaskError as e:
+                raise HTTPException(status_code=400, detail=e.message) from e
+
+            spend = db.spend_generation(user_id, config.FREE_DAILY_LIMIT)
+            if spend is None:
+                raise HTTPException(
+                    status_code=402,
+                    detail="your free daily limit is used up and you have no credits",
+                )
+            _, usage_id = spend
+            prompt = req.prompt.replace(HAIR_COLOUR_TOKEN, colour or "natural")
+            job = Job(user_id=user_id, prompt=prompt, workflow=f"hair-{engine}", caption=hair_caption(req.style))
+            try:
+                mask_name = await comfy.upload_image(session, mask_png, f"tsumiki_hair_mask_{job.id}.png")
+                wf = prepare_workflow(
+                    _load_template_file(f"hair_{engine}", config.HAIR_WORKFLOW_FILES[engine]),
+                    prompt=prompt,
+                    negative=req.negative_prompt,
+                    image_name=src_name,
+                    mask_name=mask_name,
+                    checkpoint=config.HAIR_CHECKPOINT if engine == "sdxl" else None,
+                )
+                prompt_id, queue_number = await comfy.queue_prompt(session, wf)
+            except (ComfyError, aiohttp.ClientError, asyncio.TimeoutError) as e:
+                db.undo_usage(usage_id)
+                log.error("hair submit failed: %s", e)
+                raise HTTPException(status_code=502, detail="ComfyUI is unavailable") from e
+    finally:
+        _hair_analysing.discard(user_id)
+
+    job.prompt_id = prompt_id
+    job.status = "running"
+    jobs.add(job)
+    asyncio.create_task(_watch_job(job, usage_id))
+    log.info(
+        "hair job %s queued for user %s (prompt_id=%s, %s, %s, colour=%s, on %s)",
+        job.id, user_id, prompt_id, req.style or "-", shape.key, colour, engine,
+    )
+    return {"job_id": job.id, "queue_position": queue_number, "hair_colour": colour}
 
 
 @app.get("/api/jobs/{job_id}")

@@ -3,9 +3,10 @@
 `prepare_workflow` is a direct port of ComfyImageService._prepare in
 lib/services/comfy_image_service.dart — keep the two in sync: placeholder
 substitution (__PROMPT__/__NEGATIVE__/__IMAGE__/__POSE__/__CKPT__), forced
-batch size, randomized seed/noise_seed. The `latent` override is server-only:
-the restyle workflow renders into the SDXL bucket that fits the uploaded
-photo, and only this backend runs that workflow.
+batch size, randomized seed/noise_seed. Server-only additions: the `latent`
+override (the restyle workflows render into the SDXL bucket that fits the
+uploaded photo) and __MASK__ (the hairdresser inpaint; same placeholder name
+as Ol1nLLM's inpaint assets).
 """
 
 import asyncio
@@ -29,6 +30,7 @@ def prepare_workflow(
     pose_name: str | None = None,
     checkpoint: str | None = None,
     latent: tuple[int, int] | None = None,
+    mask_name: str | None = None,
 ) -> dict:
     """`latent` = (width, height) forced onto the empty latent *and* onto the
     reference-fitting resize node, so a depth/face hint is letterboxed onto
@@ -54,6 +56,8 @@ def prepare_workflow(
                 inputs[key] = pose_name
             elif value == "__CKPT__" and checkpoint is not None:
                 inputs[key] = checkpoint
+            elif value == "__MASK__" and mask_name is not None:
+                inputs[key] = mask_name
 
         cls = node.get("class_type")
         if cls in ("EmptySD3LatentImage", "EmptyLatentImage"):
@@ -163,14 +167,14 @@ class ComfyClient:
                 raise ComfyError(f"/view HTTP {resp.status} for {filename}")
             return await resp.read()
 
-    async def wait_for_image(
+    async def wait_for_history(
         self,
         session: aiohttp.ClientSession,
         prompt_id: str,
         timeout: int = 300,
         poll_interval: float = 2.0,
-    ) -> bytes:
-        """Polls /history until the job finishes, then downloads the first output."""
+    ) -> dict:
+        """Polls /history until the job has an entry; raises on a failed run."""
         deadline = asyncio.get_event_loop().time() + timeout
         while True:
             if asyncio.get_event_loop().time() > deadline:
@@ -185,17 +189,67 @@ class ComfyClient:
             status_block = hist.get("status") or {}
             if status_block.get("status_str") == "error":
                 raise ComfyError(execution_error_message(status_block))
+            return hist
 
-            outputs = hist.get("outputs") or {}
-            refs = [
-                img
-                for node in outputs.values()
-                for img in (node.get("images") or [])
-                if img.get("type") != "temp"
-            ]
-            if not refs:
-                raise ComfyError("no output images in workflow result")
-            ref = refs[0]
-            return await self.view(
+    async def wait_for_image(
+        self,
+        session: aiohttp.ClientSession,
+        prompt_id: str,
+        timeout: int = 300,
+        poll_interval: float = 2.0,
+    ) -> bytes:
+        """Polls /history until the job finishes, then downloads the first output."""
+        hist = await self.wait_for_history(session, prompt_id, timeout, poll_interval)
+        refs = output_refs(hist)
+        if not refs:
+            raise ComfyError("no output images in workflow result")
+        ref = refs[0]
+        return await self.view(
+            session, ref["filename"], ref.get("subfolder", ""), ref.get("type", "output")
+        )
+
+    async def wait_for_images(
+        self,
+        session: aiohttp.ClientSession,
+        prompt_id: str,
+        prefixes: tuple[str, ...],
+        timeout: int = 300,
+        poll_interval: float = 1.0,
+    ) -> dict[str, bytes]:
+        """Several named outputs of one prompt (the hair analysis saves four
+        masks). Matched by SaveImage filename prefix, never by order: history
+        keys outputs by node id and promises no ordering."""
+        hist = await self.wait_for_history(session, prompt_id, timeout, poll_interval)
+        found = pick_outputs(output_refs(hist), prefixes)
+        missing = [p for p in prefixes if p not in found]
+        if missing:
+            raise ComfyError(f"workflow result is missing {', '.join(missing)}")
+        return {
+            prefix: await self.view(
                 session, ref["filename"], ref.get("subfolder", ""), ref.get("type", "output")
             )
+            for prefix, ref in found.items()
+        }
+
+
+def output_refs(hist: dict) -> list[dict]:
+    """Saved (non-temp) image refs of a finished history entry."""
+    outputs = hist.get("outputs") or {}
+    return [
+        img
+        for node in outputs.values()
+        for img in (node.get("images") or [])
+        if img.get("type") != "temp"
+    ]
+
+
+def pick_outputs(refs: list[dict], prefixes: tuple[str, ...]) -> dict[str, dict]:
+    """First ref per filename prefix. Longest prefix wins, so `hair_mask`
+    never swallows `hair_mask_x`."""
+    found: dict[str, dict] = {}
+    for ref in refs:
+        name = ref.get("filename", "")
+        matches = [p for p in prefixes if name.startswith(p + "_")]
+        if matches:
+            found.setdefault(max(matches, key=len), ref)
+    return found

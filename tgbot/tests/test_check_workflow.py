@@ -2,6 +2,8 @@ import json
 import sys
 from pathlib import Path
 
+import pytest
+
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "tools"))
 
 from check_workflow import check_workflow  # noqa: E402
@@ -86,10 +88,14 @@ def test_placeholders_are_never_flagged():
     assert check_workflow(wf, OBJECT_INFO) == []
 
 
-def test_shipped_restyle_workflow_against_a_server_that_has_everything():
+@pytest.mark.parametrize("filename", [
+    "sdxl_restyle.api.json", "flux_restyle.api.json", "hair_analyse.api.json",
+    "flux_hair_inpaint.api.json", "sdxl_hair_inpaint.api.json",
+])
+def test_shipped_workflow_against_a_server_that_has_everything(filename):
     """The checker must pass the graph we actually ship when the server does
     offer every class and file — otherwise it would cry wolf on SPARK."""
-    wf = json.loads((WORKFLOW_DIR / "sdxl_restyle.api.json").read_text())
+    wf = json.loads((WORKFLOW_DIR / filename).read_text())
     info: dict = {}
     for node in wf.values():
         required = info.setdefault(node["class_type"], {"input": {"required": {}}})[
@@ -106,4 +112,16 @@ def test_shipped_restyle_workflow_against_a_server_that_has_everything():
                     options.append(value)
             else:
                 required[key] = ["ANY", {"default": value}]
+    assert check_workflow(wf, info) == []
+
+
+def test_optional_input_is_known():
+    """ControlNetApplyAdvanced declares `vae` as optional; the FLUX restyle
+    graph wires it and that must not read as drift."""
+    info = {"ControlNetApplyAdvanced": {"input": {
+        "required": {"positive": ["CONDITIONING"], "strength": ["FLOAT", {"default": 1.0}]},
+        "optional": {"vae": ["VAE"]},
+    }}}
+    wf = {"1": {"class_type": "ControlNetApplyAdvanced",
+                "inputs": {"positive": ["9", 0], "strength": 0.55, "vae": ["3", 0]}}}
     assert check_workflow(wf, info) == []

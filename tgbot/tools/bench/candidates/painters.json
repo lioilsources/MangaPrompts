@@ -1,0 +1,296 @@
+[
+ {
+  "id": "davinci",
+  "label_cs": "Da Vinci — sfumato portrét",
+  "artist": "Leonardo da Vinci",
+  "period": "sfumato, c. 1490–1510",
+  "block": "portrait painting by Leonardo da Vinci, sfumato, soft smoky shadows without hard edges, enigmatic half smile, muted olive umber and dark green palette, hazy distant landscape, high renaissance oil on poplar"
+ },
+ {
+  "id": "davinci-chalk",
+  "label_cs": "Da Vinci — červená křída (studie)",
+  "artist": "Leonardo da Vinci",
+  "period": "studie křídou a stříbrnou tužkou",
+  "block": "red chalk figure study by Leonardo da Vinci, sanguine on toned paper, fine parallel hatching, anatomical precision, unfinished sketch edges, faint mirror handwriting notes in the margin"
+ },
+ {
+  "id": "picasso-blue",
+  "label_cs": "Picasso — modré období",
+  "artist": "Pablo Picasso",
+  "period": "modré období 1901–1904",
+  "block": "blue period painting by Pablo Picasso, monochrome cold blue and blue-green palette, gaunt melancholic figure, elongated hands, hunched posture, flat sombre background, thin dry paint"
+ },
+ {
+  "id": "picasso-rose",
+  "label_cs": "Picasso — růžové období (harlekýni)",
+  "artist": "Pablo Picasso",
+  "period": "růžové období 1904–1906",
+  "block": "rose period painting by Pablo Picasso, warm pink ochre and terracotta palette, harlequin diamond costume, circus saltimbanque figure, quiet dignity, flat dusty background, delicate thin paint"
+ },
+ {
+  "id": "picasso-cubist",
+  "label_cs": "Picasso — kubistický portrét (Dora Maar)",
+  "artist": "Pablo Picasso",
+  "period": "figurální kubismus 1937–1940",
+  "block": "cubist portrait by Pablo Picasso, face shown in profile and frontal view at once, both eyes on one side, fractured angular planes, thick black outlines, bold flat red yellow green and purple, patterned wallpaper"
+ },
+ {
+  "id": "basquiat",
+  "label_cs": "Basquiat",
+  "artist": "Jean-Michel Basquiat",
+  "period": "1981–1983",
+  "block": "neo-expressionist painting by Jean-Michel Basquiat, raw scrawled figure with skull-like head, three-pointed crown, exposed anatomy lines, graffiti text fragments and crossed-out words, oil stick and acrylic on rough canvas, chaotic bright colours"
+ },
+ {
+  "id": "hockney-pool",
+  "label_cs": "Hockney — bazén, ploché akryly",
+  "artist": "David Hockney",
+  "period": "Los Angeles 1964–1972",
+  "block": "1960s Los Angeles acrylic painting by David Hockney, flat clean colour fields, turquoise swimming pool with stylised ripples, modernist house and palm trees, crisp shadows, bright even sunlight, deadpan cool stillness"
+ },
+ {
+  "id": "monet",
+  "label_cs": "Monet — figura v plenéru",
+  "artist": "Claude Monet",
+  "period": "figury v plenéru, 1870s",
+  "block": "plein air painting by Claude Monet, figure with parasol in a windswept meadow, dappled sunlight and moving clouds, loose feathery brushstrokes, lavender and green shadows, bright airy sky, form dissolving in light"
+ },
+ {
+  "id": "kahlo",
+  "label_cs": "Frida Kahlo",
+  "artist": "Frida Kahlo",
+  "period": "autoportréty 1930–1950",
+  "block": "self-portrait painting by Frida Kahlo, frontal gaze, joined eyebrows, flowers braided into hair, embroidered Tehuana dress, lush tropical leaves and a small monkey, flat naive Mexican folk retablo style, saturated colours"
+ },
+ {
+  "id": "goya-black",
+  "label_cs": "Goya — černé malby",
+  "artist": "Francisco Goya",
+  "period": "černé malby 1819–1823",
+  "block": "black painting by Francisco Goya, murky black brown and ochre palette, grotesque haunted figure emerging from darkness, wild frantic brushstrokes, gaping mouth and staring eyes, nightmare mural on plaster"
+ },
+ {
+  "id": "goya-caprichos",
+  "label_cs": "Goya — Caprichos (lept, akvatinta)",
+  "artist": "Francisco Goya",
+  "period": "Caprichos, lepty 1797–1799",
+  "block": "etching and aquatint by Francisco Goya from Los Caprichos, monochrome sepia print, grainy aquatint shadows, satirical grotesque figure, owls and bats in the gloom, hand-written caption below"
+ },
+ {
+  "id": "kandinsky-early",
+  "label_cs": "Kandinskij — raná pohádková tempera",
+  "artist": "Vasilij Kandinskij",
+  "period": "pohádkové tempery 1903–1909 (před abstrakcí)",
+  "block": "early tempera painting by Wassily Kandinsky before abstraction, fairy-tale folk scene, rider in old Russian costume, jewel-like dabs of colour on dark ground, glowing pointillist dots, medieval towers, night blue with gold and crimson"
+ },
+ {
+  "id": "vangogh-arles",
+  "label_cs": "Van Gogh — Arles, impasto portrét",
+  "artist": "Vincent van Gogh",
+  "period": "Arles 1888–1889 (portréty)",
+  "block": "portrait painting by Vincent van Gogh in Arles, thick impasto brushstrokes, vivid complementary colours, yellow and blue, green shadows on the face, flat patterned background, directional hatched strokes following the form, visible paint ridges"
+ },
+ {
+  "id": "vangogh-saintremy",
+  "label_cs": "Van Gogh — Saint-Rémy, vířivé tahy",
+  "artist": "Vincent van Gogh",
+  "period": "Saint-Rémy 1889–1890 (víry)",
+  "block": "late painting by Vincent van Gogh in Saint-Rémy, swirling turbulent brushstrokes, spiralling sky and cypress, rhythmic curling lines around the figure, deep blue and glowing yellow, restless energy, thick oil"
+ },
+ {
+  "id": "lautrec-poster",
+  "label_cs": "Toulouse-Lautrec — plakát (litografie)",
+  "artist": "Henri de Toulouse-Lautrec",
+  "period": "litografické plakáty 1891–1896",
+  "block": "lithograph poster by Henri de Toulouse-Lautrec, flat bold colour areas, sinuous black silhouette contours, Moulin Rouge dancer, spattered crachis texture, cropped Japanese composition, bold hand-lettered title, ochre red and black"
+ },
+ {
+  "id": "lautrec-cabaret",
+  "label_cs": "Toulouse-Lautrec — kabaret na kartonu",
+  "artist": "Henri de Toulouse-Lautrec",
+  "period": "kabaretní malby 1888–1895",
+  "block": "cabaret painting by Henri de Toulouse-Lautrec, thinned oil on raw cardboard, streaky diagonal strokes, sickly green gaslight on the face, red lips and orange hair, Montmartre bar interior, unfinished sketchy edges, brown cardboard showing through"
+ },
+ {
+  "id": "mucha-slav-epic",
+  "label_cs": "Mucha — Slovanská epopej",
+  "artist": "Alfons Mucha",
+  "period": "Slovanská epopej 1910–1928",
+  "block": "monumental egg tempera painting by Alphonse Mucha from the Slav Epic, pale luminous blue and white tones, crowd of Slavic figures in linen folk dress, glowing symbolic figure hovering above, misty historical vision, soft muted fresco-like surface"
+ },
+ {
+  "id": "kubista",
+  "label_cs": "Kubišta — kuboexpresionismus",
+  "artist": "Bohumil Kubišta",
+  "period": "kuboexpresionismus 1910–1912",
+  "block": "Czech cubo-expressionist painting by Bohumil Kubista, figure built from sharp crystalline facets, cold blue green and ochre planes, dramatic raking light and deep shadow, tense angular composition, intense staring face, dense heavy oil"
+ },
+ {
+  "id": "schiele",
+  "label_cs": "Schiele",
+  "artist": "Egon Schiele",
+  "period": "1910–1918",
+  "block": "figure drawing by Egon Schiele, nervous jagged contour line, contorted angular pose, bony elongated hands, gouache and watercolour patches of orange red and sickly green on bare paper, empty white background, raw expressionist intensity"
+ },
+ {
+  "id": "klimt-golden",
+  "label_cs": "Klimt — zlaté období",
+  "artist": "Gustav Klimt",
+  "period": "zlaté období 1901–1909",
+  "block": "golden period painting by Gustav Klimt, figure wrapped in a flat gold leaf robe of spirals and rectangles, realistic softly painted face and hands, mosaic ornament, byzantine gold background, embrace, jewel colours"
+ },
+ {
+  "id": "vermeer",
+  "label_cs": "Vermeer",
+  "artist": "Johannes Vermeer",
+  "period": "Delft 1660s",
+  "block": "painting by Johannes Vermeer, soft daylight from a window on the left, pearl earring and turban, ultramarine and lemon yellow, quiet domestic interior, pointillé highlights, calm serene stillness, smooth Dutch golden age oil"
+ },
+ {
+  "id": "botticelli",
+  "label_cs": "Botticelli",
+  "artist": "Sandro Botticelli",
+  "period": "1480s (Zrození Venuše, Primavera)",
+  "block": "early renaissance tempera painting by Sandro Botticelli, graceful linear contours, long flowing golden hair, pale porcelain skin, transparent fluttering drapery, flowers and orange grove, gentle wistful expression, delicate pastel palette"
+ },
+ {
+  "id": "elgreco",
+  "label_cs": "El Greco",
+  "artist": "El Greco",
+  "period": "Toledo 1580–1614",
+  "block": "mannerist painting by El Greco, dramatically elongated flame-like figure, upturned ecstatic eyes, cold flickering light, stormy grey sky, acid green crimson and silver, restless swirling drapery, spiritual intensity"
+ },
+ {
+  "id": "munch",
+  "label_cs": "Munch",
+  "artist": "Edvard Munch",
+  "period": "1892–1900 (Výkřik, Madona)",
+  "block": "expressionist painting by Edvard Munch, anxious figure, wavy undulating brushstrokes flowing through sky and ground, blood orange sky over dark blue fjord, hollow skull-like face, thinly scrubbed paint, existential dread"
+ },
+ {
+  "id": "matisse-fauve",
+  "label_cs": "Matisse — fauvismus",
+  "artist": "Henri Matisse",
+  "period": "fauvismus 1905–1910",
+  "block": "fauvist painting by Henri Matisse, wild unmixed colour, green stripe down the face, red and turquoise flat planes, loose broad brushstrokes, decorative patterned interior, joyful bold simplicity"
+ },
+ {
+  "id": "matisse-cutout",
+  "label_cs": "Matisse — výstřižky (Modrý akt)",
+  "artist": "Henri Matisse",
+  "period": "papírové výstřižky 1943–1954",
+  "block": "paper cut-out by Henri Matisse, figure as a single flat cobalt blue silhouette cut from gouache-painted paper, simplified curving limbs, white background, scissors-cut edges, leaf and star shapes, jazz-like playfulness"
+ },
+ {
+  "id": "gauguin",
+  "label_cs": "Gauguin — Tahiti",
+  "artist": "Paul Gauguin",
+  "period": "Tahiti 1891–1903",
+  "block": "Tahitian painting by Paul Gauguin, flat cloisonné colour areas with dark outlines, saturated warm ochre pink and violet, tropical foliage, calm monumental figure, matte chalky surface, symbolist stillness"
+ },
+ {
+  "id": "cezanne",
+  "label_cs": "Cézanne",
+  "artist": "Paul Cézanne",
+  "period": "1890s (Hráči karet, Koupající se)",
+  "block": "painting by Paul Cezanne, figure built from patches of parallel constructive brushstrokes, blue-green ochre and grey-violet palette, solid geometric volumes, slightly tilted perspective, calm weighty stillness"
+ },
+ {
+  "id": "seurat",
+  "label_cs": "Seurat — pointilismus",
+  "artist": "Georges Seurat",
+  "period": "pointilismus 1884–1891",
+  "block": "pointillist painting by Georges Seurat, entire image built from tiny dots of pure colour, stiff formal figures in profile, sunny riverside park, optical mixing, calm frozen geometry, soft shimmering surface"
+ },
+ {
+  "id": "hopper",
+  "label_cs": "Hopper",
+  "artist": "Edward Hopper",
+  "period": "1927–1960",
+  "block": "painting by Edward Hopper, solitary figure in a quiet room or diner, hard raking morning sunlight, long geometric shadows, muted greens and ochres, large window, american realism, melancholy urban stillness"
+ },
+ {
+  "id": "warhol",
+  "label_cs": "Warhol — sítotisk",
+  "artist": "Andy Warhol",
+  "period": "sítotisky 1962–1967 (Marilyn)",
+  "block": "pop art silkscreen portrait by Andy Warhol, high-contrast photo reduced to flat blocks, misregistered neon colour fills, hot pink turquoise and yellow, repeated grid of the same face, halftone grain, flat glossy celebrity icon"
+ },
+ {
+  "id": "lichtenstein",
+  "label_cs": "Lichtenstein — komiksové rastry",
+  "artist": "Roy Lichtenstein",
+  "period": "pop art 1961–1965",
+  "block": "pop art painting by Roy Lichtenstein, enlarged comic strip panel, Ben-Day dot shading, thick black outlines, primary red yellow and blue, dramatic close-up face, speech bubble with bold text, flat printed look"
+ },
+ {
+  "id": "haring",
+  "label_cs": "Haring",
+  "artist": "Keith Haring",
+  "period": "1982–1989",
+  "block": "painting by Keith Haring, figure as a thick black outline pictogram, radiant motion lines around the body, flat bright red yellow and blue, dancing pose, dense playful pattern, subway chalk graffiti energy"
+ },
+ {
+  "id": "bacon",
+  "label_cs": "Francis Bacon",
+  "artist": "Francis Bacon",
+  "period": "1949–1975",
+  "block": "painting by Francis Bacon, smeared distorted figure with blurred twisting face, seated inside a thin drawn cage of lines, flat orange or violet ground, raw fleshy pinks, isolated on a bare stage, visceral unease"
+ },
+ {
+  "id": "rivera",
+  "label_cs": "Rivera — mexický murál",
+  "artist": "Diego Rivera",
+  "period": "mexické murály 1923–1935",
+  "block": "mural fresco by Diego Rivera, monumental rounded figure with simplified solid volumes, Mexican worker or calla lily seller, earthy terracotta ochre and green, flat matte surface, social realism, crowded composition"
+ },
+ {
+  "id": "chagall",
+  "label_cs": "Chagall",
+  "artist": "Marc Chagall",
+  "period": "1911–1950",
+  "block": "dreamlike painting by Marc Chagall, floating lovers drifting over a village, upside-down cow and fiddler, glowing cobalt blue and crimson, soft translucent layers, folk fairy tale, weightless joy"
+ },
+ {
+  "id": "dali",
+  "label_cs": "Dalí — surrealismus",
+  "artist": "Salvador Dalí",
+  "period": "surrealismus 1931–1945",
+  "block": "surrealist painting by Salvador Dali, figure in a vast empty desert plain under a clear sky, melting soft forms propped on crutches, long shadows, ants and drawers, hyper-smooth academic rendering, uncanny dream logic"
+ },
+ {
+  "id": "magritte",
+  "label_cs": "Magritte",
+  "artist": "René Magritte",
+  "period": "1926–1966",
+  "block": "surrealist painting by Rene Magritte, bowler hat and dark overcoat, face hidden behind a floating green apple, cloudy blue daytime sky, flat deadpan illustrative rendering, uncanny calm, clean smooth paint"
+ },
+ {
+  "id": "lempicka",
+  "label_cs": "Lempicka — art deco portrét",
+  "artist": "Tamara de Lempicka",
+  "period": "art deco portréty 1925–1935",
+  "block": "art deco portrait by Tamara de Lempicka, glossy metallic sculpted figure, streamlined drapery in silver green and scarlet, sharp geometric shading, skyscraper backdrop, cool glamorous stare, polished tubular volumes"
+ },
+ {
+  "id": "beardsley",
+  "label_cs": "Beardsley — perokresba",
+  "artist": "Aubrey Beardsley",
+  "period": "perokresby 1893–1898",
+  "block": "pen and ink illustration by Aubrey Beardsley, stark black and white, large flat black areas against blank white, single sinuous ink line, peacock and rose ornament, decadent elegant figure, japanese asymmetry"
+ },
+ {
+  "id": "lada",
+  "label_cs": "Lada — česká lidová ilustrace",
+  "artist": "Josef Lada",
+  "period": "lidová ilustrace 1920–1957",
+  "block": "Czech folk illustration by Josef Lada, round-faced jolly figure with rosy cheeks, thick black outlines, flat cheerful colours, snowy village with pointed roofs, naive childlike proportions, gentle humour, gouache"
+ },
+ {
+  "id": "josef-capek",
+  "label_cs": "Josef Čapek — naivní kubismus",
+  "artist": "Josef Čapek",
+  "period": "naivní kubismus 1913–1938",
+  "block": "Czech painting by Josef Capek, blocky simplified figure like a wooden toy, rough thick outlines, chunky flat planes of brick red ochre and grey-blue, childlike naive geometry, coarse matte texture, tender humour"
+ }
+]

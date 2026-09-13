@@ -4,6 +4,7 @@ and that nothing is spent when the request never reaches the queue."""
 
 import asyncio
 import base64
+import json
 import struct
 
 import pytest
@@ -82,26 +83,44 @@ def test_restyle_queues_an_image_job_billed_like_generate(client, monkeypatch):
     job = appmod.jobs.get(job_id)
     assert job.kind == "image" and job.status == "running"
     assert job.caption == "🖼 Ukiyo-e woodblock · photo"
+    assert job.workflow == "restyle-flux"
 
     # one upload, per-job filename, and the workflow reads exactly that file
     assert len(fake.uploads) == 1
     assert fake.uploads[0][1] == f"tsumiki_restyle_{job_id}.png"
     wf = fake.workflows[0]
-    assert wf["2"]["inputs"]["image"] == f"clipspace/tsumiki_restyle_{job_id}.png"
-    assert wf["1"]["inputs"]["ckpt_name"] == appmod.config.RESTYLE_CHECKPOINTS["photo"]
+    assert wf["4"]["inputs"]["image"] == f"clipspace/tsumiki_restyle_{job_id}.png"
+    # photo runs on FLUX: a unet by name, no checkpoint slot left unfilled
+    assert wf["1"]["class_type"] == "UNETLoader"
+    assert "__CKPT__" not in json.dumps(wf) and "__IMAGE__" not in json.dumps(wf)
+    # PuLID reads the same fitted reference the depth map is made from
+    assert wf["15"]["inputs"]["image"] == ["5", 0] and wf["6"]["inputs"]["image"] == ["5", 0]
     # 1:2 photo → 768×1344 bucket on both the latent and the reference fit
-    assert (wf["14"]["inputs"]["width"], wf["14"]["inputs"]["height"]) == (768, 1344)
-    assert (wf["3"]["inputs"]["width"], wf["3"]["inputs"]["height"]) == (768, 1344)
-    assert wf["7"]["inputs"]["text"].startswith("a photorealistic photograph")
+    assert (wf["16"]["inputs"]["width"], wf["16"]["inputs"]["height"]) == (768, 1344)
+    assert (wf["5"]["inputs"]["width"], wf["5"]["inputs"]["height"]) == (768, 1344)
+    assert wf["8"]["inputs"]["text"].startswith("a photorealistic photograph")
 
 
-def test_restyle_illustration_routes_its_checkpoint(client, monkeypatch):
+def test_restyle_illustration_runs_sdxl_with_its_checkpoint(client, monkeypatch):
     fake = FakeComfy()
     monkeypatch.setattr(appmod, "comfy", fake)
     monkeypatch.setitem(appmod.config.RESTYLE_CHECKPOINTS, "illustration", "painterly.safetensors")
     resp = client.post("/api/restyle", json=_body(medium="illustration"), headers=USER_HEADERS)
     assert resp.status_code == 200, resp.text
-    assert fake.workflows[0]["1"]["inputs"]["ckpt_name"] == "painterly.safetensors"
+    wf = fake.workflows[0]
+    assert wf["1"]["inputs"]["ckpt_name"] == "painterly.safetensors"
+    assert wf["2"]["inputs"]["image"].startswith("clipspace/tsumiki_restyle_")
+    assert (wf["14"]["inputs"]["width"], wf["14"]["inputs"]["height"]) == (768, 1344)
+    assert appmod.jobs.get(resp.json()["job_id"]).workflow == "restyle-sdxl"
+
+
+def test_restyle_engine_is_configurable_per_medium(client, monkeypatch):
+    fake = FakeComfy()
+    monkeypatch.setattr(appmod, "comfy", fake)
+    monkeypatch.setitem(appmod.config.RESTYLE_ENGINES, "photo", "sdxl")
+    resp = client.post("/api/restyle", json=_body(), headers=USER_HEADERS)
+    assert resp.status_code == 200, resp.text
+    assert fake.workflows[0]["1"]["inputs"]["ckpt_name"] == appmod.config.RESTYLE_CHECKPOINTS["photo"]
 
 
 def test_restyle_unknown_medium_is_400_before_spending(client, monkeypatch):

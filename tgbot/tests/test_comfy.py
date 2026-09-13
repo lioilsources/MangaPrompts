@@ -143,3 +143,93 @@ def test_execution_error_message_surfaces_node_exception():
 def test_execution_error_message_falls_back():
     assert execution_error_message({"status_str": "error"}) == "generation failed on the ComfyUI side"
     assert execution_error_message({"messages": [["execution_error", {}]]}).startswith("generation failed")
+
+
+FLUX_RESTYLE_FILE = "flux_restyle.api.json"
+
+
+def test_flux_restyle_template_is_fully_patched_without_a_checkpoint():
+    template = json.loads((WORKFLOW_DIR / FLUX_RESTYLE_FILE).read_text())
+    wf = prepare_workflow(
+        template, prompt="a photorealistic photograph of a person, monet",
+        negative="ignored at cfg 1", batch=1, image_name="ref.png", latent=(896, 1152),
+    )
+    dump = json.dumps(wf)
+    for placeholder in ("__PROMPT__", "__IMAGE__"):
+        assert placeholder not in dump
+    assert "__CKPT__" not in json.dumps(template) and "__NEGATIVE__" not in json.dumps(template)
+    by_cls = {n["class_type"]: n for n in wf.values()}
+    assert (by_cls["EmptySD3LatentImage"]["inputs"]["width"], by_cls["EmptySD3LatentImage"]["inputs"]["height"]) == (896, 1152)
+    assert (by_cls["ImageResizeKJv2"]["inputs"]["width"], by_cls["ImageResizeKJv2"]["inputs"]["height"]) == (896, 1152)
+
+
+def test_flux_restyle_graph_wiring():
+    """Face (PuLID) and pose (depth) read the same letterboxed reference; the
+    InstantX ControlNet gets the VAE edge it encodes the hint through."""
+    wf = json.loads((WORKFLOW_DIR / FLUX_RESTYLE_FILE).read_text())
+    by_cls = {n["class_type"]: k for k, n in wf.items()}
+    fit = by_cls["ImageResizeKJv2"]
+    assert wf[by_cls["DepthAnythingV2Preprocessor"]]["inputs"]["image"] == [fit, 0]
+    pulid = by_cls["ApplyPulidFlux"]
+    assert wf[pulid]["inputs"]["image"] == [fit, 0]
+    apply = wf[by_cls["ControlNetApplyAdvanced"]]["inputs"]
+    assert apply["vae"] == [by_cls["VAELoader"], 0]
+    assert apply["positive"] == [by_cls["FluxGuidance"], 0]
+    assert apply["end_percent"] < 1.0
+    sampler = wf[by_cls["KSampler"]]["inputs"]
+    assert sampler["model"] == [pulid, 0]
+    assert sampler["positive"] == [by_cls["ControlNetApplyAdvanced"], 0]
+    assert sampler["latent_image"] == [by_cls["EmptySD3LatentImage"], 0]
+    assert sampler["cfg"] == 1.0
+
+
+@pytest.mark.parametrize("filename", ["flux_hair_inpaint.api.json", "sdxl_hair_inpaint.api.json"])
+def test_hair_inpaint_templates_take_image_and_mask(filename):
+    template = json.loads((WORKFLOW_DIR / filename).read_text())
+    wf = prepare_workflow(
+        template, prompt="a photo of the same person with a pixie cut", negative="hat",
+        image_name="portrait.png", mask_name="mask.png", checkpoint="ckpt.safetensors",
+        latent=(832, 1216),
+    )
+    dump = json.dumps(wf)
+    for placeholder in ("__PROMPT__", "__NEGATIVE__", "__IMAGE__", "__MASK__", "__CKPT__"):
+        assert placeholder not in dump
+    loads = sorted(n["inputs"]["image"] for n in wf.values() if n["class_type"] == "LoadImage")
+    assert loads == ["mask.png", "portrait.png"]
+    # an inpaint keeps the photo's own size: no latent node for the override to touch
+    assert not [n for n in wf.values() if n["class_type"] in ("EmptyLatentImage", "EmptySD3LatentImage")]
+    # the result is stitched back into the full photo
+    by_cls = {n["class_type"]: k for k, n in wf.items()}
+    save = wf[by_cls["SaveImage"]]["inputs"]["images"]
+    assert save == [by_cls["InpaintStitchImproved"], 0]
+
+
+def test_hair_analyse_saves_four_named_masks():
+    wf = json.loads((WORKFLOW_DIR / "hair_analyse.api.json").read_text())
+    prefixes = sorted(n["inputs"]["filename_prefix"] for n in wf.values() if n["class_type"] == "SaveImage")
+    assert prefixes == sorted(
+        ["tsumiki_hair_mask", "tsumiki_face_mask", "tsumiki_hat_mask", "tsumiki_features_mask"]
+    )
+    assert not [n for n in wf.values() if n["class_type"] == "KSampler"]
+
+
+def test_mask_placeholder_left_alone_without_a_mask():
+    template = {"1": {"class_type": "LoadImage", "inputs": {"image": "__MASK__"}}}
+    assert prepare_workflow(template, prompt="p")["1"]["inputs"]["image"] == "__MASK__"
+
+
+def test_pick_outputs_matches_by_prefix_not_order():
+    from comfy import output_refs, pick_outputs
+
+    hist = {"outputs": {
+        "13": {"images": [{"filename": "tsumiki_features_mask_00003_.png", "type": "output"}]},
+        "4": {"images": [{"filename": "tsumiki_hair_mask_00003_.png", "type": "output"},
+                          {"filename": "preview.png", "type": "temp"}]},
+        "7": {"images": [{"filename": "tsumiki_face_mask_00003_.png", "type": "output"}]},
+    }}
+    refs = output_refs(hist)
+    assert len(refs) == 3
+    found = pick_outputs(refs, ("tsumiki_hair_mask", "tsumiki_face_mask", "tsumiki_hat_mask"))
+    assert found["tsumiki_hair_mask"]["filename"].startswith("tsumiki_hair_mask_")
+    assert found["tsumiki_face_mask"]["filename"].startswith("tsumiki_face_mask_")
+    assert "tsumiki_hat_mask" not in found

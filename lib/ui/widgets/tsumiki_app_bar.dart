@@ -4,7 +4,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../providers/account_provider.dart';
 import '../../providers/video_scenes_provider.dart';
+import '../../config/hairstyles.dart';
 import '../screens/animate_screen.dart';
+import '../screens/hair_screen.dart';
 import '../screens/home_screen.dart';
 import '../screens/restyle_screen.dart';
 import '../screens/settings_screen.dart';
@@ -15,6 +17,7 @@ import 'paywall_sheet.dart';
 enum TsumikiScreen {
   builder('Prompt builder', Icons.auto_awesome),
   restyle('Restyle a photo', Icons.face_retouching_natural),
+  hair('Try a haircut', Icons.content_cut),
   animate('Animate a photo', Icons.movie_creation_outlined);
 
   const TsumikiScreen(this.label, this.icon);
@@ -27,10 +30,11 @@ enum TsumikiScreen {
   bool get video => this == TsumikiScreen.animate;
 
   Widget build() => switch (this) {
-        TsumikiScreen.builder => const HomeScreen(),
-        TsumikiScreen.restyle => const RestyleScreen(),
-        TsumikiScreen.animate => const AnimateScreen(),
-      };
+    TsumikiScreen.builder => const HomeScreen(),
+    TsumikiScreen.restyle => const RestyleScreen(),
+    TsumikiScreen.hair => const HairScreen(),
+    TsumikiScreen.animate => const AnimateScreen(),
+  };
 }
 
 /// The Mini App's title bar, shared by every card so the chrome never shifts
@@ -100,7 +104,9 @@ class _ShopChip extends ConsumerWidget {
         child: ActionChip(
           label: Text(label),
           visualDensity: VisualDensity.compact,
-          tooltip: video ? 'Animation credits and packages' : 'Credits and packages',
+          tooltip: video
+              ? 'Animation credits and packages'
+              : 'Credits and packages',
           onPressed: () => PaywallSheet.show(context, video: video),
         ),
       ),
@@ -123,6 +129,20 @@ ScreenNav screenNavFor({
   if (target == root) return ScreenNav.popToRoot;
   return canPop ? ScreenNav.pushReplacement : ScreenNav.push;
 }
+
+/// Whether the switcher lists [screen]. Animation needs a scene catalog from
+/// the render server; the hairdresser needs at least one hairstyle that passed
+/// the bench gate (docs/hair-matrix.md) — until then the card stays hidden
+/// rather than empty.
+bool screenOffered(
+  TsumikiScreen screen, {
+  required bool animateAvailable,
+  required bool hairstylesAvailable,
+}) => switch (screen) {
+  TsumikiScreen.animate => animateAvailable,
+  TsumikiScreen.hair => hairstylesAvailable,
+  _ => true,
+};
 
 /// Jump to another card. Animation is only offered when there is a catalog
 /// to animate with; the other two always work.
@@ -148,7 +168,11 @@ class _ScreenMenu extends ConsumerWidget {
       onSelected: (target) => _goTo(context, root, target),
       itemBuilder: (_) => [
         for (final s in TsumikiScreen.values)
-          if (s != TsumikiScreen.animate || animateAvailable)
+          if (screenOffered(
+            s,
+            animateAvailable: animateAvailable,
+            hairstylesAvailable: kHairstyles.isNotEmpty,
+          ))
             PopupMenuItem(
               value: s,
               enabled: s != current,

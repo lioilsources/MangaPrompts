@@ -98,16 +98,34 @@ WORKFLOW_FILES = {
     "wai": "wai_txt2img.api.json",
 }
 
-# Restyle a photo: depth ControlNet keeps the pose, InstantID keeps the face,
-# the prompt (composed by the app from medium + style) does the rest. One
-# workflow, checkpoint chosen by the requested medium. Both media default to
-# Juggernaut XL v9 on purpose: InstantID's face embedding is trained on
-# photographs and only a photoreal SDXL-base finetune leaves headroom for a
-# style prompt — booru-tag models read the embedding as noise and fall back
-# to their default scene (measured in Ol1nLLM's style matrix). Override per
-# medium via RESTYLE_CKPT_PHOTO / RESTYLE_CKPT_ILLUSTRATION when a better
-# checkpoint lands on the server.
-RESTYLE_WORKFLOW_FILE = "sdxl_restyle.api.json"
+# Restyle a photo: the pose comes from a depth ControlNet on the uploaded
+# photo, the face from an identity adapter, the prompt (composed by the app from
+# medium + style) does the rest. Two engines, one per medium:
+#
+# - "flux" (photo): flux_restyle.api.json — FLUX.1-dev + PuLID + InstantX depth
+#   ControlNet. T5 reads the long painter blocks as prose and PuLID keeps a
+#   photographic face without dragging the style back to a plain photo.
+# - "sdxl" (illustration): sdxl_restyle.api.json — InstantID + xinsir union
+#   depth on a checkpoint from RESTYLE_CHECKPOINTS.
+#
+# Measured in docs/restyle-flux-results.md; override per medium with
+# RESTYLE_ENGINE_PHOTO / RESTYLE_ENGINE_ILLUSTRATION ("flux" | "sdxl").
+RESTYLE_WORKFLOW_FILES = {
+    "flux": "flux_restyle.api.json",
+    "sdxl": "sdxl_restyle.api.json",
+}
+RESTYLE_ENGINES = {
+    "photo": os.environ.get("RESTYLE_ENGINE_PHOTO", "").strip() or "flux",
+    "illustration": os.environ.get("RESTYLE_ENGINE_ILLUSTRATION", "").strip() or "sdxl",
+}
+if not set(RESTYLE_ENGINES.values()) <= set(RESTYLE_WORKFLOW_FILES):
+    raise RuntimeError(f"unknown restyle engine in {RESTYLE_ENGINES}")
+# Checkpoint per medium, used only when that medium runs on the "sdxl" engine.
+# Juggernaut XL v9 is the default (a photoreal SDXL-base finetune leaves
+# InstantID's photographic embedding room for a style). On 2026-09-09 it kept
+# illustrations photographic and sd_xl_base_1.0 carried the style instead —
+# that is set per deployment via RESTYLE_CKPT_ILLUSTRATION, not here. Booru
+# checkpoints read the face embedding as noise; do not use them.
 _RESTYLE_DEFAULT_CKPT = "Juggernaut-XL_v9_RunDiffusionPhoto_v2.safetensors"
 RESTYLE_CHECKPOINTS = {
     "photo": os.environ.get("RESTYLE_CKPT_PHOTO", "").strip() or _RESTYLE_DEFAULT_CKPT,
@@ -117,3 +135,19 @@ RESTYLE_CHECKPOINTS = {
 # Photo uploads for restyle are downscaled by the app (≤1536 px) — this is a
 # sanity cap for the JSON body, not the video one (which allows 24 M chars).
 MAX_RESTYLE_IMAGE_B64_CHARS = _int_env("MAX_RESTYLE_IMAGE_B64_CHARS", 6_000_000)
+
+# Hairdresser: portrait + hairstyle → the same photo with a new cut. A cheap
+# analysis pass (face parsing, no diffusion) builds the inpaint mask before
+# anything is billed; the inpaint itself runs on HAIR_ENGINE.
+HAIR_ANALYSE_WORKFLOW_FILE = "hair_analyse.api.json"
+HAIR_WORKFLOW_FILES = {
+    "flux": "flux_hair_inpaint.api.json",
+    "sdxl": "sdxl_hair_inpaint.api.json",
+}
+HAIR_ENGINE = os.environ.get("HAIR_ENGINE", "").strip() or "flux"
+if HAIR_ENGINE not in HAIR_WORKFLOW_FILES:
+    raise RuntimeError(f"unknown HAIR_ENGINE '{HAIR_ENGINE}'")
+HAIR_CHECKPOINT = os.environ.get("HAIR_CHECKPOINT", "").strip() or _RESTYLE_DEFAULT_CKPT
+# The analysis waits in the same ComfyUI queue as everyone else's jobs.
+HAIR_ANALYSE_TIMEOUT = _int_env("HAIR_ANALYSE_TIMEOUT", 120)
+MAX_HAIR_IMAGE_B64_CHARS = MAX_RESTYLE_IMAGE_B64_CHARS

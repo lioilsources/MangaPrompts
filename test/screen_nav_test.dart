@@ -65,5 +65,18 @@ void main() {
     expect(TsumikiScreen.animate.video, isTrue);
     expect(TsumikiScreen.restyle.video, isFalse);
     expect(TsumikiScreen.builder.video, isFalse);
+    expect(TsumikiScreen.hair.video, isFalse);
+  });
+
+  test('the hairdresser is a pushed card, never the root', () {
+    expect(webRootScreen(const []), isNot(TsumikiScreen.hair));
+    expect(
+      screenNavFor(
+        root: TsumikiScreen.animate,
+        canPop: true,
+        target: TsumikiScreen.hair,
+      ),
+      ScreenNav.pushReplacement,
+    );
   });
 }
