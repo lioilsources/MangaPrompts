@@ -330,7 +330,9 @@ def run_matrix(args) -> None:
                 wf = prepare_workflow(tpl, prompt=prompt, negative=catalog.HAIR_NEGATIVE,
                                       image_name=uploaded[ident["src"]], mask_name=mask_name,
                                       checkpoint=ident["ckpt"])
-                row.update(prompt=prompt, colour=colour, shape=style["shape"], mask=f"masks/{name}",
+                # "colour" on a row is the *target* (ident); what was read off the
+                # photo is colour_src — one field for both lost the target once.
+                row.update(prompt=prompt, colour_src=colour, shape=style["shape"], mask=f"masks/{name}",
                            mask_area=round(res.area, 4), face_box=res.face_box)
             apply_graph_variants(wf, ident["sweep"])
             apply_node_sweep(wf, ident["sweep"])
