@@ -10,8 +10,8 @@ block and shape; the bench builds its cells with this same module.
 from __future__ import annotations
 
 NEGATIVE = (
-    "hat, cap, helmet, headband, deformed hair, floating hair, extra face, second person, "
-    "blurry, watermark, low quality"
+    "nude, naked, nsfw, hat, cap, helmet, headband, deformed hair, floating hair, extra face, "
+    "second person, blurry, watermark, low quality"
 )
 
 # Said out loud because the mask alone does not stop a model from growing the
