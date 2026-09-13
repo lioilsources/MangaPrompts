@@ -48,5 +48,10 @@
     "id": "p-seated",
     "seed": 202,
     "prompt": "three-quarter length photo of a bearded man in his thirties sitting on a wooden stool, leaning forward with elbows on his knees and hands clasped, looking at the camera, wearing a denim shirt, plain warm grey backdrop, soft light, sharp focus, photorealistic"
+  },
+  {
+    "id": "x-landscape",
+    "seed": 301,
+    "prompt": "wide photo of a mountain lake at sunrise, pine forest, mist over the water, no people, photorealistic"
   }
 ]

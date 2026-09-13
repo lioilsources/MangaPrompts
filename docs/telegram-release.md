@@ -23,7 +23,8 @@ Tyhle kroky vyžadují tvoje účty a jdou udělat jen ručně. Pořadí je záv
 - [ ] `/newbot` → **dev bot** (např. `TsumikiMangaDevBot`) — token pro dev
       instanci backendu.
 - [ ] Prod bot: `/setuserpic` (z `assets/icon/app_icon.png`), `/setdescription`,
-      `/setabouttext`.
+      `/setabouttext`. Popis má zmínit všechny karty: prompt builder, restyle
+      fotky, **zkoušku účesu** (od uvedení karty Kadeřník) a animaci.
 
 ## 2. Cloudflare Pages
 
