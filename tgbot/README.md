@@ -241,7 +241,10 @@ Portrét + účes → tatáž fotka s novým střihem. Dva prompty do ComfyUI:
 
 `/api/hair` bere `style_id`, `block`, `style` (popisek do chatu), `shape`
 (`length` keep/short/medium/long, `bangs` none/full/side/curtain/wispy, `updo`)
-a `image`. Běžící analýza se počítá do pravidla „jedna generace naráz“
+volitelně `colour` (id z `haircolours.py`, 16 barev od platinové blond po
+levandulovou) a `image`. `style_id: keep-cut` bez nového střihu je změna barvy:
+maska jen starých vlasů bez obálky, prompt „change the hair colour…“; bez
+`colour` je to 400. Běžící analýza se počítá do pravidla „jedna generace naráz“
 (`_hair_analysing`). Inpaint grafy mají `mask_fill_holes: false` — obličej je
 v masce díra a vyplnění ho přemalovalo. Čísla v `hairmask.py` a volba enginu
 jsou naměřené benchem (`tools/bench`, `docs/hair-matrix.md`).

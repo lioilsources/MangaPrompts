@@ -55,7 +55,9 @@ The fourth card, **Try a haircut** (`hair_screen.dart`, `POST /api/hair`),
 repaints only the hair of a portrait: a free analysis pass (face parsing,
 `hair_analyse.api.json`) feeds `tgbot/hairmask.py`, which builds the inpaint
 mask from the style's shape and reads the hair colour; the prompt is written
-server-side per `HAIR_ENGINE` (`tgbot/hairprompt.py`); billing starts only after
+server-side per `HAIR_ENGINE` (`tgbot/hairprompt.py`), optionally with a new
+colour (`tgbot/haircolours.py`; style id `keep-cut` = colour only, mask of the old
+hair without an envelope); billing starts only after
 the analysis accepted the photo. The catalog (`lib/config/hairstyle_catalog.dart`)
 is generated from the bench gate (`docs/hair-matrix.md`) and the card stays
 hidden while it is empty. Ol1nLLM mirrors the mask in `lib/models/hair_mask.dart`.
