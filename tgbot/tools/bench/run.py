@@ -403,7 +403,7 @@ def main() -> None:
     ap.add_argument("--limit", type=int)
     ap.add_argument("--plan", action="store_true")
     ap.add_argument("--timeout", type=float, default=900)
-    ap.add_argument("--min-free-gb", type=float, default=8.0)
+    ap.add_argument("--min-free-gb", type=float, default=20.0)
     args = ap.parse_args()
     if args.task == "srcgen":
         srcgen(args)

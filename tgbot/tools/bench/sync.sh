@@ -17,7 +17,7 @@ if [[ "${1:-}" == "pull" ]]; then
 fi
 
 ssh "$HOST" "mkdir -p $DEST/tgbot/tools $DEST/assets $DEST/lib/config"
-rsync -az "$ROOT"/tgbot/{comfy,hairmask,hairprompt,imagesize}.py "$HOST:$DEST/tgbot/"
+rsync -az "$ROOT"/tgbot/{comfy,haircolours,hairmask,hairprompt,imagesize}.py "$HOST:$DEST/tgbot/"
 rsync -az --delete --exclude out/ --exclude cache/ --exclude __pycache__/ --exclude "queue_*.sh" \
   "$ROOT/tgbot/tools/bench/" "$HOST:$DEST/tgbot/tools/bench/"
 rsync -az --delete "$ROOT/assets/comfyui/" "$HOST:$DEST/assets/comfyui/"
