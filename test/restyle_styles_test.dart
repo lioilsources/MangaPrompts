@@ -50,6 +50,15 @@ void main() {
     expect(photo.split(', ').last, drawn.split(', ').last);
   });
 
+  test('both media sentences keep the person clothed', () {
+    // FLUX has no negative: clothing must be in the positive (bench restyle-a
+    // rendered a clothed dancer nude without it).
+    final style = restyleStyleById('ukiyoe')!;
+    for (final m in RestyleMedium.values) {
+      expect(restylePrompt(style, m), contains('fully clothed'), reason: m.name);
+    }
+  });
+
   test('negatives push away from the other medium', () {
     final photo = restyleNegative(RestyleMedium.photo);
     final drawn = restyleNegative(RestyleMedium.illustration);
@@ -57,9 +66,11 @@ void main() {
     expect(photo, isNot(contains('photograph')));
     expect(drawn, contains('photograph'));
     expect(drawn, isNot(contains('painting')));
-    // both keep the model's quality negative
+    // both keep the model's quality negative and refuse nudity
     expect(photo, contains('bad anatomy'));
     expect(drawn, contains('bad anatomy'));
+    expect(photo, contains('nude'));
+    expect(drawn, contains('nsfw'));
   });
 
   test('wire values match what the backend routes on', () {

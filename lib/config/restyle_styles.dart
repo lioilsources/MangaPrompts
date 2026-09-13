@@ -729,19 +729,24 @@ bool restyleStyleMatchesQuery(RestyleStyle style, String query) {
 List<RestyleStyle> restyleStylesIn(String group) =>
     kRestyleStyles.where((s) => s.group == group).toList(growable: false);
 
-// Medium sentences. "a person" on purpose: the face comes from InstantID and
-// the body from the depth map, so the prompt must not argue gender or
-// framing with the photo.
+// Medium sentences. "a person" on purpose: the face comes from the identity
+// adapter and the body from the depth map, so the prompt must not argue gender
+// or framing with the photo. "fully clothed, wearing the clothes from the
+// photo" is not decoration: a depth map carries a body's silhouette but not its
+// clothes, and FLUX (no negative prompt at cfg 1) rendered the dancer
+// reference nude on the unstyled baseline (bench restyle-a, 2026-09-13).
 const _photoMedium =
-    'a photorealistic photograph of a person, natural skin texture, '
-    'realistic lighting, true-to-life detail';
-const _illustrationMedium = 'a painted illustration of a person, artwork';
+    'a photorealistic photograph of a fully clothed person wearing the clothes '
+    'from the photo, natural skin texture, realistic lighting, true-to-life detail';
+const _illustrationMedium =
+    'a painted illustration of a fully clothed person, artwork';
 
 // Juggernaut's own negative (Ol1nLLM's preset), plus the other medium so the
 // toggle actually bites: in photo mode a woodblock style should read as
-// costume and set, not turn the photo into a print.
+// costume and set, not turn the photo into a print. SDXL only — FLUX ignores
+// the negative, which is why the clothing lives in the positive above.
 const _baseNegative =
-    'bad quality, worst quality, low quality, jpeg artifacts, blurry, '
+    'nude, naked, nsfw, bad quality, worst quality, low quality, jpeg artifacts, blurry, '
     'watermark, deformed, disfigured, bad anatomy, bad hands';
 const _photoNegative =
     'illustration, painting, drawing, cartoon, anime, 3d render, $_baseNegative';

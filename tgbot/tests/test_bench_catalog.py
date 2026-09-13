@@ -20,7 +20,7 @@ def test_bench_hair_prompt_is_the_bots():
 
 def test_restyle_catalog_is_read_from_the_dart_source():
     cat = catalog.restyle_catalog()
-    assert cat["heads"]["photo"].startswith("a photorealistic photograph of a person")
+    assert cat["heads"]["photo"].startswith("a photorealistic photograph of a fully clothed person")
     assert "bad anatomy" in cat["negatives"]["illustration"]
     painters = {k for k, v in cat["styles"].items() if v.get("group") == "kRestyleGroupPainters"}
     assert painters == set(catalog.painter_candidates())
