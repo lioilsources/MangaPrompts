@@ -101,6 +101,17 @@ def hairstyles() -> dict:
     }
 
 
-def hair_prompt(style: dict, colour: str | None, engine: str = "flux") -> str:
+def hair_style(style_id: str) -> dict:
+    """A candidate, or the synthetic "keep-cut" style of a colour-only request."""
+    import haircolours
+
+    if style_id == haircolours.KEEP_CUT:
+        return {"id": style_id, "label": "Keep the cut", "cs": "stejný střih", "group": "Any",
+                "section": "Colour", "block": haircolours.KEEP_CUT_BLOCK,
+                "shape": {"length": "keep", "bangs": "none", "updo": False}}
+    return hairstyles()[style_id]
+
+
+def hair_prompt(style: dict, colour: str | None, engine: str = "flux", new_colour: str | None = None) -> str:
     """The prompt the bot would send for this candidate (tgbot/hairprompt.py)."""
-    return hairprompt.prompt(style["block"], style["id"], style["shape"], colour, engine)
+    return hairprompt.prompt(style["block"], style["id"], style["shape"], colour, engine, new_colour=new_colour)

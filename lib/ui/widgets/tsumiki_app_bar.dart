@@ -171,7 +171,7 @@ class _ScreenMenu extends ConsumerWidget {
           if (screenOffered(
             s,
             animateAvailable: animateAvailable,
-            hairstylesAvailable: kHairstyles.isNotEmpty,
+            hairstylesAvailable: kHairstyles.isNotEmpty || kHairColours.isNotEmpty,
           ))
             PopupMenuItem(
               value: s,

@@ -34,3 +34,27 @@ def test_length_clause_follows_shape():
 def test_unknown_engine():
     with pytest.raises(ValueError):
         hp.prompt("x", "x", SHORT, None, "dalle")
+
+
+def test_new_colour_replaces_the_read_one():
+    import haircolours as hc
+
+    fill = hp.prompt("bob cut", "bob", {"length": "medium", "updo": False}, "brown", "sdxl", new_colour="jet-black")
+    assert "glossy jet black hair" in fill and "brown" not in fill
+    kontext = hp.prompt("bob cut", "bob", {"length": "medium", "updo": False}, "brown", "kontext", new_colour="auburn")
+    assert "Dye the hair deep auburn." in kontext and "Keep the brown" not in kontext
+    keep = hp.prompt(hc.KEEP_CUT_BLOCK, hc.KEEP_CUT, {"length": "keep"}, "brown", "flux", new_colour="lavender")
+    assert keep.startswith("a photo of the same person with the same haircut as in the photo, pastel lavender purple hair")
+
+
+def test_colour_ranges_accept_their_own_colour():
+    import haircolours as hc
+
+    assert hc.matches("jet-black", {"L": 10, "a": 1, "b": 2, "spread": 12})
+    assert not hc.matches("jet-black", {"L": 40, "a": 8, "b": 15, "spread": 20})
+    assert hc.matches("copper-red", {"L": 45, "a": 30, "b": 35, "spread": 20})
+    assert not hc.matches("burgundy", {"L": 35, "a": 20, "b": 30, "spread": 20})  # orange, not wine
+    assert hc.matches("honey-balayage", {"L": 40, "a": 8, "b": 20, "spread": 35})
+    assert hc.matches("platinum-blonde", None) is None
+    for cid, c in hc.COLOURS.items():
+        assert c["phrase"] and c["label"] and c["cs"] and c["group"], cid

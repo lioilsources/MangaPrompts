@@ -4,4 +4,8 @@
 
 import 'hairstyles.dart';
 
-const kHairstyles = <Hairstyle>[];
+const kHairstyles = <Hairstyle>[
+];
+
+const kHairColours = <HairColour>[
+];

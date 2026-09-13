@@ -55,7 +55,7 @@ def badge(m: dict, task: str) -> str:
     ident = m.get("identity")
     bits.append(f'<span class="{"ok" if ident is not None and ident >= 0.6 else "bad"}">id {ident if ident is not None else "—"}</span>')
     if task == "hair":
-        for k, label in (("length_ok", "len"), ("bangs_ok", "fringe"), ("recognised", "clip")):
+        for k, label in (("length_ok", "len"), ("bangs_ok", "fringe"), ("recognised", "clip"), ("colour_ok", "colour")):
             v = m.get(k)
             if v is not None:
                 bits.append(f'<span class="{"ok" if v else "bad"}">{label}</span>')
@@ -76,13 +76,24 @@ def build(run: Path, show_mask: bool, title: str) -> str:
     cols: set[tuple] = set()
     for key, row in manifest["cells"].items():
         cols.add(col_key(row))
-        rows[row["style"]][col_key(row)] = (key, row)
+        label = row["style"] + (f"+{row['colour']}" if row.get("colour") else "")
+        rows[label][col_key(row)] = (key, row)
     cols_sorted = sorted(cols)
     style_meta = {}
     if task == "hair":
         import catalog
 
-        style_meta = catalog.hairstyles()
+        import haircolours
+
+        style_meta = dict(catalog.hairstyles())
+        style_meta[haircolours.KEEP_CUT] = catalog.hair_style(haircolours.KEEP_CUT)
+        for key_ in list(rows):
+            if "+" in key_:
+                st, col = key_.split("+", 1)
+                base = style_meta.get(st, {})
+                c = haircolours.COLOURS[col]
+                style_meta[key_] = {**base, "label": f"{base.get('label', st)} + {c['label']}",
+                                    "cs": f"{base.get('cs', '')} · {c['cs']}"}
 
     srcs_used = sorted({c[2] for c in cols_sorted})
     out = [f"""<title>{html.escape(title)}</title>

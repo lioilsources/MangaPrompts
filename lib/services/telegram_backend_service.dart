@@ -295,6 +295,7 @@ class TelegramBackendService implements ImageGenerationService {
     required String block,
     required String styleLabel,
     required Map<String, Object> shape,
+    String? colour,
   }) async {
     final headers = _authHeaders;
     final resp = await http
@@ -306,6 +307,7 @@ class TelegramBackendService implements ImageGenerationService {
             'block': block,
             'style': styleLabel,
             'shape': shape,
+            if (colour != null) 'colour': colour,
             'image': base64Encode(imageBytes),
           }),
         )

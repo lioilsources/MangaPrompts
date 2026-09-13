@@ -39,6 +39,7 @@ import numpy as np  # noqa: E402
 from PIL import Image  # noqa: E402
 
 import catalog  # noqa: E402
+import haircolours  # noqa: E402
 import hairmask as hm  # noqa: E402
 from comfy import prepare_workflow  # noqa: E402
 from comfysync import CellError, Comfy, apply_node_sweep, set_seed  # noqa: E402
@@ -244,12 +245,20 @@ def plan_cells(args) -> list[dict]:
         if args.group:
             styles = [s for s in styles if cands[s]["group"] == args.group]
         for s in styles:
-            if s not in cands:
+            if s not in cands and s != haircolours.KEEP_CUT:
                 raise SystemExit(f"unknown hairstyle '{s}'")
-        for engine, src, style, seed, sweep in itertools.product(engines, srcs, styles, seeds, sweeps):
+        colours = csv(args.colours) or [None]
+        for col in colours:
+            if col is not None and col not in haircolours.COLOURS:
+                raise SystemExit(f"unknown hair colour '{col}'")
+        for engine, src, style, col, seed, sweep in itertools.product(
+            engines, srcs, styles, colours, seeds, sweeps
+        ):
             ident = {"task": "hair", "engine": engine, "src": Path(src).name, "style": style,
                      "seed": seed, "sweep": sweep,
                      "ckpt": (args.ckpt or DEFAULT_CKPT) if engine == "sdxl" else None}
+            if col is not None:  # absent, not None: keeps pre-colour cell keys stable
+                ident["colour"] = col
             cells.append(ident)
     for ident in cells:
         ident["key"] = cell_key({k: v for k, v in ident.items() if k != "key"})
@@ -285,7 +294,8 @@ def run_matrix(args) -> None:
     for i, ident in enumerate(todo, 1):
         key = ident["key"]
         src = src_paths[ident["src"]]
-        name = f"{ident['style']}__{ident['engine']}__{src.stem}__s{ident['seed']}__{key}.png"
+        label = ident["style"] + (f"+{ident['colour']}" if ident.get("colour") else "")
+        name = f"{label}__{ident['engine']}__{src.stem}__s{ident['seed']}__{key}.png"
         row = {**ident, "file": f"img/{name}", "status": "running"}
         c.guard(args.min_free_gb, log)
         started = time.time()
@@ -302,12 +312,12 @@ def run_matrix(args) -> None:
                                        denoise=float(ident["sweep"].get("graph.facepass_denoise", 0.45)))
                 row.update(prompt=prompt, negative=negative)
             else:
-                style = catalog.hairstyles()[ident["style"]]
+                style = catalog.hair_style(ident["style"])
                 analysis, rgb = analyse(c, cache, src, uploaded[ident["src"]])
                 shape = hm.HairShape(**style["shape"])
                 with mask_tunables(ident["sweep"]):
                     try:
-                        res = hm.build_mask(analysis, shape)
+                        res = hm.build_mask(analysis, shape, "hair" if style["id"] == haircolours.KEEP_CUT else None)
                     except hm.HairMaskError as e:
                         row.update(status="refused", error=e.code)
                         raise
@@ -316,7 +326,7 @@ def run_matrix(args) -> None:
                 (out / "masks").mkdir(exist_ok=True)
                 (out / "masks" / name).write_bytes(mask_png)
                 colour = hm.estimate_colour(rgb, analysis.hair)
-                prompt = catalog.hair_prompt(style, colour, ident["engine"])
+                prompt = catalog.hair_prompt(style, colour, ident["engine"], ident.get("colour"))
                 wf = prepare_workflow(tpl, prompt=prompt, negative=catalog.HAIR_NEGATIVE,
                                       image_name=uploaded[ident["src"]], mask_name=mask_name,
                                       checkpoint=ident["ckpt"])
@@ -384,6 +394,7 @@ def main() -> None:
     ap.add_argument("--media", default="photo")
     ap.add_argument("--styles")
     ap.add_argument("--group", choices=["Women", "Men"])
+    ap.add_argument("--colours", help="haircolours ids; with --styles keep-cut a colour-only round")
     ap.add_argument("--srcs")
     ap.add_argument("--seeds", default="777")
     ap.add_argument("--sweep", nargs="*")

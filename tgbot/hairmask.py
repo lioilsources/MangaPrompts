@@ -195,9 +195,13 @@ def rounded_rect(
     return inside & (dx * dx + dy * dy <= r * r)
 
 
-def build_mask(analysis: HairAnalysis, shape: HairShape) -> MaskResult:
+def build_mask(analysis: HairAnalysis, shape: HairShape, mode: str | None = None) -> MaskResult:
     """The repaint mask for `shape` on this portrait. Raises HairMaskError
-    for a photo the card cannot use (the caller refuses before billing)."""
+    for a photo the card cannot use (the caller refuses before billing).
+
+    `mode` overrides MASK_MODE: a colour change on the same cut uses "hair",
+    because there the old silhouette is exactly the shape to keep."""
+    mode = mode or MASK_MODE
     full_h, full_w = analysis.face.shape
     scale = min(1.0, WORK_SIDE / max(full_h, full_w))
     w, h = max(1, round(full_w * scale)), max(1, round(full_h * scale))
@@ -242,7 +246,7 @@ def build_mask(analysis: HairAnalysis, shape: HairShape) -> MaskResult:
             CORNER_FW * fw,
         )
 
-    if MASK_MODE == "blob" and mask.any():
+    if mode == "blob" and mask.any():
         ys, xs = np.nonzero(mask)
         mask |= rounded_rect(h, w, xs.min(), ys.min(), xs.max(), ys.max(), CORNER_FW * fw)
 
@@ -312,14 +316,14 @@ def colour_name(lab: tuple[float, float, float]) -> str:
     return "platinum blonde"
 
 
-def estimate_colour(rgb: np.ndarray, hair: np.ndarray) -> str | None:
-    """Colour word for the hair in `rgb` (HxWx3 uint8), or None when the photo
-    has too little hair to read one (the prompt then says "natural").
+def hair_lab(rgb: np.ndarray, hair: np.ndarray) -> dict | None:
+    """CIELAB of the lit strands (the 50th–90th luminance rank of the hair
+    core) plus the luminance spread (90th − 10th percentile, which is what
+    tells a balayage from a solid colour). None with too little hair.
 
-    Read from the *lit* strands — the 50th–90th luminance percentile of the
-    hair core. The plain median lands in the shadows between strands: brown
-    hair measured L 18 there and came out as "black" in bench round 0, while
-    the brightest 10 % are specular highlights."""
+    The plain median lands in the shadows between strands: brown hair measured
+    L 18 there and came out as "black" in bench round 0, while the brightest
+    10 % are specular highlights."""
     if hair.shape != rgb.shape[:2]:
         raise ValueError("hair mask and image differ in size")
     if hair.mean() < MIN_HAIR_FOR_COLOUR:
@@ -331,8 +335,18 @@ def estimate_colour(rgb: np.ndarray, hair: np.ndarray) -> str | None:
     # By rank, not by value: a luminance threshold would keep every pixel of
     # a two-tone mask and let the shadows win again.
     order = np.argsort(lab[:, 0], kind="stable")
-    lit = lab[order[int(0.5 * len(order)) : max(int(0.9 * len(order)), int(0.5 * len(order)) + 1)]]
-    return colour_name(tuple(float(v) for v in np.median(lit, axis=0)))
+    n = len(order)
+    lit = lab[order[int(0.5 * n) : max(int(0.9 * n), int(0.5 * n) + 1)]]
+    L, a, b = (float(v) for v in np.median(lit, axis=0))
+    p10, p90 = np.percentile(lab[:, 0], [10, 90])
+    return {"L": L, "a": a, "b": b, "spread": float(p90 - p10)}
+
+
+def estimate_colour(rgb: np.ndarray, hair: np.ndarray) -> str | None:
+    """Colour word for the hair in `rgb` (HxWx3 uint8), or None when the photo
+    has too little hair to read one (the prompt then says "natural")."""
+    lab = hair_lab(rgb, hair)
+    return None if lab is None else colour_name((lab["L"], lab["a"], lab["b"]))
 
 
 # ── One call for the bot ────────────────────────────────────────────────────
@@ -346,7 +360,9 @@ ANALYSE_OUTPUTS = {
 }
 
 
-def prepare(image: bytes, masks: dict[str, bytes], shape: HairShape) -> tuple[bytes, str | None]:
+def prepare(
+    image: bytes, masks: dict[str, bytes], shape: HairShape, mode: str | None = None
+) -> tuple[bytes, str | None]:
     """Analysis outputs (by SaveImage prefix) + the uploaded photo → (mask PNG,
     hair colour word or None). Raises HairMaskError for an unusable photo.
 
@@ -354,7 +370,7 @@ def prepare(image: bytes, masks: dict[str, bytes], shape: HairShape) -> tuple[by
     ComfyUI's LoadImage sees and so what the masks were made on; if the sizes
     still disagree the colour is skipped rather than guessed."""
     analysis = HairAnalysis(**{field: decode_mask(masks[prefix]) for prefix, field in ANALYSE_OUTPUTS.items()})
-    result = build_mask(analysis, shape)
+    result = build_mask(analysis, shape, mode)
     colour = None
     try:
         with Image.open(io.BytesIO(image)) as im:

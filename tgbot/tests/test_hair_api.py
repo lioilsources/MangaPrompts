@@ -218,6 +218,8 @@ def test_hair_requires_auth(client):
 def test_hair_caption():
     assert appmod.hair_caption("  ") == "💇 New haircut"
     assert appmod.hair_caption("Wolf Cut") == "💇 Wolf Cut"
+    assert appmod.hair_caption("Wolf Cut", "copper-red") == "💇 Wolf Cut · Copper red"
+    assert appmod.hair_caption("", "platinum-blonde") == "💇 Platinum blonde"
 
 
 def test_hair_kontext_engine_gets_an_instruction(client, monkeypatch):
@@ -243,3 +245,48 @@ def test_hair_broken_analysis_output_is_502_and_free(client, monkeypatch):
     resp = client.post("/api/hair", json=_body(image), headers=USER_HEADERS)
     assert resp.status_code == 502
     assert appmod.db.free_used_today(0) == 0
+
+
+def test_hair_new_colour_goes_into_the_prompt(client, monkeypatch):
+    image, masks = _portrait_and_masks()
+    fake = FakeComfy(masks)
+    monkeypatch.setattr(appmod, "comfy", fake)
+    resp = client.post("/api/hair", json=_body(image, colour="platinum-blonde"), headers=USER_HEADERS)
+    assert resp.status_code == 200, resp.text
+    dump = json.dumps(fake.workflows[1])
+    assert "icy platinum blonde hair" in dump and "brown hair" not in dump
+    assert appmod.jobs.get(resp.json()["job_id"]).caption == "💇 Pixie Cut · Platinum blonde"
+
+
+def test_hair_colour_only_keeps_the_cut_and_masks_just_the_hair(client, monkeypatch):
+    image, masks = _portrait_and_masks()
+    fake = FakeComfy(masks)
+    monkeypatch.setattr(appmod, "comfy", fake)
+    monkeypatch.setattr(appmod.config, "HAIR_ENGINE", "kontext")
+    body = _body(image, style_id="keep-cut", block="the same haircut as in the photo",
+                 style="", colour="copper-red",
+                 shape={"length": "long", "bangs": "full", "updo": True})  # ignored for keep-cut
+    resp = client.post("/api/hair", json=body, headers=USER_HEADERS)
+    assert resp.status_code == 200, resp.text
+    text = next(n["inputs"]["text"] for n in fake.workflows[1].values()
+                if n["class_type"] == "CLIPTextEncode" and n["inputs"]["text"])
+    assert text.startswith("Change the person's hair colour to vibrant copper red")
+    assert "Keep the haircut" in text
+    mask = hm.decode_mask(fake.uploads[1][0])
+    a = synthetic()
+    # "hair" mode: no envelope below the old hair, no fringe band
+    assert not mask[400:, :].any()
+    assert mask[250 - 60, 256] and not mask[a.face].any()
+
+
+@pytest.mark.parametrize("over, status", [
+    ({"colour": "rainbow"}, 400),
+    ({"style_id": "keep-cut"}, 400),  # nothing to change
+])
+def test_hair_colour_validation_costs_nothing(client, monkeypatch, over, status):
+    image, masks = _portrait_and_masks()
+    fake = FakeComfy(masks)
+    monkeypatch.setattr(appmod, "comfy", fake)
+    resp = client.post("/api/hair", json=_body(image, **over), headers=USER_HEADERS)
+    assert resp.status_code == status
+    assert fake.workflows == []

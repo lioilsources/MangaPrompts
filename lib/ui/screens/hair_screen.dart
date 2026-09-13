@@ -19,10 +19,17 @@ import 'result_screen.dart';
 /// builder. The face pixels sit outside the mask, so identity is kept by
 /// construction rather than by an adapter.
 class HairScreen extends ConsumerStatefulWidget {
-  const HairScreen({super.key, this.catalog = kHairstyles});
+  const HairScreen({
+    super.key,
+    this.catalog = kHairstyles,
+    this.colours = kHairColours,
+  });
 
   /// Injectable for tests; the app always shows [kHairstyles].
   final List<Hairstyle> catalog;
+
+  /// Injectable for tests; the app always shows [kHairColours].
+  final List<HairColour> colours;
 
   @override
   ConsumerState<HairScreen> createState() => _HairScreenState();
@@ -32,8 +39,18 @@ class _HairScreenState extends ConsumerState<HairScreen> {
   Uint8List? _imageBytes;
   String _group = kHairGroupWomen;
   String? _styleId;
+
+  /// Null keeps the colour the bot reads off the photo.
+  String? _colourId;
   bool _busy = false;
   String? _error;
+
+  HairColour? get _colour {
+    for (final c in widget.colours) {
+      if (c.id == _colourId) return c;
+    }
+    return null;
+  }
 
   Hairstyle? get _style {
     for (final s in widget.catalog) {
@@ -60,7 +77,9 @@ class _HairScreenState extends ConsumerState<HairScreen> {
   Future<void> _submit() async {
     final bytes = _imageBytes;
     final style = _style;
-    if (bytes == null || style == null) return;
+    final colour = _colour;
+    // A colour alone is a whole request: same cut, new colour.
+    if (bytes == null || (style == null && colour == null)) return;
     setState(() {
       _busy = true;
       _error = null;
@@ -68,10 +87,12 @@ class _HairScreenState extends ConsumerState<HairScreen> {
     try {
       final result = await TelegramBackendService.hairImage(
         imageBytes: bytes,
-        styleId: style.id,
-        block: style.block,
-        styleLabel: style.label,
-        shape: style.shape.toJson(),
+        styleId: style?.id ?? kKeepCutId,
+        block: style?.block ?? kKeepCutBlock,
+        styleLabel: style?.label ?? '',
+        shape:
+            (style?.shape ?? const HairShape(length: HairLength.keep)).toJson(),
+        colour: colour?.id,
       );
       ref.invalidate(accountProvider);
       if (!mounted) return;
@@ -80,7 +101,7 @@ class _HairScreenState extends ConsumerState<HairScreen> {
         MaterialPageRoute(
           builder: (_) => ResultScreen(
             imageUrl: result.url,
-            prompt: style.label,
+            prompt: [style?.label, colour?.label].whereType<String>().join(' · '),
             imageBytes: result.bytes,
           ),
         ),
@@ -101,7 +122,8 @@ class _HairScreenState extends ConsumerState<HairScreen> {
   Widget build(BuildContext context) {
     final account = ref.watch(accountProvider);
     final theme = Theme.of(context);
-    final canSubmit = _imageBytes != null && _style != null && !_busy;
+    final canSubmit =
+        _imageBytes != null && (_style != null || _colour != null) && !_busy;
     final groups = kHairGroups.where(
       (g) => widget.catalog.any((s) => s.group == g),
     );
@@ -126,18 +148,57 @@ class _HairScreenState extends ConsumerState<HairScreen> {
           Padding(
             padding: const EdgeInsets.only(top: 6),
             child: Text(
-              'Keeps your face and hair colour. Works best with a front-facing '
-              'portrait, hair fully visible, no hat.',
+              'Keeps your face, and your hair colour unless you pick a new '
+              'one. Works best with a front-facing portrait, hair fully '
+              'visible, no hat.',
               style: theme.textTheme.bodySmall,
             ),
           ),
           const SizedBox(height: 16),
-          if (widget.catalog.isEmpty)
+          if (widget.catalog.isEmpty && widget.colours.isEmpty)
             Text(
               'No hairstyles yet — check back soon.',
               style: theme.textTheme.bodyMedium,
-            )
-          else ...[
+            ),
+          if (widget.colours.isNotEmpty) ...[
+            Text('Colour', style: theme.textTheme.titleMedium),
+            const SizedBox(height: 8),
+            Wrap(
+              spacing: 8,
+              runSpacing: 4,
+              children: [
+                ChoiceChip(
+                  label: const Text('Keep mine'),
+                  selected: _colourId == null,
+                  onSelected:
+                      _busy ? null : (_) => setState(() => _colourId = null),
+                ),
+                for (final g in kHairColourGroups)
+                  for (final c in widget.colours.where((c) => c.group == g))
+                    ChoiceChip(
+                      label: Text(c.label),
+                      selected: c.id == _colourId,
+                      onSelected: _busy
+                          ? null
+                          : (_) => setState(() => _colourId = c.id),
+                    ),
+              ],
+            ),
+            const SizedBox(height: 16),
+          ],
+          if (widget.catalog.isNotEmpty) ...[
+            Text('Haircut', style: theme.textTheme.titleMedium),
+            const SizedBox(height: 8),
+            if (widget.colours.isNotEmpty)
+              Align(
+                alignment: Alignment.centerLeft,
+                child: ChoiceChip(
+                  label: const Text('Keep my cut'),
+                  selected: _styleId == null,
+                  onSelected:
+                      _busy ? null : (_) => setState(() => _styleId = null),
+                ),
+              ),
             if (groups.length > 1)
               SegmentedButton<String>(
                 segments: [
@@ -194,7 +255,11 @@ class _HairScreenState extends ConsumerState<HairScreen> {
                 child: CircularProgressIndicator(strokeWidth: 2),
               )
             : const Icon(Icons.content_cut),
-        label: Text(_busy ? 'Cutting…' : 'New haircut'),
+        label: Text(
+          _busy
+              ? 'Working…'
+              : (_style == null && _colour != null ? 'New colour' : 'New haircut'),
+        ),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
     );
@@ -237,7 +302,7 @@ class _HairScreenState extends ConsumerState<HairScreen> {
                           CircularProgressIndicator(),
                           SizedBox(height: 12),
                           Text(
-                            'Cutting… about a minute.\n'
+                            'Working… about a minute.\n'
                             'The photo also arrives in your chat.',
                             textAlign: TextAlign.center,
                           ),

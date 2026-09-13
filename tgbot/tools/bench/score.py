@@ -31,6 +31,7 @@ import numpy as np  # noqa: E402
 from PIL import Image  # noqa: E402
 
 import catalog  # noqa: E402
+import haircolours  # noqa: E402
 import hairmask as hm  # noqa: E402
 from comfy import prepare_workflow  # noqa: E402
 from comfysync import Comfy  # noqa: E402
@@ -247,7 +248,7 @@ def score(run: Path, url: str, cache: Path) -> dict:
             if row["style"] != catalog.BASELINE and gk in baselines:
                 m["reaction"] = round(cos_dist(histogram(out_img), baselines[gk]), 3)
         else:
-            style = hair_styles[row["style"]]
+            style = catalog.hair_style(row["style"])
             shape = style["shape"]
             m["clean"] = n_faces == 1 and out_img.shape == src["img"].shape
             box = src["box"]
@@ -265,22 +266,28 @@ def score(run: Path, url: str, cache: Path) -> dict:
                 length_ok=length_ok(row["style"], shape, below, src["below"]),
                 bangs_ok=bangs_ok(shape, cover, src["cover"]),
             )
-            group = [h for h in hair_styles.values() if h["group"] == style["group"]]
-            labels = [h["id"] for h in group]
-            texts = [f"a photo of a person with a {h['label']} hairstyle" for h in group]
-            t = labels.index(row["style"])
-            p_out = clip_probs(head_crop(Image.fromarray(out_img), box), texts)
-            p_src = clip_probs(head_crop(Image.fromarray(src["img"]), box), texts)
-            rank_out = int((p_out > p_out[t]).sum()) + 1
-            rank_src = int((p_src > p_src[t]).sum()) + 1
-            m.update(
-                clip_p=round(float(p_out[t]), 3), clip_p_src=round(float(p_src[t]), 3),
-                clip_rank=rank_out, clip_rank_src=rank_src,
-                clip_top_other=labels[int(p_out.argmax())],
-            )
-            m["recognised"] = bool(rank_out <= THRESHOLDS["clip_top"] and (
-                p_out[t] - p_src[t] >= THRESHOLDS["clip_gain"] or (rank_out == 1 and rank_src == 1)
-            ))
+            if row.get("colour"):
+                lab = hm.hair_lab(out_img, a.hair) if a.hair.shape == out_img.shape[:2] else None
+                m["hair_lab"] = None if lab is None else {k: round(v, 1) for k, v in lab.items()}
+                m["colour_ok"] = haircolours.matches(row["colour"], lab)
+                m["colour_read"] = hm.estimate_colour(out_img, a.hair) if lab else None
+            if style["id"] != haircolours.KEEP_CUT:
+                group = [h for h in hair_styles.values() if h["group"] == style["group"]]
+                labels = [h["id"] for h in group]
+                texts = [f"a photo of a person with a {h['label']} hairstyle" for h in group]
+                t = labels.index(row["style"])
+                p_out = clip_probs(head_crop(Image.fromarray(out_img), box), texts)
+                p_src = clip_probs(head_crop(Image.fromarray(src["img"]), box), texts)
+                rank_out = int((p_out > p_out[t]).sum()) + 1
+                rank_src = int((p_src > p_src[t]).sum()) + 1
+                m.update(
+                    clip_p=round(float(p_out[t]), 3), clip_p_src=round(float(p_src[t]), 3),
+                    clip_rank=rank_out, clip_rank_src=rank_src,
+                    clip_top_other=labels[int(p_out.argmax())],
+                )
+                m["recognised"] = bool(rank_out <= THRESHOLDS["clip_top"] and (
+                    p_out[t] - p_src[t] >= THRESHOLDS["clip_gain"] or (rank_out == 1 and rank_src == 1)
+                ))
         out_cells[key] = m
         print(f"{row['style']:22} {row['engine']:5} {row['src']:18} {json.dumps({k: v for k, v in m.items() if k not in ('status', 'scored_file')})}", flush=True)
 
@@ -291,7 +298,8 @@ def summarise(manifest: dict, metrics: dict) -> dict:
     groups: dict[tuple, list] = defaultdict(list)
     for key, row in manifest["cells"].items():
         sweep = json.dumps(row["sweep"], sort_keys=True)
-        groups[(row["style"], row["engine"], row.get("medium", ""), sweep)].append((row, metrics.get(key, {})))
+        label = row["style"] + (f"+{row['colour']}" if row.get("colour") else "")
+        groups[(label, row["engine"], row.get("medium", ""), sweep)].append((row, metrics.get(key, {})))
     out = {}
     for (style, engine, medium, sweep), items in sorted(groups.items()):
         done = [m for _, m in items if m.get("status") == "done"]
@@ -316,7 +324,7 @@ def summarise(manifest: dict, metrics: dict) -> dict:
         if done and s["clean"] < 1:
             reasons.append("not clean")
         if manifest["task"] == "hair":
-            for check in ("length_ok", "bangs_ok", "recognised"):
+            for check in ("length_ok", "bangs_ok", "recognised", "colour_ok"):
                 vals = [m[check] for m in done if m.get(check) is not None]
                 rate = sum(vals) / len(vals) if vals else None
                 s[check] = None if rate is None else round(rate, 2)
@@ -334,8 +342,8 @@ def summarise(manifest: dict, metrics: dict) -> dict:
 def write_summary_md(run: Path, manifest: dict, metrics: dict) -> None:
     lines = [f"# {run.name} — {manifest['task']}", ""]
     if manifest["task"] == "hair":
-        lines += ["| style | engine | sweep | done | identity min/mean | length | bangs | CLIP | clean | auto |",
-                  "|---|---|---|---|---|---|---|---|---|---|"]
+        lines += ["| style | engine | sweep | done | identity min/mean | length | bangs | CLIP | colour | clean | auto |",
+                  "|---|---|---|---|---|---|---|---|---|---|---|"]
     else:
         lines += ["| style | engine | medium | sweep | done | identity min/mean | reaction | clean | auto |",
                   "|---|---|---|---|---|---|---|---|---|"]
@@ -348,7 +356,7 @@ def write_summary_md(run: Path, manifest: dict, metrics: dict) -> None:
         done = f"{s['done']}/{s['cells']}" + (f" ({s['refused']} refused)" if s["refused"] else "")
         if manifest["task"] == "hair":
             lines.append(f"| {style} | {engine} | {sweep} | {done} | {ident} | {fmt(s.get('length_ok'))} | "
-                         f"{fmt(s.get('bangs_ok'))} | {fmt(s.get('recognised'))} | {fmt(s['clean'])} | {auto} |")
+                         f"{fmt(s.get('bangs_ok'))} | {fmt(s.get('recognised'))} | {fmt(s.get('colour_ok'))} | {fmt(s['clean'])} | {auto} |")
         else:
             lines.append(f"| {style} | {engine} | {medium} | {sweep} | {done} | {ident} | "
                          f"{s.get('reaction_mean') if s.get('reaction_mean') is not None else '—'} | {fmt(s['clean'])} | {auto} |")

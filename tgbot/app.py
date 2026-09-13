@@ -43,6 +43,7 @@ from fastapi.responses import FileResponse
 from pydantic import BaseModel, Field
 
 import config
+import haircolours
 import hairmask
 import hairprompt
 import payments
@@ -319,6 +320,9 @@ class HairRequest(BaseModel):
     block: str = Field(min_length=1, max_length=600)
     style: str = Field(default="", max_length=80)
     shape: HairShapeIn
+    # haircolours id; None keeps the colour read off the photo. With
+    # style_id "keep-cut" the colour is the whole request.
+    colour: str | None = Field(default=None, max_length=40)
     image: str = Field(min_length=1, max_length=config.MAX_HAIR_IMAGE_B64_CHARS)
 
 
@@ -361,8 +365,12 @@ def restyle_caption(style: str, medium: str) -> str:
     return f"🖼 {label} · {medium}"
 
 
-def hair_caption(style: str) -> str:
-    return f"💇 {style.strip() or 'New haircut'}"
+def hair_caption(style: str, colour: str | None = None) -> str:
+    label = style.strip() or "New haircut"
+    if colour:
+        colour_label = haircolours.COLOURS[colour]["label"]
+        label = colour_label if label == "New haircut" else f"{label} · {colour_label}"
+    return f"💇 {label}"
 
 
 @app.get("/healthz")
@@ -518,10 +526,17 @@ async def hair(req: HairRequest, user_id: int = Depends(current_user_id)):
     runs first and is free: it builds the inpaint mask and reads the hair
     colour, and a photo without a usable face is refused here, before any
     credit moves. Then it is billed exactly like /api/generate."""
+    if req.colour is not None and req.colour not in haircolours.COLOURS:
+        raise HTTPException(status_code=400, detail=f"unknown hair colour '{req.colour}'")
+    keep_cut = req.style_id == haircolours.KEEP_CUT
+    if keep_cut and req.colour is None:
+        raise HTTPException(status_code=400, detail="pick a new haircut or a new colour")
     image = _decode_image(req.image)
     if user_id in _hair_analysing or jobs.active_count(user_id, "image") >= 1:
         raise HTTPException(status_code=429, detail="wait for your previous generation to finish")
-    shape = hairmask.HairShape(**req.shape.model_dump())
+    # Same cut, new colour: the old hair silhouette is exactly what to repaint.
+    shape = hairmask.HairShape() if keep_cut else hairmask.HairShape(**req.shape.model_dump())
+    mask_mode = "hair" if keep_cut else None
     engine = config.HAIR_ENGINE
     token = uuid.uuid4().hex
 
@@ -543,7 +558,7 @@ async def hair(req: HairRequest, user_id: int = Depends(current_user_id)):
                 log.error("hair analysis failed: %s", e)
                 raise HTTPException(status_code=502, detail="ComfyUI is unavailable") from e
             try:
-                mask_png, colour = await asyncio.to_thread(hairmask.prepare, image, masks, shape)
+                mask_png, colour = await asyncio.to_thread(hairmask.prepare, image, masks, shape, mask_mode)
             except hairmask.HairMaskError as e:
                 raise HTTPException(status_code=400, detail=e.message) from e
             except (ValueError, OSError, KeyError) as e:
@@ -559,8 +574,10 @@ async def hair(req: HairRequest, user_id: int = Depends(current_user_id)):
                     detail="your free daily limit is used up and you have no credits",
                 )
             _, usage_id = spend
-            prompt = hairprompt.prompt(req.block, req.style_id, req.shape.model_dump(), colour, engine)
-            job = Job(user_id=user_id, prompt=prompt, workflow=f"hair-{engine}", caption=hair_caption(req.style))
+            prompt = hairprompt.prompt(
+                req.block, req.style_id, req.shape.model_dump(), colour, engine, new_colour=req.colour
+            )
+            job = Job(user_id=user_id, prompt=prompt, workflow=f"hair-{engine}", caption=hair_caption(req.style, req.colour))
             try:
                 mask_name = await comfy.upload_image(session, mask_png, f"tsumiki_hair_mask_{job.id}.png")
                 wf = prepare_workflow(
@@ -584,8 +601,8 @@ async def hair(req: HairRequest, user_id: int = Depends(current_user_id)):
     jobs.add(job)
     asyncio.create_task(_watch_job(job, usage_id))
     log.info(
-        "hair job %s queued for user %s (prompt_id=%s, %s, %s, colour=%s, on %s)",
-        job.id, user_id, prompt_id, req.style or "-", shape.key, colour, engine,
+        "hair job %s queued for user %s (prompt_id=%s, %s, %s, colour=%s → %s, on %s)",
+        job.id, user_id, prompt_id, req.style or "-", shape.key, colour, req.colour or "keep", engine,
     )
     return {"job_id": job.id, "queue_position": queue_number, "hair_colour": colour}
 

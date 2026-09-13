@@ -111,12 +111,35 @@ void main() {
     expect(fab.onPressed, isNull, reason: 'no photo picked yet');
   });
 
+  testWidgets('a colour alone is enough; the button says what happens',
+      (tester) async {
+    await tester.pumpWidget(const ProviderScope(
+      child: MaterialApp(
+        home: HairScreen(
+          catalog: [_pixie],
+          colours: [
+            HairColour(id: 'copper-red', label: 'Copper red', group: 'Red'),
+          ],
+        ),
+      ),
+    ));
+    await tester.pump();
+    expect(find.text('Keep mine'), findsOneWidget);
+    expect(find.text('Keep my cut'), findsOneWidget);
+    await tester.tap(find.text('Copper red'));
+    await tester.pump();
+    expect(find.text('New colour'), findsOneWidget);
+    await tester.tap(find.text('Pixie Cut'));
+    await tester.pump();
+    expect(find.text('New haircut'), findsOneWidget);
+  });
+
   testWidgets('empty catalog says so instead of showing nothing', (
     tester,
   ) async {
     await tester.pumpWidget(
       const ProviderScope(
-        child: MaterialApp(home: HairScreen(catalog: [])),
+        child: MaterialApp(home: HairScreen(catalog: [], colours: [])),
       ),
     );
     await tester.pump();

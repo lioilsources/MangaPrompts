@@ -11,7 +11,7 @@ library;
 
 import 'hairstyle_catalog.dart';
 
-export 'hairstyle_catalog.dart' show kHairstyles;
+export 'hairstyle_catalog.dart' show kHairstyles, kHairColours;
 
 enum HairLength { keep, short, medium, long }
 
@@ -78,6 +78,22 @@ const kHairSections = [
   'Long',
   'Updos',
 ];
+
+/// A hair colour the bot knows (`tgbot/haircolours.py` holds the prompt
+/// phrase); the app sends only the id. [group] orders the chips.
+class HairColour {
+  const HairColour({required this.id, required this.label, required this.group});
+
+  final String id;
+  final String label;
+  final String group;
+}
+
+const kHairColourGroups = ['Blonde', 'Red', 'Brown', 'Black & grey', 'Fashion'];
+
+/// Style id for "same haircut, new colour" (`haircolours.KEEP_CUT`).
+const kKeepCutId = 'keep-cut';
+const kKeepCutBlock = 'the same haircut as in the photo';
 
 Hairstyle? hairstyleById(String? id) {
   if (id == null) return null;
