@@ -5,7 +5,99 @@
 import 'hairstyles.dart';
 
 const kHairstyles = <Hairstyle>[
+  Hairstyle(
+    id: 'curtain-bangs',
+    label: 'Curtain Bangs',
+    group: kHairGroupWomen,
+    section: 'Bangs',
+    block:
+        'curtain bangs, soft face-framing fringe parted in the middle and swept to both sides, blending into the lengths',
+    shape: HairShape(length: HairLength.keep, bangs: HairBangs.curtain, updo: false),
+  ),
+  Hairstyle(
+    id: 'lob',
+    label: 'Long Bob (Lob)',
+    group: kHairGroupWomen,
+    section: 'Cuts',
+    block:
+        'long bob haircut (lob), one-length hair ending at the collarbone, sleek and slightly longer in front',
+    shape: HairShape(length: HairLength.medium, bangs: HairBangs.none, updo: false),
+  ),
+  Hairstyle(
+    id: 'french-bob',
+    label: 'French Bob',
+    group: kHairGroupWomen,
+    section: 'Cuts',
+    block:
+        'french bob, short chin-length bob with a full straight fringe, effortless parisian look',
+    shape: HairShape(length: HairLength.medium, bangs: HairBangs.full, updo: false),
+  ),
+  Hairstyle(
+    id: 'face-framing',
+    label: 'Face-Framing Layers',
+    group: kHairGroupWomen,
+    section: 'Cuts',
+    block:
+        'face-framing layers, shorter layered pieces around the face blending into the lengths, soft and flattering',
+    shape: HairShape(length: HairLength.keep, bangs: HairBangs.none, updo: false),
+  ),
+  Hairstyle(
+    id: 'beach-waves',
+    label: 'Beach Waves',
+    group: kHairGroupWomen,
+    section: 'Texture',
+    block:
+        'beach waves, loose undone tousled waves with natural texture, effortless surf look',
+    shape: HairShape(length: HairLength.keep, bangs: HairBangs.none, updo: false),
+  ),
+  Hairstyle(
+    id: 'soft-curls',
+    label: 'Soft Curls',
+    group: kHairGroupWomen,
+    section: 'Texture',
+    block:
+        'soft curls, bouncy loose curls with defined ringlets and shine',
+    shape: HairShape(length: HairLength.keep, bangs: HairBangs.none, updo: false),
+  ),
+  Hairstyle(
+    id: 'm-skin-fade',
+    label: 'High Skin Fade',
+    group: kHairGroupMen,
+    section: 'Short',
+    block:
+        'high skin fade, sides shaved down to the skin and blended up high, short textured hair on top',
+    shape: HairShape(length: HairLength.short, bangs: HairBangs.none, updo: false),
+  ),
+  Hairstyle(
+    id: 'm-quiff',
+    label: 'Quiff',
+    group: kHairGroupMen,
+    section: 'Medium',
+    block:
+        'quiff hairstyle, hair on top brushed up and back into a voluminous quiff, shorter tapered sides',
+    shape: HairShape(length: HairLength.short, bangs: HairBangs.none, updo: false),
+  ),
 ];
 
 const kHairColours = <HairColour>[
+  HairColour(
+    id: 'burgundy',
+    label: 'Burgundy',
+    group: 'Red',
+  ),
+  HairColour(
+    id: 'honey-balayage',
+    label: 'Honey balayage',
+    group: 'Brown',
+  ),
+  HairColour(
+    id: 'jet-black',
+    label: 'Jet black',
+    group: 'Black & grey',
+  ),
+  HairColour(
+    id: 'blue-black',
+    label: 'Blue black',
+    group: 'Black & grey',
+  ),
 ];

@@ -1,0 +1,538 @@
+{
+ "beach-waves": {
+  "verdict": "accept",
+  "run": "hair-r1",
+  "engines": {
+   "kontext": "pass",
+   "sdxl": "pass"
+  }
+ },
+ "bixie": {
+  "verdict": "reject",
+  "run": "hair-r1",
+  "engines": {
+   "kontext": "fail: recognised 0%",
+   "sdxl": "fail: recognised 0%"
+  }
+ },
+ "blunt-bangs": {
+  "verdict": "reject",
+  "run": "hair-r1",
+  "engines": {
+   "kontext": "pass",
+   "sdxl": "fail: length_ok 0%"
+  }
+ },
+ "blunt-cut": {
+  "verdict": "reject",
+  "run": "hair-r1",
+  "engines": {
+   "kontext": "fail: recognised 0%",
+   "sdxl": "fail: recognised 0%"
+  }
+ },
+ "bob": {
+  "verdict": "reject",
+  "run": "hair-r1",
+  "engines": {
+   "kontext": "fail: recognised 0%",
+   "sdxl": "pass"
+  }
+ },
+ "butterfly-cut": {
+  "verdict": "reject",
+  "run": "hair-r1",
+  "engines": {
+   "kontext": "fail: recognised 0%",
+   "sdxl": "fail: bangs_ok 0%, recognised 0%"
+  }
+ },
+ "curtain-bangs": {
+  "verdict": "accept",
+  "run": "hair-r1",
+  "engines": {
+   "kontext": "pass",
+   "sdxl": "pass"
+  }
+ },
+ "face-framing": {
+  "verdict": "accept",
+  "run": "hair-r1",
+  "engines": {
+   "kontext": "pass",
+   "sdxl": "pass"
+  }
+ },
+ "french-bob": {
+  "verdict": "accept",
+  "run": "hair-r1",
+  "engines": {
+   "kontext": "pass",
+   "sdxl": "pass"
+  }
+ },
+ "half-up": {
+  "verdict": "reject",
+  "run": "hair-r1",
+  "engines": {
+   "kontext": "fail: recognised 0%",
+   "sdxl": "fail: recognised 0%"
+  }
+ },
+ "high-ponytail": {
+  "verdict": "reject",
+  "run": "hair-r1",
+  "engines": {
+   "kontext": "fail: length_ok 0%",
+   "sdxl": "pass"
+  }
+ },
+ "italian-bob": {
+  "verdict": "reject",
+  "run": "hair-r1",
+  "engines": {
+   "kontext": "fail: recognised 0%",
+   "sdxl": "fail: recognised 0%"
+  }
+ },
+ "lob": {
+  "verdict": "accept",
+  "run": "hair-r1",
+  "engines": {
+   "kontext": "pass",
+   "sdxl": "pass"
+  }
+ },
+ "long-layered": {
+  "verdict": "reject",
+  "run": "hair-r1",
+  "engines": {
+   "kontext": "fail: length_ok 0%, recognised 0%",
+   "sdxl": "pass"
+  }
+ },
+ "low-ponytail": {
+  "verdict": "reject",
+  "run": "hair-r1",
+  "engines": {
+   "kontext": "fail: length_ok 0%, recognised 0%",
+   "sdxl": "pass"
+  }
+ },
+ "m-afro": {
+  "verdict": "reject",
+  "run": "hair-r1",
+  "engines": {
+   "kontext": "fail: length_ok 0%",
+   "sdxl": "fail: length_ok 0%"
+  }
+ },
+ "m-blowout": {
+  "verdict": "reject",
+  "run": "hair-r1",
+  "engines": {
+   "kontext": "fail: length_ok 0%, recognised 0%",
+   "sdxl": "fail: length_ok 0%, recognised 0%"
+  }
+ },
+ "m-buzz": {
+  "verdict": "reject",
+  "run": "hair-r1",
+  "engines": {
+   "kontext": "fail: recognised 0%",
+   "sdxl": "pass"
+  }
+ },
+ "m-caesar": {
+  "verdict": "reject",
+  "run": "hair-r1",
+  "engines": {
+   "kontext": "fail: bangs_ok 0%, recognised 0%",
+   "sdxl": "fail: bangs_ok 0%"
+  }
+ },
+ "m-crew": {
+  "verdict": "reject",
+  "run": "hair-r1",
+  "engines": {
+   "kontext": "fail: recognised 0%",
+   "sdxl": "fail: recognised 0%"
+  }
+ },
+ "m-curly-fade": {
+  "verdict": "reject",
+  "run": "hair-r1",
+  "engines": {
+   "kontext": "fail: recognised 0%",
+   "sdxl": "pass"
+  }
+ },
+ "m-curtains": {
+  "verdict": "reject",
+  "run": "hair-r1",
+  "engines": {
+   "kontext": "fail: length_ok 0%, bangs_ok 0%, recognised 0%",
+   "sdxl": "fail: length_ok 0%, recognised 0%"
+  }
+ },
+ "m-faux-hawk": {
+  "verdict": "reject",
+  "run": "hair-r1",
+  "engines": {
+   "kontext": "fail: recognised 0%",
+   "sdxl": "fail: recognised 0%"
+  }
+ },
+ "m-flow": {
+  "verdict": "reject",
+  "run": "hair-r1",
+  "engines": {
+   "kontext": "fail: length_ok 0%",
+   "sdxl": "fail: length_ok 0%"
+  }
+ },
+ "m-ivy-league": {
+  "verdict": "reject",
+  "run": "hair-r1",
+  "engines": {
+   "kontext": "fail: recognised 0%",
+   "sdxl": "fail: recognised 0%"
+  }
+ },
+ "m-locs": {
+  "verdict": "reject",
+  "run": "hair-r1",
+  "engines": {
+   "kontext": "fail: length_ok 0%",
+   "sdxl": "fail: length_ok 0%"
+  }
+ },
+ "m-low-taper": {
+  "verdict": "reject",
+  "run": "hair-r1",
+  "engines": {
+   "kontext": "fail: recognised 0%",
+   "sdxl": "fail: recognised 0%"
+  }
+ },
+ "m-man-bun": {
+  "verdict": "reject",
+  "run": "hair-r1",
+  "engines": {
+   "kontext": "fail: recognised 0%",
+   "sdxl": "pass"
+  }
+ },
+ "m-modern-mullet": {
+  "verdict": "reject",
+  "run": "hair-r1",
+  "engines": {
+   "kontext": "fail: length_ok 0%, recognised 0%",
+   "sdxl": "fail: length_ok 0%, recognised 0%"
+  }
+ },
+ "m-pompadour": {
+  "verdict": "reject",
+  "run": "hair-r1",
+  "engines": {
+   "kontext": "fail: length_ok 0%",
+   "sdxl": "fail: length_ok 0%"
+  }
+ },
+ "m-quiff": {
+  "verdict": "accept",
+  "run": "hair-r1",
+  "engines": {
+   "kontext": "pass",
+   "sdxl": "pass"
+  }
+ },
+ "m-shag": {
+  "verdict": "reject",
+  "run": "hair-r1",
+  "engines": {
+   "kontext": "fail: length_ok 0%, recognised 0%",
+   "sdxl": "fail: recognised 0%"
+  }
+ },
+ "m-side-part": {
+  "verdict": "reject",
+  "run": "hair-r1",
+  "engines": {
+   "kontext": "fail: recognised 0%",
+   "sdxl": "fail: recognised 0%"
+  }
+ },
+ "m-skin-fade": {
+  "verdict": "accept",
+  "run": "hair-r1",
+  "engines": {
+   "kontext": "pass",
+   "sdxl": "pass"
+  }
+ },
+ "m-slick-back": {
+  "verdict": "reject",
+  "run": "hair-r1",
+  "engines": {
+   "kontext": "fail: length_ok 0%, recognised 0%",
+   "sdxl": "fail: length_ok 0%, recognised 0%"
+  }
+ },
+ "m-textured-crop": {
+  "verdict": "reject",
+  "run": "hair-r1",
+  "engines": {
+   "kontext": "fail: bangs_ok 0%, recognised 0%",
+   "sdxl": "fail: bangs_ok 0%, recognised 0%"
+  }
+ },
+ "m-textured-fringe": {
+  "verdict": "reject",
+  "run": "hair-r1",
+  "engines": {
+   "kontext": "fail: bangs_ok 0%",
+   "sdxl": "fail: bangs_ok 0%"
+  }
+ },
+ "m-top-knot": {
+  "verdict": "reject",
+  "run": "hair-r1",
+  "engines": {
+   "kontext": "pass",
+   "sdxl": "fail: recognised 0%"
+  }
+ },
+ "m-two-block": {
+  "verdict": "reject",
+  "run": "hair-r1",
+  "engines": {
+   "kontext": "fail: length_ok 0%, bangs_ok 0%, recognised 0%",
+   "sdxl": "fail: length_ok 0%, bangs_ok 0%"
+  }
+ },
+ "m-undercut": {
+  "verdict": "reject",
+  "run": "hair-r1",
+  "engines": {
+   "kontext": "fail: length_ok 0%, recognised 0%",
+   "sdxl": "fail: length_ok 0%, recognised 0%"
+  }
+ },
+ "m-wolf-cut": {
+  "verdict": "reject",
+  "run": "hair-r1",
+  "engines": {
+   "kontext": "fail: length_ok 0%, bangs_ok 0%",
+   "sdxl": "fail: length_ok 0%"
+  }
+ },
+ "messy-bun": {
+  "verdict": "reject",
+  "run": "hair-r1",
+  "engines": {
+   "kontext": "fail: length_ok 0%, recognised 0%",
+   "sdxl": "pass"
+  }
+ },
+ "messy-waves": {
+  "verdict": "reject",
+  "run": "hair-r1",
+  "engines": {
+   "kontext": "fail: recognised 0%",
+   "sdxl": "pass"
+  }
+ },
+ "pixie": {
+  "verdict": "reject",
+  "run": "hair-r1",
+  "engines": {
+   "kontext": "fail: recognised 0%",
+   "sdxl": "pass"
+  }
+ },
+ "shag": {
+  "verdict": "reject",
+  "run": "hair-r1",
+  "engines": {
+   "kontext": "fail: recognised 0%",
+   "sdxl": "pass"
+  }
+ },
+ "side-bangs": {
+  "verdict": "reject",
+  "run": "hair-r1",
+  "engines": {
+   "kontext": "fail: recognised 0%",
+   "sdxl": "fail: recognised 0%"
+  }
+ },
+ "sleek-straight": {
+  "verdict": "reject",
+  "run": "hair-r1",
+  "engines": {
+   "kontext": "fail: recognised 0%",
+   "sdxl": "pass"
+  }
+ },
+ "soft-curls": {
+  "verdict": "accept",
+  "run": "hair-r1",
+  "engines": {
+   "kontext": "pass",
+   "sdxl": "pass"
+  }
+ },
+ "top-knot": {
+  "verdict": "reject",
+  "run": "hair-r1",
+  "engines": {
+   "kontext": "fail: length_ok 0%, recognised 0%",
+   "sdxl": "pass"
+  }
+ },
+ "wispy-bangs": {
+  "verdict": "reject",
+  "run": "hair-r1",
+  "engines": {
+   "kontext": "pass",
+   "sdxl": "fail: recognised 0%"
+  }
+ },
+ "wolf-cut": {
+  "verdict": "reject",
+  "run": "hair-r1",
+  "engines": {
+   "kontext": "fail: recognised 0%",
+   "sdxl": "fail: recognised 0%"
+  }
+ },
+ "colour:ash-blonde": {
+  "verdict": "reject",
+  "run": "hair-colours",
+  "engines": {
+   "kontext": "pass",
+   "sdxl": "fail: colour_ok 0%"
+  }
+ },
+ "colour:ash-brown": {
+  "verdict": "reject",
+  "run": "hair-colours",
+  "engines": {
+   "kontext": "fail: colour_ok 50%",
+   "sdxl": "fail: colour_ok 0%"
+  }
+ },
+ "colour:auburn": {
+  "verdict": "reject",
+  "run": "hair-colours",
+  "engines": {
+   "kontext": "fail: colour_ok 50%",
+   "sdxl": "pass"
+  }
+ },
+ "colour:blue-black": {
+  "verdict": "accept",
+  "run": "hair-colours",
+  "engines": {
+   "kontext": "pass",
+   "sdxl": "pass"
+  }
+ },
+ "colour:burgundy": {
+  "verdict": "accept",
+  "run": "hair-colours",
+  "engines": {
+   "kontext": "pass",
+   "sdxl": "pass"
+  }
+ },
+ "colour:chestnut-brown": {
+  "verdict": "reject",
+  "run": "hair-colours",
+  "engines": {
+   "kontext": "fail: colour_ok 50%",
+   "sdxl": "fail: colour_ok 0%"
+  }
+ },
+ "colour:chocolate-brown": {
+  "verdict": "reject",
+  "run": "hair-colours",
+  "engines": {
+   "kontext": "fail: colour_ok 0%",
+   "sdxl": "pass"
+  }
+ },
+ "colour:copper-red": {
+  "verdict": "reject",
+  "run": "hair-colours",
+  "engines": {
+   "kontext": "fail: colour_ok 50%",
+   "sdxl": "fail: colour_ok 50%"
+  }
+ },
+ "colour:honey-balayage": {
+  "verdict": "accept",
+  "run": "hair-colours",
+  "engines": {
+   "kontext": "pass",
+   "sdxl": "pass"
+  }
+ },
+ "colour:honey-blonde": {
+  "verdict": "reject",
+  "run": "hair-colours",
+  "engines": {
+   "kontext": "pass",
+   "sdxl": "fail: colour_ok 0%"
+  }
+ },
+ "colour:jet-black": {
+  "verdict": "accept",
+  "run": "hair-colours",
+  "engines": {
+   "kontext": "pass",
+   "sdxl": "pass"
+  }
+ },
+ "colour:lavender": {
+  "verdict": "reject",
+  "run": "hair-colours",
+  "engines": {
+   "kontext": "pass",
+   "sdxl": "fail: colour_ok 50%"
+  }
+ },
+ "colour:pastel-pink": {
+  "verdict": "reject",
+  "run": "hair-colours",
+  "engines": {
+   "kontext": "fail: length_ok 50%",
+   "sdxl": "pass"
+  }
+ },
+ "colour:platinum-blonde": {
+  "verdict": "reject",
+  "run": "hair-colours",
+  "engines": {
+   "kontext": "pass",
+   "sdxl": "fail: colour_ok 0%"
+  }
+ },
+ "colour:silver-grey": {
+  "verdict": "reject",
+  "run": "hair-colours",
+  "engines": {
+   "kontext": "pass",
+   "sdxl": "fail: colour_ok 0%"
+  }
+ },
+ "colour:strawberry-blonde": {
+  "verdict": "reject",
+  "run": "hair-colours",
+  "engines": {
+   "kontext": "fail: colour_ok 50%",
+   "sdxl": "fail: colour_ok 0%"
+  }
+ }
+}

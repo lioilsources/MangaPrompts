@@ -145,7 +145,9 @@ HAIR_WORKFLOW_FILES = {
     "sdxl": "sdxl_hair_inpaint.api.json",  # SDXL + Fooocus inpaint patch
     "kontext": "flux_hair_kontext.api.json",  # FLUX Kontext edit, pasted back through the mask
 }
-HAIR_ENGINE = os.environ.get("HAIR_ENGINE", "").strip() or "flux"
+# The catalog gate measures kontext and sdxl (docs/hair-matrix.md); FLUX Fill
+# barely changes the cut and never went through it, so it is not the default.
+HAIR_ENGINE = os.environ.get("HAIR_ENGINE", "").strip() or "kontext"
 if HAIR_ENGINE not in HAIR_WORKFLOW_FILES:
     raise RuntimeError(f"unknown HAIR_ENGINE '{HAIR_ENGINE}'")
 HAIR_CHECKPOINT = os.environ.get("HAIR_CHECKPOINT", "").strip() or _RESTYLE_DEFAULT_CKPT

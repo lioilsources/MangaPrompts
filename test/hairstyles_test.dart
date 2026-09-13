@@ -89,7 +89,9 @@ void main() {
   ) async {
     await tester.pumpWidget(
       const ProviderScope(
-        child: MaterialApp(home: HairScreen(catalog: [_pixie, _halfUp, _bun])),
+        child: MaterialApp(
+          home: HairScreen(catalog: [_pixie, _halfUp, _bun], colours: []),
+        ),
       ),
     );
     await tester.pump();

@@ -57,6 +57,75 @@ CLIP práh byl původně top 3. Viditelně správná mikáda na Kontextu měla r
 6–8 z 25, protože sousední labely (bob, lob, Italian bob, blunt cut) mají pro
 CLIP stejný tvar. Práh je proto top 5.
 
-## Kolo 1 — 51 kandidátů × 2 enginy
+## Kolo 1 — 51 kandidátů × 2 enginy (2026-09-13)
 
-_Doplní se po doběhnutí běhu `out/hair-r1`._
+Běh `out/hair-r1` (Kontext + SDXL, předloha `w-long` pro ženské a `m-short`
+pro pánské účesy, seed 1) a `out/hair-colours` (16 barev × 2 enginy × obě
+předlohy, `keep-cut`). Arch pro mobil: artefakt „Kadeřnický arch“.
+
+**Gate = automatický verdikt na obou enginech**, schválený pohledem na arch
+(verdikty v `tgbot/tools/bench/verdicts.json`, export `export_catalog.py`).
+Každý účes má zatím jednu buňku na engine, takže prahy „≥ 2/3 buněk“ jsou
+tady všechno nebo nic.
+
+Do katalogu (8 účesů, 4 barev):
+
+| účes | skupina | Kontext | SDXL |
+|---|---|---|---|
+| Beach Waves (`beach-waves`) | Women | pass | pass |
+| Curtain Bangs (`curtain-bangs`) | Women | pass | pass |
+| Face-Framing Layers (`face-framing`) | Women | pass | pass |
+| French Bob (`french-bob`) | Women | pass | pass |
+| Long Bob (Lob) (`lob`) | Women | pass | pass |
+| Quiff (`m-quiff`) | Men | pass | pass |
+| High Skin Fade (`m-skin-fade`) | Men | pass | pass |
+| Soft Curls (`soft-curls`) | Women | pass | pass |
+
+| barva | Kontext | SDXL |
+|---|---|---|
+| Blue black (`blue-black`) | pass | pass |
+| Burgundy (`burgundy`) | pass | pass |
+| Honey balayage (`honey-balayage`) | pass | pass |
+| Jet black (`jet-black`) | pass | pass |
+
+Prošly jen na jednom enginu — kandidáti na kolo s víc předlohami a seedy,
+ne do katalogu (appky jedou na obou enginech):
+
+| účes | Kontext | SDXL |
+|---|---|---|
+| Blunt Bangs (`blunt-bangs`) | pass | fail: length_ok 0% |
+| Bob Cut (`bob`) | fail: recognised 0% | pass |
+| High Ponytail (`high-ponytail`) | fail: length_ok 0% | pass |
+| Long Layered Haircut (`long-layered`) | fail: length_ok 0%, recognised 0% | pass |
+| Low Ponytail (`low-ponytail`) | fail: length_ok 0%, recognised 0% | pass |
+| Buzz Cut (`m-buzz`) | fail: recognised 0% | pass |
+| Curly Top Fade (`m-curly-fade`) | fail: recognised 0% | pass |
+| Man Bun (`m-man-bun`) | fail: recognised 0% | pass |
+| Top Knot (Undercut) (`m-top-knot`) | pass | fail: recognised 0% |
+| Messy Bun (`messy-bun`) | fail: length_ok 0%, recognised 0% | pass |
+| Messy Waves (`messy-waves`) | fail: recognised 0% | pass |
+| Pixie Cut (`pixie`) | fail: recognised 0% | pass |
+| Shag Cut (`shag`) | fail: recognised 0% | pass |
+| Sleek Straight Hair (`sleek-straight`) | fail: recognised 0% | pass |
+| Top Knot (`top-knot`) | fail: length_ok 0%, recognised 0% | pass |
+| Wispy Bangs (`wispy-bangs`) | pass | fail: recognised 0% |
+
+| barva | Kontext | SDXL |
+|---|---|---|
+| Ash blonde (`ash-blonde`) | pass | fail: colour_ok 0% |
+| Auburn (`auburn`) | fail: colour_ok 50% | pass |
+| Chocolate brown (`chocolate-brown`) | fail: colour_ok 0% | pass |
+| Honey blonde (`honey-blonde`) | pass | fail: colour_ok 0% |
+| Lavender (`lavender`) | pass | fail: colour_ok 50% |
+| Pastel pink (`pastel-pink`) | fail: length_ok 50% | pass |
+| Platinum blonde (`platinum-blonde`) | pass | fail: colour_ok 0% |
+| Silver grey (`silver-grey`) | pass | fail: colour_ok 0% |
+
+Nejčastější důvod pádu je `recognised` — CLIP ViT-L/14 si plete sousední
+střihy (bob / lob / blunt cut / Italian bob), i když výstup střih zjevně
+mění. Delší pánské střihy (afro, flow, dredy, blowout, slick back, curtains)
+padají na obou enginech na `length` — z krátké pánské předlohy nedorostou
+pod bradu tak, jak metrika čeká.
+
+Produkce Tsumiki jede na `HAIR_ENGINE=kontext` (výchozí od tohoto kola) — FLUX
+Fill gate neprošel už v kole 0.
