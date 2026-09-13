@@ -13,16 +13,13 @@ from PIL import Image
 
 import app as appmod
 import hairmask as hm
+import hairprompt
 from comfy import ComfyError
 from db import Database
 from jobs import JobStore
 from test_hairmask import synthetic
 
 USER_HEADERS = {"Authorization": "dev secret"}
-PROMPT = (
-    "a photo of the same person with a pixie cut, short hair ending above the jaw, "
-    "__HAIRCOLOR__ hair, photorealistic"
-)
 
 
 def _png_array(arr: np.ndarray) -> bytes:
@@ -91,8 +88,8 @@ def client(tmp_path, monkeypatch):
 
 def _body(photo: bytes, **over):
     body = {
-        "prompt": PROMPT,
-        "negative_prompt": "hat, blurry",
+        "style_id": "pixie",
+        "block": "pixie cut, very short cropped women's haircut",
         "style": "Pixie Cut",
         "shape": {"length": "short", "bangs": "none", "updo": False},
         "image": base64.b64encode(photo).decode(),
@@ -124,9 +121,10 @@ def test_hair_analyses_then_bills_and_queues_the_inpaint(client, monkeypatch):
     assert loads == {f"in/{src_upload[1]}", f"in/{mask_upload[1]}"}
     mask = hm.decode_mask(mask_upload[0])
     assert mask.shape == (512, 512) and mask.any()
-    # colour substituted, token gone
+    # the backend wrote the prompt for its engine, with the colour off the photo
     dump = json.dumps(inpaint)
-    assert "__HAIRCOLOR__" not in dump and "brown hair" in dump
+    assert "a photo of the same person with a pixie cut" in dump and "brown hair" in dump
+    assert "short hair ending above the jaw" in dump
     assert "__MASK__" not in dump and "__IMAGE__" not in dump
 
 
@@ -178,7 +176,7 @@ def test_hair_sdxl_engine_gets_its_checkpoint(client, monkeypatch):
     assert resp.status_code == 200, resp.text
     inpaint = fake.workflows[1]
     assert inpaint["1"]["inputs"]["ckpt_name"] == "jugg.safetensors"
-    assert inpaint["3"]["inputs"]["text"] == "hat, blurry"
+    assert inpaint["3"]["inputs"]["text"] == hairprompt.NEGATIVE
     assert appmod.jobs.get(resp.json()["job_id"]).workflow == "hair-sdxl"
 
 
@@ -196,7 +194,7 @@ def test_hair_one_at_a_time_shares_the_image_lane(client, monkeypatch):
 @pytest.mark.parametrize(
     "over, status",
     [
-        ({"prompt": "a photo with a pixie cut"}, 400),  # no colour token
+        ({"style_id": "Pixie Cut!"}, 422),
         ({"shape": {"length": "huge"}}, 422),
         ({"shape": {"length": "short", "bangs": "mohawk"}}, 422),
         ({"image": "not base64!!"}, 400),
@@ -220,3 +218,19 @@ def test_hair_requires_auth(client):
 def test_hair_caption():
     assert appmod.hair_caption("  ") == "💇 New haircut"
     assert appmod.hair_caption("Wolf Cut") == "💇 Wolf Cut"
+
+
+def test_hair_kontext_engine_gets_an_instruction(client, monkeypatch):
+    image, masks = _portrait_and_masks()
+    fake = FakeComfy(masks)
+    monkeypatch.setattr(appmod, "comfy", fake)
+    monkeypatch.setattr(appmod.config, "HAIR_ENGINE", "kontext")
+    resp = client.post("/api/hair", json=_body(image), headers=USER_HEADERS)
+    assert resp.status_code == 200, resp.text
+    inpaint = fake.workflows[1]
+    text = next(n["inputs"]["text"] for n in inpaint.values()
+                if n["class_type"] == "CLIPTextEncode" and n["inputs"]["text"])
+    assert text.startswith("Change the person's hairstyle to a pixie cut")
+    assert "Keep the brown hair colour" in text
+    composite = next(n for n in inpaint.values() if n["class_type"] == "ImageCompositeMasked")
+    assert composite["inputs"]["destination"] == ["4", 0]  # the untouched portrait

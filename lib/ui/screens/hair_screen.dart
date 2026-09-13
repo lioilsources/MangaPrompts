@@ -68,8 +68,8 @@ class _HairScreenState extends ConsumerState<HairScreen> {
     try {
       final result = await TelegramBackendService.hairImage(
         imageBytes: bytes,
-        prompt: hairPrompt(style),
-        negativePrompt: kHairNegative,
+        styleId: style.id,
+        block: style.block,
         styleLabel: style.label,
         shape: style.shape.toJson(),
       );

@@ -112,14 +112,16 @@ def clip_probs(img: Image.Image, texts: list[str]) -> np.ndarray:
         _clip = (CLIPModel.from_pretrained(CLIP_MODEL).to(dev).eval(), CLIPProcessor.from_pretrained(CLIP_MODEL), dev, {})
     model, proc, dev, text_cache = _clip
     key = tuple(texts)
+    # Projections spelled out: newer transformers return an output object from
+    # get_*_features instead of the projected tensor.
     if key not in text_cache:
         with torch.no_grad():
             t = proc(text=texts, return_tensors="pt", padding=True).to(dev)
-            te = model.get_text_features(**t)
+            te = model.text_projection(model.text_model(**t).pooler_output)
             text_cache[key] = te / te.norm(dim=-1, keepdim=True)
     with torch.no_grad():
         i = proc(images=img, return_tensors="pt").to(dev)
-        ie = model.get_image_features(**i)
+        ie = model.visual_projection(model.vision_model(pixel_values=i["pixel_values"]).pooler_output)
         ie = ie / ie.norm(dim=-1, keepdim=True)
         logits = model.logit_scale.exp() * ie @ text_cache[key].T
     return logits.softmax(dim=-1)[0].float().cpu().numpy()
@@ -274,9 +276,9 @@ def score(run: Path, url: str, cache: Path) -> dict:
                 clip_rank=rank_out, clip_rank_src=rank_src,
                 clip_top_other=labels[int(p_out.argmax())],
             )
-            m["recognised"] = rank_out <= THRESHOLDS["clip_top"] and (
+            m["recognised"] = bool(rank_out <= THRESHOLDS["clip_top"] and (
                 p_out[t] - p_src[t] >= THRESHOLDS["clip_gain"] or (rank_out == 1 and rank_src == 1)
-            )
+            ))
         out_cells[key] = m
         print(f"{row['style']:22} {row['engine']:5} {row['src']:18} {json.dumps({k: v for k, v in m.items() if k not in ('status', 'scored_file')})}", flush=True)
 

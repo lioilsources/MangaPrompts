@@ -198,6 +198,9 @@ def test_hair_inpaint_templates_take_image_and_mask(filename):
     assert loads == ["mask.png", "portrait.png"]
     # an inpaint keeps the photo's own size: no latent node for the override to touch
     assert not [n for n in wf.values() if n["class_type"] in ("EmptyLatentImage", "EmptySD3LatentImage")]
+    # the face is a hole in the mask; filling holes would repaint it (round 0b)
+    crop = next(n for n in wf.values() if n["class_type"] == "InpaintCropImproved")
+    assert crop["inputs"]["mask_fill_holes"] is False
     # the result is stitched back into the full photo
     by_cls = {n["class_type"]: k for k, n in wf.items()}
     save = wf[by_cls["SaveImage"]]["inputs"]["images"]

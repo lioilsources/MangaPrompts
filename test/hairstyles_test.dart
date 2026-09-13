@@ -31,35 +31,6 @@ const _halfUp = Hairstyle(
 );
 
 void main() {
-  test('prompt string is pinned (tgbot/tools/bench/catalog.py mirrors it)', () {
-    expect(
-      hairPrompt(_pixie),
-      "a photo of the same person with a pixie cut, very short cropped women's "
-      'haircut, short hair ending above the jaw with the neck clear of hair, '
-      '__HAIRCOLOR__ hair, natural hair texture, realistic strands, same '
-      'clothes, same lighting and background, photorealistic',
-    );
-    expect(kHairNegative, startsWith('hat, cap, helmet'));
-  });
-
-  test('length clause follows the shape; half-up keeps hair down', () {
-    expect(hairLengthClause(_bun), startsWith('all hair gathered up'));
-    expect(hairLengthClause(_halfUp), '');
-    expect(
-      hairLengthClause(
-        const Hairstyle(
-          id: 'x',
-          label: 'X',
-          group: kHairGroupWomen,
-          section: 'Texture',
-          block: 'beach waves',
-          shape: HairShape(length: HairLength.keep),
-        ),
-      ),
-      '',
-    );
-  });
-
   test('shape serialises to the backend enum names', () {
     expect(
       const HairShape(
@@ -78,7 +49,7 @@ void main() {
       expect(kHairGroups, contains(s.group), reason: s.id);
       expect(kHairSections, contains(s.section), reason: s.id);
       expect(ascii.hasMatch(s.label), isTrue, reason: s.label);
-      expect(hairPrompt(s), contains(kHairColourToken));
+      expect(RegExp(r'^[a-z0-9-]+$').hasMatch(s.id), isTrue, reason: s.id);
       for (final word in ['anime', 'illustration', 'painting']) {
         expect(s.block, isNot(contains(word)), reason: s.id);
       }

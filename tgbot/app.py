@@ -44,6 +44,7 @@ from pydantic import BaseModel, Field
 
 import config
 import hairmask
+import hairprompt
 import payments
 from auth import InvalidInitData, validate_init_data
 from comfy import ComfyClient, ComfyError, prepare_workflow
@@ -308,18 +309,14 @@ class HairShapeIn(BaseModel):
     updo: bool = False
 
 
-# The app writes this token where the hair colour goes; the backend reads the
-# colour off the photo and substitutes it.
-HAIR_COLOUR_TOKEN = "__HAIRCOLOR__"
-
-
 class HairRequest(BaseModel):
-    """A new haircut on the user's own portrait. The app composes `prompt`
-    from the hairstyle (with HAIR_COLOUR_TOKEN in it); `shape` sizes the mask;
-    `style` is the label for the chat caption."""
+    """A new haircut on the user's own portrait. The app sends the hairstyle
+    (id, prompt block, shape); the backend writes the prompt for the engine it
+    runs and fills in the hair colour it reads off the photo. `style` is the
+    label for the chat caption."""
 
-    prompt: str = Field(min_length=1, max_length=config.MAX_PROMPT_CHARS)
-    negative_prompt: str = Field(default="", max_length=config.MAX_PROMPT_CHARS)
+    style_id: str = Field(min_length=1, max_length=40, pattern=r"^[a-z0-9-]+$")
+    block: str = Field(min_length=1, max_length=600)
     style: str = Field(default="", max_length=80)
     shape: HairShapeIn
     image: str = Field(min_length=1, max_length=config.MAX_HAIR_IMAGE_B64_CHARS)
@@ -521,8 +518,6 @@ async def hair(req: HairRequest, user_id: int = Depends(current_user_id)):
     runs first and is free: it builds the inpaint mask and reads the hair
     colour, and a photo without a usable face is refused here, before any
     credit moves. Then it is billed exactly like /api/generate."""
-    if HAIR_COLOUR_TOKEN not in req.prompt:
-        raise HTTPException(status_code=400, detail=f"prompt must contain {HAIR_COLOUR_TOKEN}")
     image = _decode_image(req.image)
     if user_id in _hair_analysing or jobs.active_count(user_id, "image") >= 1:
         raise HTTPException(status_code=429, detail="wait for your previous generation to finish")
@@ -559,14 +554,14 @@ async def hair(req: HairRequest, user_id: int = Depends(current_user_id)):
                     detail="your free daily limit is used up and you have no credits",
                 )
             _, usage_id = spend
-            prompt = req.prompt.replace(HAIR_COLOUR_TOKEN, colour or "natural")
+            prompt = hairprompt.prompt(req.block, req.style_id, req.shape.model_dump(), colour, engine)
             job = Job(user_id=user_id, prompt=prompt, workflow=f"hair-{engine}", caption=hair_caption(req.style))
             try:
                 mask_name = await comfy.upload_image(session, mask_png, f"tsumiki_hair_mask_{job.id}.png")
                 wf = prepare_workflow(
                     _load_template_file(f"hair_{engine}", config.HAIR_WORKFLOW_FILES[engine]),
                     prompt=prompt,
-                    negative=req.negative_prompt,
+                    negative=hairprompt.NEGATIVE,
                     image_name=src_name,
                     mask_name=mask_name,
                     checkpoint=config.HAIR_CHECKPOINT if engine == "sdxl" else None,

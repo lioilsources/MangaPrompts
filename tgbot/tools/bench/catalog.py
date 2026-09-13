@@ -4,14 +4,14 @@ would build for them.
 Restyle prompts come straight from `lib/config/restyle_styles.dart` (parsed,
 not copied), so a change to the app's medium sentences is measured the next
 run. Painter candidates and hairstyle candidates are JSON until they pass the
-gate; the hair prompt template mirrors `lib/config/hairstyles.dart` and a
-test on each side pins the exact string.
+gate; hair prompts come from the bot's own `hairprompt.py`.
 """
 
 from __future__ import annotations
 
 import json
 import re
+import sys
 from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
@@ -21,32 +21,10 @@ RESTYLE_DART = REPO / "lib" / "config" / "restyle_styles.dart"
 
 BASELINE = "__baseline"
 
-# Mirror of lib/config/hairstyles.dart (hairPrompt / kHairNegative /
-# hairLengthClause). Both sides pin the exact strings in a test.
-HAIR_PROMPT = (
-    "a photo of the same person with a {block}, {length}__HAIRCOLOR__ hair, "
-    "natural hair texture, realistic strands, same clothes, same lighting and background, photorealistic"
-)
-HAIR_NEGATIVE = (
-    "hat, cap, helmet, headband, deformed hair, floating hair, extra face, second person, "
-    "blurry, watermark, low quality"
-)
-# Said out loud because the mask alone does not stop a model from growing the
-# old length back: in bench round 0 a pixie on long hair left strands on the
-# shoulders, and a high ponytail kept hair hanging at both sides.
-HAIR_LENGTH_CLAUSES = {
-    "short": "short hair ending above the jaw with the neck clear of hair, ",
-    "medium": "hair ending between the chin and the shoulders, ",
-    "long": "long hair falling past the shoulders, ",
-    "updo": "all hair gathered up and away from the neck and shoulders, ",
-}
+sys.path.insert(0, str(HERE.parents[1]))  # tgbot/
+import hairprompt  # noqa: E402
 
-
-def hair_length_clause(style: dict) -> str:
-    shape = style["shape"]
-    if shape["updo"]:
-        return "" if style["id"] == "half-up" else HAIR_LENGTH_CLAUSES["updo"]
-    return HAIR_LENGTH_CLAUSES.get(shape["length"], "")
+HAIR_NEGATIVE = hairprompt.NEGATIVE
 
 
 def _dart_string(body: str) -> str:
@@ -123,7 +101,6 @@ def hairstyles() -> dict:
     }
 
 
-def hair_prompt(style: dict, colour: str | None) -> str:
-    return HAIR_PROMPT.format(block=style["block"], length=hair_length_clause(style)).replace(
-        "__HAIRCOLOR__", colour or "natural"
-    )
+def hair_prompt(style: dict, colour: str | None, engine: str = "flux") -> str:
+    """The prompt the bot would send for this candidate (tgbot/hairprompt.py)."""
+    return hairprompt.prompt(style["block"], style["id"], style["shape"], colour, engine)

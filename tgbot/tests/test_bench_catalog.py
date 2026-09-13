@@ -9,18 +9,13 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "tools" / "bench
 import catalog  # noqa: E402
 
 
-def test_hair_prompt_matches_the_app():
-    pixie = {"id": "pixie", "block": "pixie cut, very short cropped women's haircut",
-             "shape": {"length": "short", "bangs": "none", "updo": False}}
-    assert catalog.hair_prompt(pixie, None).replace("natural hair,", "__HAIRCOLOR__ hair,") == (
-        "a photo of the same person with a pixie cut, very short cropped women's "
-        "haircut, short hair ending above the jaw with the neck clear of hair, "
-        "__HAIRCOLOR__ hair, natural hair texture, realistic strands, same "
-        "clothes, same lighting and background, photorealistic"
-    )
-    assert catalog.HAIR_NEGATIVE.startswith("hat, cap, helmet")
-    half = {"id": "half-up", "block": "x", "shape": {"length": "keep", "bangs": "none", "updo": True}}
-    assert catalog.hair_length_clause(half) == ""
+def test_bench_hair_prompt_is_the_bots():
+    import hairprompt
+
+    pixie = {"id": "pixie", "block": "pixie cut", "shape": {"length": "short", "bangs": "none", "updo": False}}
+    for engine in hairprompt.ENGINES:
+        assert catalog.hair_prompt(pixie, "brown", engine) == hairprompt.prompt(
+            "pixie cut", "pixie", pixie["shape"], "brown", engine)
 
 
 def test_restyle_catalog_is_read_from_the_dart_source():

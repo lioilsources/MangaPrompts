@@ -215,3 +215,13 @@ def test_fringe_band_keeps_clear_of_the_brows():
     res = hm.build_mask(a, hm.HairShape("keep", "full"))
     guard = hm.dilate(a.features, 3)
     assert not (res.mask & guard & a.face).any()
+
+
+def test_blob_mode_hides_the_old_silhouette(monkeypatch):
+    a = synthetic()
+    hair_mode = hm.build_mask(a, hm.HairShape("short"))
+    monkeypatch.setattr(hm, "MASK_MODE", "blob")
+    blob = hm.build_mask(a, hm.HairShape("short"))
+    assert blob.area > hair_mode.area
+    assert (blob.mask | ~hair_mode.mask).all()  # a superset
+    assert not (blob.mask & a.features).any()

@@ -52,6 +52,7 @@ WORKFLOWS = {
     ("restyle", "sdxl"): "sdxl_restyle.api.json",
     ("hair", "flux"): "flux_hair_inpaint.api.json",
     ("hair", "sdxl"): "sdxl_hair_inpaint.api.json",
+    ("hair", "kontext"): "flux_hair_kontext.api.json",
 }
 
 
@@ -135,6 +136,35 @@ def add_flux_face_pass(wf: dict, weight: float = 1.2, denoise: float = 0.45) -> 
         },
     }
     wf[save]["inputs"]["images"] = ["106", 0]
+
+
+def apply_graph_variants(wf: dict, sweep: dict) -> None:
+    """Structural variants named in the sweep (`graph.*`)."""
+    if sweep.get("graph.composite") in (0, False, "0"):
+        # Kontext without pasting the original back outside the mask.
+        comp = next((k for k, n in wf.items() if n["class_type"] == "ImageCompositeMasked"), None)
+        if comp:
+            src = wf[comp]["inputs"]["source"]
+            for n in wf.values():
+                if n["class_type"] == "SaveImage":
+                    n["inputs"]["images"] = src
+    if sweep.get("graph.sdxl_encode") == "v2":
+        # comfyui-inpaint-nodes' own encoder instead of VAEEncodeForInpaint's
+        # grey fill — round 0c SDXL outputs came back olive-tinted.
+        enc = next((k for k, n in wf.items() if n["class_type"] == "VAEEncodeForInpaint"), None)
+        if enc:
+            e = wf[enc]["inputs"]
+            pos_neg = next(k for k, n in wf.items() if n["class_type"] == "KSampler")
+            ks = wf[pos_neg]["inputs"]
+            wf["__enc2__"] = {"class_type": "INPAINT_VAEEncodeInpaintConditioning", "inputs": {
+                "positive": ks["positive"], "negative": ks["negative"], "vae": e["vae"],
+                "pixels": e["pixels"], "mask": e["mask"]}}
+            ks["positive"], ks["negative"] = ["__enc2__", 0], ["__enc2__", 1]
+            ks["latent_image"] = ["__enc2__", 3]
+            for n in wf.values():
+                if n["class_type"] == "INPAINT_ApplyFooocusInpaint":
+                    n["inputs"]["latent"] = ["__enc2__", 2]
+            del wf[enc]
 
 
 # ── hair analysis ───────────────────────────────────────────────────────────
@@ -286,12 +316,13 @@ def run_matrix(args) -> None:
                 (out / "masks").mkdir(exist_ok=True)
                 (out / "masks" / name).write_bytes(mask_png)
                 colour = hm.estimate_colour(rgb, analysis.hair)
-                prompt = catalog.hair_prompt(style, colour)
+                prompt = catalog.hair_prompt(style, colour, ident["engine"])
                 wf = prepare_workflow(tpl, prompt=prompt, negative=catalog.HAIR_NEGATIVE,
                                       image_name=uploaded[ident["src"]], mask_name=mask_name,
                                       checkpoint=ident["ckpt"])
                 row.update(prompt=prompt, colour=colour, shape=style["shape"], mask=f"masks/{name}",
                            mask_area=round(res.area, 4), face_box=res.face_box)
+            apply_graph_variants(wf, ident["sweep"])
             apply_node_sweep(wf, ident["sweep"])
             set_seed(wf, ident["seed"])
             prefix = f"bench_{key}"

@@ -1,14 +1,12 @@
 /// Hairstyles offered by the Hairdresser card (portrait → same photo, new cut).
 ///
-/// A hairstyle is a prompt block plus a [HairShape]. The shape never reaches
-/// the model as text alone: the bot sizes the inpaint mask from it (where new
-/// hair may grow) and this file turns it into a length clause, because in the
-/// bench a mask alone did not stop a model from growing the old length back.
+/// A hairstyle is a prompt block plus a [HairShape]. The app sends both; the
+/// bot sizes the inpaint mask from the shape (where new hair may grow) and
+/// writes the prompt itself (`tgbot/hairprompt.py`), because the engine it runs
+/// decides whether that is a description or an instruction.
 ///
 /// The catalog itself ([kHairstyles], `hairstyle_catalog.dart`) holds only
-/// styles that passed the bench gate on both engines — see
-/// `docs/hair-matrix.md`. `tgbot/tools/bench/catalog.py` mirrors
-/// [hairPrompt] and [kHairNegative]; the tests on both sides pin the strings.
+/// styles that passed the bench gate — see `docs/hair-matrix.md`.
 library;
 
 import 'hairstyle_catalog.dart';
@@ -80,39 +78,6 @@ const kHairSections = [
   'Long',
   'Updos',
 ];
-
-/// Token the bot replaces with the colour it reads off the photo.
-const kHairColourToken = '__HAIRCOLOR__';
-
-const kHairNegative =
-    'hat, cap, helmet, headband, deformed hair, floating hair, '
-    'extra face, second person, blurry, watermark, low quality';
-
-/// Said out loud next to the block: without it a pixie on long hair left
-/// strands on the shoulders and a ponytail kept hair hanging at the sides.
-String hairLengthClause(Hairstyle style) {
-  final shape = style.shape;
-  if (shape.updo) {
-    // half-up keeps half the hair down on purpose
-    return style.id == 'half-up'
-        ? ''
-        : 'all hair gathered up and away from the neck and shoulders, ';
-  }
-  return switch (shape.length) {
-    HairLength.short =>
-      'short hair ending above the jaw with the neck clear of hair, ',
-    HairLength.medium => 'hair ending between the chin and the shoulders, ',
-    HairLength.long => 'long hair falling past the shoulders, ',
-    HairLength.keep => '',
-  };
-}
-
-/// Positive prompt for the bot, with [kHairColourToken] still in it.
-String hairPrompt(Hairstyle style) =>
-    'a photo of the same person with a ${style.block}, '
-    '${hairLengthClause(style)}$kHairColourToken hair, '
-    'natural hair texture, realistic strands, same clothes, '
-    'same lighting and background, photorealistic';
 
 Hairstyle? hairstyleById(String? id) {
   if (id == null) return null;

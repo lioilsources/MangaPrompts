@@ -1,10 +1,52 @@
 [
-  {"id": "w-long", "seed": 101, "prompt": "head and shoulders photo portrait of a young woman with long straight brown hair falling past her shoulders, facing the camera, neutral expression, plain light grey studio backdrop, soft even light, sharp focus, photorealistic"},
-  {"id": "m-short", "seed": 102, "prompt": "head and shoulders photo portrait of a young man with short neat brown hair, facing the camera, neutral expression, plain light grey studio backdrop, soft even light, sharp focus, photorealistic"},
-  {"id": "w-curly-short", "seed": 103, "prompt": "head and shoulders photo portrait of a woman in her thirties with short curly black hair, facing the camera, slight smile, plain beige studio backdrop, soft light, sharp focus, photorealistic"},
-  {"id": "w-bangs-3q", "seed": 104, "prompt": "head and shoulders photo portrait of a young woman with shoulder-length blonde hair and a straight fringe, three-quarter view turned slightly to the left, plain light blue studio backdrop, soft light, sharp focus, photorealistic"},
-  {"id": "m-long", "seed": 105, "prompt": "head and shoulders photo portrait of a man in his twenties with long wavy dark blond hair down to his shoulders, facing the camera, neutral expression, plain grey studio backdrop, soft light, sharp focus, photorealistic"},
-  {"id": "m-receding", "seed": 106, "prompt": "head and shoulders photo portrait of a man in his fifties with a receding hairline and short grey hair, facing the camera, neutral expression, plain dark grey studio backdrop, soft light, sharp focus, photorealistic"},
-  {"id": "w-glasses", "seed": 107, "prompt": "head and shoulders photo portrait of a woman in her forties wearing thin-rimmed glasses, medium-length auburn hair, facing the camera, plain off-white studio backdrop, soft light, sharp focus, photorealistic"},
-  {"id": "w-afro", "seed": 108, "prompt": "head and shoulders photo portrait of a young black woman with natural afro hair, facing the camera, neutral expression, plain warm grey studio backdrop, soft light, sharp focus, photorealistic"}
+  {
+    "id": "w-long",
+    "seed": 101,
+    "prompt": "head and shoulders photo portrait of a young woman with long straight brown hair falling past her shoulders, facing the camera, neutral expression, plain light grey studio backdrop, soft even light, sharp focus, photorealistic"
+  },
+  {
+    "id": "m-short",
+    "seed": 102,
+    "prompt": "head and shoulders photo portrait of a young man with short neat brown hair, facing the camera, neutral expression, plain light grey studio backdrop, soft even light, sharp focus, photorealistic"
+  },
+  {
+    "id": "w-curly-short",
+    "seed": 103,
+    "prompt": "head and shoulders photo portrait of a woman in her thirties with short curly black hair, facing the camera, slight smile, plain beige studio backdrop, soft light, sharp focus, photorealistic"
+  },
+  {
+    "id": "w-bangs-3q",
+    "seed": 104,
+    "prompt": "head and shoulders photo portrait of a young woman with shoulder-length blonde hair and a straight fringe, three-quarter view turned slightly to the left, plain light blue studio backdrop, soft light, sharp focus, photorealistic"
+  },
+  {
+    "id": "m-long",
+    "seed": 105,
+    "prompt": "head and shoulders photo portrait of a man in his twenties with long wavy dark blond hair down to his shoulders, facing the camera, neutral expression, plain grey studio backdrop, soft light, sharp focus, photorealistic"
+  },
+  {
+    "id": "m-receding",
+    "seed": 106,
+    "prompt": "head and shoulders photo portrait of a man in his fifties with a receding hairline and short grey hair, facing the camera, neutral expression, plain dark grey studio backdrop, soft light, sharp focus, photorealistic"
+  },
+  {
+    "id": "w-glasses",
+    "seed": 107,
+    "prompt": "head and shoulders photo portrait of a woman in her forties wearing thin-rimmed glasses, medium-length auburn hair, facing the camera, plain off-white studio backdrop, soft light, sharp focus, photorealistic"
+  },
+  {
+    "id": "w-afro",
+    "seed": 108,
+    "prompt": "head and shoulders photo portrait of a young black woman with natural afro hair, facing the camera, neutral expression, plain warm grey studio backdrop, soft light, sharp focus, photorealistic"
+  },
+  {
+    "id": "p-dancer",
+    "seed": 201,
+    "prompt": "full body photo of a young woman dancing in a studio, one arm raised above her head, the other stretched sideways, weight on one leg, wearing a plain black leotard and jeans, face towards the camera, plain light grey backdrop, soft light, sharp focus, photorealistic"
+  },
+  {
+    "id": "p-seated",
+    "seed": 202,
+    "prompt": "three-quarter length photo of a bearded man in his thirties sitting on a wooden stool, leaning forward with elbows on his knees and hands clasped, looking at the camera, wearing a denim shirt, plain warm grey backdrop, soft light, sharp focus, photorealistic"
+  }
 ]

@@ -48,6 +48,11 @@ ENVELOPES: dict[str, tuple[float, float, float] | None] = {
     "medium": (0.5, 0.35, 0.7),
     "long": (0.6, 0.35, 1.8),
 }
+# Shape of the repaint area. "hair": exactly the union above. "blob": its
+# bounding rounded rectangle (still minus the face). FLUX Fill paints the mask's
+# *shape*: in bench round 0b a pixie masked as the old long-hair silhouette
+# came back as long hair; a rectangle says nothing about length.
+MASK_MODE = "hair"
 # Room above the head for a bun / ponytail, and how wide it may be.
 UPDO_ABOVE_FH = 0.8
 UPDO_SIDE_FW = 0.3
@@ -234,6 +239,10 @@ def build_mask(analysis: HairAnalysis, shape: HairShape) -> MaskResult:
             x1 + UPDO_SIDE_FW * fw, y0 + 0.2 * fh,
             CORNER_FW * fw,
         )
+
+    if MASK_MODE == "blob" and mask.any():
+        ys, xs = np.nonzero(mask)
+        mask |= rounded_rect(h, w, xs.min(), ys.min(), xs.max(), ys.max(), CORNER_FW * fw)
 
     # The face stays untouched; only a fringe may cover the forehead.
     mask &= ~(face & ~band)

@@ -291,8 +291,8 @@ class TelegramBackendService implements ImageGenerationService {
   /// plain submit; a 400 carries a message the user can act on ("no face").
   static Future<GeneratedImage> hairImage({
     required Uint8List imageBytes,
-    required String prompt,
-    required String negativePrompt,
+    required String styleId,
+    required String block,
     required String styleLabel,
     required Map<String, Object> shape,
   }) async {
@@ -302,8 +302,8 @@ class TelegramBackendService implements ImageGenerationService {
           Uri.parse('$_baseUrl/api/hair'),
           headers: {...headers, 'Content-Type': 'application/json'},
           body: jsonEncode({
-            'prompt': prompt,
-            'negative_prompt': negativePrompt,
+            'style_id': styleId,
+            'block': block,
             'style': styleLabel,
             'shape': shape,
             'image': base64Encode(imageBytes),

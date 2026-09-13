@@ -141,8 +141,9 @@ MAX_RESTYLE_IMAGE_B64_CHARS = _int_env("MAX_RESTYLE_IMAGE_B64_CHARS", 6_000_000)
 # anything is billed; the inpaint itself runs on HAIR_ENGINE.
 HAIR_ANALYSE_WORKFLOW_FILE = "hair_analyse.api.json"
 HAIR_WORKFLOW_FILES = {
-    "flux": "flux_hair_inpaint.api.json",
-    "sdxl": "sdxl_hair_inpaint.api.json",
+    "flux": "flux_hair_inpaint.api.json",  # FLUX Fill inpaint
+    "sdxl": "sdxl_hair_inpaint.api.json",  # SDXL + Fooocus inpaint patch
+    "kontext": "flux_hair_kontext.api.json",  # FLUX Kontext edit, pasted back through the mask
 }
 HAIR_ENGINE = os.environ.get("HAIR_ENGINE", "").strip() or "flux"
 if HAIR_ENGINE not in HAIR_WORKFLOW_FILES:
