@@ -163,7 +163,7 @@ Cíl: stejná matice účes × model × předloha × seed, kterou dělá
 `tgbot/tools/bench`, ale postavená kódem **téhle** appky.
 
 - `tools/lab/dump.dart`: nová flow `hair` — vyžaduje `HAIR_FILE`
-  (kandidáti = **tentýž** `Prompts/hairstyles-candidates.json`, zkopírovaný
+  (kandidáti = **tentýž** `tgbot/tools/bench/candidates/hairstyles.json`, zkopírovaný
   do `tools/lab/candidates/hairstyles.json`) a `HAIR_MASKS_DIR`. Dump je bez
   GPU, takže masky musí existovat předem: nový příkaz `lab hairmasks --ref
   a.png,b.png` (Go volá malý Dart runner `tools/lab/hairmask.dart` přes

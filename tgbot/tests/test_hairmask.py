@@ -204,8 +204,9 @@ def test_colour_reads_lit_strands_not_the_shadows_between_them():
     assert hm.estimate_colour(img, a.hair) == "brown"
 
 
-def test_medium_cut_leaves_most_of_a_portrait_alone():
+def test_medium_cut_leaves_most_of_a_portrait_alone(monkeypatch):
     """Round 0 regression: a medium envelope must not swallow the frame."""
+    monkeypatch.setattr(hm, "MASK_MODE", "hair")
     a = synthetic()
     assert hm.build_mask(a, hm.HairShape("medium")).area < 0.35
 
@@ -219,9 +220,10 @@ def test_fringe_band_keeps_clear_of_the_brows():
 
 def test_blob_mode_hides_the_old_silhouette(monkeypatch):
     a = synthetic()
-    hair_mode = hm.build_mask(a, hm.HairShape("short"))
-    monkeypatch.setattr(hm, "MASK_MODE", "blob")
+    assert hm.MASK_MODE == "blob"  # the shipped default
     blob = hm.build_mask(a, hm.HairShape("short"))
+    monkeypatch.setattr(hm, "MASK_MODE", "hair")
+    hair_mode = hm.build_mask(a, hm.HairShape("short"))
     assert blob.area > hair_mode.area
     assert (blob.mask | ~hair_mode.mask).all()  # a superset
     assert not (blob.mask & a.features).any()

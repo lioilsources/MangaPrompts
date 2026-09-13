@@ -43,11 +43,25 @@ Photo animation follows the same path against the **video-api on SPARK:8096**
 delivers the mp4 into the chat. Separate video ledger (users.video_credits,
 package `v1` = 10⭐/animation, VIDEO_FREE_DAILY_LIMIT=1/day free).
 The third card, **Restyle a photo** (`restyle_screen.dart`, `POST /api/restyle`),
-keeps the face (InstantID) and pose (depth ControlNet) of an uploaded photo
-and renders it in a picked style (`lib/config/restyle_styles.dart`, medium
-toggle photo/illustration); it is billed as an ordinary image generation.
+keeps the face and pose (depth ControlNet) of an uploaded photo and renders it
+in a picked style (`lib/config/restyle_styles.dart`: popular looks, 42 measured
+painters from Ol1nLLM's style matrix, art traditions; medium toggle
+photo/illustration); it is billed as an ordinary image generation. The medium
+picks the **engine** (`RESTYLE_ENGINES` in `tgbot/config.py`): photo runs
+`flux_restyle.api.json` (FLUX.1-dev + PuLID + InstantX depth), illustration
+`sdxl_restyle.api.json` (InstantID + xinsir union depth, checkpoint from
+`RESTYLE_CHECKPOINTS`). Measurements: `docs/restyle-flux-results.md`.
+The fourth card, **Try a haircut** (`hair_screen.dart`, `POST /api/hair`),
+repaints only the hair of a portrait: a free analysis pass (face parsing,
+`hair_analyse.api.json`) feeds `tgbot/hairmask.py`, which builds the inpaint
+mask from the style's shape and reads the hair colour; the prompt is written
+server-side per `HAIR_ENGINE` (`tgbot/hairprompt.py`); billing starts only after
+the analysis accepted the photo. The catalog (`lib/config/hairstyle_catalog.dart`)
+is generated from the bench gate (`docs/hair-matrix.md`) and the card stays
+hidden while it is empty. Ol1nLLM mirrors the mask in `lib/models/hair_mask.dart`.
 The cards share `TsumikiAppBar` (`TsumikiScreen` enum drives the shop chip
-and the card switcher). Monetization: Telegram Stars credits (SQLite ledger in tgbot/db.py, packages
+and the card switcher; `screenOffered` hides animate without scenes and hair
+without hairstyles). Monetization: Telegram Stars credits (SQLite ledger in tgbot/db.py, packages
 in tgbot/config.py, paywall UI in lib/ui/widgets/paywall_sheet.dart). Platform seams use conditional imports
 (`backend_factory.dart`, `image_service.dart`, `repose_entry.dart`,
 `local_image.dart`, `platform/telegram_webapp.dart`) — anything importing
@@ -93,5 +107,23 @@ auto-selection must never be silent.
 Workflows live in `assets/comfyui/*.api.json` and are registered twice: in
 `WORKFLOW_FILES` (`tgbot/config.py`, the web path) and in `ComfyWorkflow`
 (`comfy_image_service.dart`, the native path). Currently flux, pony,
-juggernaut, wai. `sdxl_restyle.api.json` is web-only (`RESTYLE_WORKFLOW_FILE`)
-— its checkpoint comes from `RESTYLE_CHECKPOINTS[medium]`, not from a template.
+juggernaut, wai. The restyle and hair graphs are web-only and routed by their
+own maps: `RESTYLE_WORKFLOW_FILES` / `RESTYLE_ENGINES` (checkpoint only on the
+SDXL engine, `RESTYLE_CHECKPOINTS[medium]`) and `HAIR_WORKFLOW_FILES` /
+`HAIR_ENGINE` (+ `HAIR_ANALYSE_WORKFLOW_FILE`). A new graph goes through
+`tgbot/tools/check_workflow.py` against SPARK before anything else.
+
+## Bench (`tgbot/tools/bench/`)
+
+Measurement harness that runs on SPARK next to ComfyUI (`sync.sh` pushes the
+code; ComfyUI's venv has insightface, transformers, numpy). Cells are built by
+the bot's own `comfy.prepare_workflow`, `hairmask.py` and `hairprompt.py`, so it
+measures what ships. `run.py restyle|hair|srcgen|analyse` renders a resumable
+matrix with `--sweep '<node>.<input>=a|b'`, `mask.<CONST>=…` and `graph.*`
+variants; `score.py` adds ArcFace identity (antelopev2), histogram reaction to
+the unstyled baseline, and for hair length / fringe / CLIP-rank checks;
+`sheet.py` writes a self-contained contact sheet; `export_catalog.py
+verdicts.json [--ol1nllm DIR]` generates the hairstyle catalogs. The memory
+guard restarts `comfyui.service` only when available RAM sinks below 8 GB and
+the queue is empty — the box is shared with the Ol1nLLM app. Synthetic
+portraits (no personal data) live in `srcs/`.

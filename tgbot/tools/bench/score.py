@@ -49,7 +49,9 @@ THRESHOLDS = {
     "updo_below_max": 0.5,
     "bangs_cover": {"full": 0.5, "side": 0.3, "curtain": 0.2, "wispy": 0.2},
     "no_bangs_extra": 0.10,
-    "clip_top": 3,
+    # Neighbouring labels (bob / lob / Italian bob / blunt cut) share CLIP's
+    # idea of the shape; round 0d put visibly right bobs at rank 6–8 of 25.
+    "clip_top": 5,
     "clip_gain": 0.05,
     "style_reaction_min": 0.10,  # restyle: histogram distance from baseline
 }

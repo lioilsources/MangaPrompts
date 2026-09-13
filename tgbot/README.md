@@ -75,10 +75,14 @@ generace na uživatele. Liší se jen tím, co jde do ComfyUI:
   hlavička PNG/JPEG bez Pillow) a fotka se na něj **letterboxuje**
   (`ImageResizeKJv2`, `pad`) — jinak ControlNet hint ořízne na střed
   a fotka z telefonu 1:2 přijde o hlavu i chodidla,
-- `medium` vybírá checkpoint (`RESTYLE_CHECKPOINTS`; obojí defaultně
-  Juggernaut XL v9 — InstantID embedding je fotografický a booru modely ho
-  čtou jako šum; přepis přes `RESTYLE_CKPT_PHOTO` / `RESTYLE_CKPT_ILLUSTRATION`),
-  prompt i negativ skládá appka (`lib/config/restyle_styles.dart`),
+- `medium` vybírá **engine** (`RESTYLE_ENGINES`, přepis přes
+  `RESTYLE_ENGINE_PHOTO` / `RESTYLE_ENGINE_ILLUSTRATION`): `photo` → `flux`
+  = `flux_restyle.api.json` (FLUX.1-dev, PuLID na tvář, InstantX depth
+  ControlNet s VAE hranou na pózu; negativ se na cfg 1 nepoužije),
+  `illustration` → `sdxl` = graf výše s checkpointem z `RESTYLE_CHECKPOINTS`
+  (default Juggernaut XL v9, přepis `RESTYLE_CKPT_*`; booru modely čtou
+  InstantID embedding jako šum). Naměřené: `docs/restyle-flux-results.md`.
+  Prompt i negativ skládá appka (`lib/config/restyle_styles.dart`),
 - když InsightFace v fotce tvář nenajde, job spadne na `execution_error`;
   `execution_error_message` vytáhne text výjimky uzlu do `job.error`, aby
   uživatel viděl „no face detected“, ne jen „generation failed“. Spend se
@@ -217,3 +221,27 @@ venv/bin/python -m pytest tests/ -q
 - Selhané doručení videa kvůli neexistujícímu chatu (`TelegramForbiddenError`,
   uživatel nikdy nedal /start) **vrací spend** — u obrázků se jen loguje,
   protože obrázek se zobrazí v appce; video má chat jako jediný kanál.
+
+
+## Kadeřník — `POST /api/hair`
+
+Portrét + účes → tatáž fotka s novým střihem. Dva prompty do ComfyUI:
+
+1. **Analýza zdarma** (`hair_analyse.api.json`): ComfyUI-RMBG `FaceSegment`
+   (vlasy, tvář, oči+obočí) a `ClothesSegment` (čepice; `FaceSegment` třídu Hat
+   nevystavuje), bez difuze. Čeká se ve stejné frontě jako ostatní joby
+   (`HAIR_ANALYSE_TIMEOUT`). Výpadek → 502, nic se nestrhne.
+2. `hairmask.prepare`: maska = staré vlasy + čepice (dilatace), pás na čele
+   u ofiny, obálka podle `shape.length` (kam smí nové vlasy), minus obličej;
+   barva vlasů z nasvícených pramenů. Fotka bez tváře / s malou tváří / bez
+   vlasů → 400 s hláškou pro uživatele, **nic se nestrhne**.
+3. Teprve pak `spend_generation`, upload masky pod per-job jménem, prompt z
+   `hairprompt.py` podle `HAIR_ENGINE` (Fill a SDXL chtějí popis fotky, Kontext
+   instrukci) a inpaint graf. Selhání submitu → refund, jako u restyle.
+
+`/api/hair` bere `style_id`, `block`, `style` (popisek do chatu), `shape`
+(`length` keep/short/medium/long, `bangs` none/full/side/curtain/wispy, `updo`)
+a `image`. Běžící analýza se počítá do pravidla „jedna generace naráz“
+(`_hair_analysing`). Inpaint grafy mají `mask_fill_holes: false` — obličej je
+v masce díra a vyplnění ho přemalovalo. Čísla v `hairmask.py` a volba enginu
+jsou naměřené benchem (`tools/bench`, `docs/hair-matrix.md`).

@@ -4,7 +4,7 @@
 > ComfyUI na SPARKu. Navazuje na `03-PLAN-restyle-painters-flux.md`
 > (stejné enginy, sdílený bench). Ol1nLLM část je v
 > `05-PLAN-ol1nllm-kadernik.md`. Kandidátský katalog účesů:
-> `Prompts/hairstyles-candidates.json` (tento adresář).
+> `tgbot/tools/bench/candidates/hairstyles.json`.
 
 ## Zadání a rozhodnutí
 
@@ -226,7 +226,7 @@ String hairNegative() => 'hat, cap, helmet, headband, deformed hair, floating ha
 Obsah = **jen položky, které prošly gatem v §5**; do té doby je katalog
 prázdný a karta se v menu neukáže (`TsumikiScreen` menu skryje `hair`,
 když `kHairstyles.isEmpty` — stejný „hide-on-failure" princip jako u
-animace). Kandidáti žijí v `Prompts/hairstyles-candidates.json`, ne v kódu.
+animace). Kandidáti žijí v `tgbot/tools/bench/candidates/hairstyles.json`, ne v kódu.
 
 **`lib/ui/widgets/tsumiki_app_bar.dart`**: `TsumikiScreen.hair('Hairdresser',
 Icons.content_cut)` mezi `restyle` a `animate`; `build()` → `HairScreen()`;
@@ -311,7 +311,7 @@ odkaz na arch) a **teprve pak** naplnění `kHairstyles` (§4). Formát: jako
 
 ### 6. Katalog kandidátů
 
-`Prompts/hairstyles-candidates.json` — 25 ženských (zadání) + 26 mužských.
+`tgbot/tools/bench/candidates/hairstyles.json` — 25 ženských (zadání) + 26 mužských.
 Pole: `id, label, cs, group, section, block, shape{length,bangs,updo}`.
 Mužský výběr je z trendů 2024–2026 (textured crop, low taper, modern mullet,
 curtain/middle part, blowout, wolf/shag, buzz + skin fade, two-block, flow,

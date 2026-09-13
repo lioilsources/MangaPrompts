@@ -117,27 +117,6 @@
       "patch": "inpaint_v26.fooocus.patch"
     }
   },
-  "5": {
-    "class_type": "VAEEncodeForInpaint",
-    "_meta": {
-      "title": "VAE encode (inpaint)"
-    },
-    "inputs": {
-      "pixels": [
-        "90",
-        1
-      ],
-      "vae": [
-        "1",
-        2
-      ],
-      "mask": [
-        "90",
-        2
-      ],
-      "grow_mask_by": 16
-    }
-  },
   "51": {
     "class_type": "INPAINT_ApplyFooocusInpaint",
     "_meta": {
@@ -154,7 +133,7 @@
       ],
       "latent": [
         "5",
-        0
+        2
       ]
     }
   },
@@ -175,16 +154,16 @@
         0
       ],
       "positive": [
-        "2",
+        "5",
         0
       ],
       "negative": [
-        "3",
-        0
+        "5",
+        1
       ],
       "latent_image": [
         "5",
-        0
+        3
       ]
     }
   },
@@ -230,6 +209,34 @@
       "images": [
         "91",
         0
+      ]
+    }
+  },
+  "5": {
+    "class_type": "INPAINT_VAEEncodeInpaintConditioning",
+    "_meta": {
+      "title": "Inpaint conditioning (not VAEEncodeForInpaint: its grey fill tinted hair olive, bench 0c/0d)"
+    },
+    "inputs": {
+      "positive": [
+        "2",
+        0
+      ],
+      "negative": [
+        "3",
+        0
+      ],
+      "vae": [
+        "1",
+        2
+      ],
+      "pixels": [
+        "90",
+        1
+      ],
+      "mask": [
+        "90",
+        2
       ]
     }
   }

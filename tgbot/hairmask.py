@@ -51,8 +51,10 @@ ENVELOPES: dict[str, tuple[float, float, float] | None] = {
 # Shape of the repaint area. "hair": exactly the union above. "blob": its
 # bounding rounded rectangle (still minus the face). FLUX Fill paints the mask's
 # *shape*: in bench round 0b a pixie masked as the old long-hair silhouette
-# came back as long hair; a rectangle says nothing about length.
-MASK_MODE = "hair"
+# came back as long hair, and SDXL left old strands on the shoulders; with the
+# rectangle both cut to length (bench round 0c). Cost: clothes and backdrop
+# inside the rectangle are repainted too.
+MASK_MODE = "blob"
 # Room above the head for a bun / ponytail, and how wide it may be.
 UPDO_ABOVE_FH = 0.8
 UPDO_SIDE_FW = 0.3
