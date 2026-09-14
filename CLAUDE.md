@@ -114,6 +114,11 @@ own maps: `RESTYLE_WORKFLOW_FILES` / `RESTYLE_ENGINES` (checkpoint only on the
 SDXL engine, `RESTYLE_CHECKPOINTS[medium]`) and `HAIR_WORKFLOW_FILES` /
 `HAIR_ENGINE` (+ `HAIR_ANALYSE_WORKFLOW_FILE`). A new graph goes through
 `tgbot/tools/check_workflow.py` against SPARK before anything else.
+Nodes of our own live in `comfyui_nodes/ComfyUI-Tsumiki` (today
+`TsumikiAlignToReference`: FLUX Kontext re-frames what it edits by up to 6 %,
+so the hair graph warps the edit back onto the photo before pasting it through
+the mask); `comfyui_nodes/deploy.sh` installs them on SPARK and must run before
+a graph using them ships — Ol1nLLM sends the same graphs.
 
 ## Bench (`tgbot/tools/bench/`)
 
