@@ -35,3 +35,20 @@ def test_hairstyle_candidates_are_well_formed():
         assert c["group"] in ("Women", "Men")
         assert c["shape"]["length"] in ("keep", "short", "medium", "long")
         assert "__HAIRCOLOR__" not in c["block"]
+
+
+def test_each_app_gets_what_passed_on_its_own_engines():
+    import export_catalog as ex
+
+    v = {
+        "both": {"verdict": "accept"},
+        "kontext-only": {"verdict": {"kontext": "accept", "sdxl": "reject"}},
+        "colour:platinum-blonde": {"verdict": {"kontext": "accept", "sdxl": "reject"}},
+        "no": {"verdict": "reject"},
+    }
+    assert ex.accepted(v, "both", ["kontext", "sdxl"])
+    assert ex.accepted(v, "kontext-only", ["kontext"])
+    assert not ex.accepted(v, "kontext-only", ["kontext", "sdxl"])
+    assert not ex.accepted(v, "no", ["kontext"]) and not ex.accepted(v, "missing", ["kontext"])
+    assert [c for c, _ in ex.accepted_colours(v, ["kontext"])] == ["platinum-blonde"]
+    assert ex.accepted_colours(v, ["kontext", "sdxl"]) == []

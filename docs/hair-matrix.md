@@ -129,3 +129,38 @@ pod bradu tak, jak metrika čeká.
 
 Produkce Tsumiki jede na `HAIR_ENGINE=kontext` (výchozí od tohoto kola) — FLUX
 Fill gate neprošel už v kole 0.
+
+## Kolo 2 — Kontext posouvá obraz (2026-09-14)
+
+Při procházení archu kola 1 měla většina pánských účesů na Kontextu přes čelo
+průsvitný pruh starých vlasů a u krku dvojitý límec — i High Skin Fade a Quiff,
+které prošly do katalogu. U dlouhých ženských vlasů šev schovají vlasy.
+
+Příčina: **FLUX Kontext výstup přerámuje.** Similarity transformace výstup →
+předloha ze SIFT shod na tváři (`scratch/align`, seed 1):
+
+| předloha | účes | s `FluxKontextImageScale` | bez něj |
+|---|---|---|---|
+| m-short | m-crew | měřítko 0.996, posun (−1, 71) px | 1.009, (−1, 73) px |
+| w-long | curtain-bangs | 0.960, (9, 51) px | 0.970, (3, 38) px |
+| m-receding | m-quiff | 1.038, (−13, 2) px | 1.051, (−19, 15) px |
+
+Není to škálování na preferované rozlišení (bez něj posun zůstává) ani offset
+reference v RoPE (první reference má offset 0); směr i velikost se mění
+s fotkou, takže pevná korekce nejde. Graf proto před složením volá
+`TsumikiAlignToReference` (`comfyui_nodes/ComfyUI-Tsumiki`): SIFT shody jen
+mimo masku (tvář, oblečení), RANSAC similarity, warp zpět; bez dost shod nebo
+s nevěrohodným měřítkem (> 15 %) projde obraz beze změny a node to zaloguje.
+Po zarovnání zbývá 0–2 px. Pruh zmizel; zůstává drobný šev u ramen, kde spodní
+hrana masky protíná tričko, které Kontext přegeneroval.
+
+Kolo 2 (`out/hair-r2`, `out/hair-colours-r2`) měří se zarovnaným grafem všech
+65 kandidátů (14 nových: hime cut, box/dutch/french/crown braids, space buns,
+sleek bun, side undercut, hollywood waves, mohawk, spiky, cornrows, twists,
+long curly) na třech předlohách na skupinu a 19 barev včetně nových módních
+(fox red, hot pink, violet, pastel/electric blue, teal) na třech předlohách.
+
+Gate je od tohoto kola **per appka**: Tsumiki bere, co prošlo na jeho
+`HAIR_ENGINE` (Kontext), Ol1nLLM dál jen to, co prošlo na Kontextu i SDXL
+(`export_catalog.py --engines` / `--ol1nllm-engines`, verdikt může být mapa
+engine → verdikt).

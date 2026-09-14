@@ -303,6 +303,18 @@ def colour_name(lab: tuple[float, float, float]) -> str:
         return "white"
     if chroma < 8 and L > 38:
         return "grey"
+    # Dyed colours sit outside natural hair's 30–90° hue: read as auburn, a
+    # pink or purple head asked for a new cut came back auburn.
+    if chroma >= 15:
+        hue = math.degrees(math.atan2(b, a)) % 360
+        if 160 <= hue < 245:
+            return "teal"
+        if 245 <= hue < 295:
+            return "blue-black" if L < 22 else "blue"
+        if 295 <= hue < 335:
+            return "purple"
+        if (hue >= 335 or hue < 25) and L >= 40 and a > 20:
+            return "pink"
     if a > 16:
         return "auburn"
     if L < 22:

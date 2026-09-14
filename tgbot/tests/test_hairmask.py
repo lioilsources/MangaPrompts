@@ -175,6 +175,12 @@ def test_shape_validation_and_key():
         ((150, 148, 146), "grey"),
         ((235, 235, 235), "white"),
         ((170, 80, 40), "auburn"),
+        ((120, 40, 35), "auburn"),  # burgundy: red but dark, not pink
+        ((255, 120, 180), "pink"),
+        ((150, 90, 200), "purple"),
+        ((60, 120, 230), "blue"),
+        ((20, 25, 60), "blue-black"),
+        ((20, 140, 140), "teal"),
     ],
 )
 def test_colour_from_hair_pixels(rgb, name):

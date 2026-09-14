@@ -58,3 +58,20 @@ def test_colour_ranges_accept_their_own_colour():
     assert hc.matches("platinum-blonde", None) is None
     for cid, c in hc.COLOURS.items():
         assert c["phrase"] and c["label"] and c["cs"] and c["group"], cid
+
+
+def test_fashion_colours_by_hue_including_pink_across_zero():
+    import haircolours as hc
+
+    lab = lambda L, a, b: {"L": L, "a": a, "b": b, "spread": 30}  # noqa: E731
+    assert hc.matches("hot-pink", lab(65, 45, -8))  # hue 350
+    assert hc.matches("hot-pink", lab(65, 45, 7))  # hue 9
+    assert not hc.matches("hot-pink", lab(35, 28, 26))  # copper
+    assert hc.matches("violet", lab(56, 27, -28))  # round 1 "lavender" on Kontext
+    assert hc.matches("electric-blue", lab(45, 10, -60))
+    assert not hc.matches("electric-blue", lab(9, 7, -24))  # blue-black
+    assert hc.matches("fox-red", lab(50, 40, 60))
+    assert not hc.matches("fox-red", lab(14, 30, 12))  # burgundy
+    assert hc.matches("teal", lab(50, -30, -9))
+    # round 1: vivid copper on Kontext read L 27.7 and failed the old L ≥ 28
+    assert hc.matches("copper-red", lab(27.7, 39.4, 36.5))

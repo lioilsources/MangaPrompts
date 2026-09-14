@@ -76,6 +76,7 @@ const kHairSections = [
   'Short',
   'Medium',
   'Long',
+  'Braids',
   'Updos',
 ];
 
