@@ -60,7 +60,14 @@ colour (`tgbot/haircolours.py`; style id `keep-cut` = colour only, mask of the o
 hair without an envelope); billing starts only after
 the analysis accepted the photo. The catalog (`lib/config/hairstyle_catalog.dart`)
 is generated from the bench gate (`docs/hair-matrix.md`) and the card stays
-hidden while it is empty. Ol1nLLM mirrors the mask in `lib/models/hair_mask.dart`.
+hidden while it is empty. Each style is picked from a card with a **preview**
+(`assets/hair/<id>.jpg`, `Hairstyle.preview`): the bench's own output for that
+style on the group's primary synthetic portrait, so every card shows the same
+face and the eye compares hair only — no stock photos, no personal data. A
+colour chip carries a **swatch** (`HairColour.swatch`): the hair colour the
+bench *measured* on the accepted cells, not the target range. Both come out of
+`export_catalog.py --bench/--colours-bench`; `test/hairstyles_test.dart`
+fails on a catalog entry without them. Ol1nLLM mirrors the mask in `lib/models/hair_mask.dart`.
 The cards share `TsumikiAppBar` (`TsumikiScreen` enum drives the shop chip
 and the card switcher; `screenOffered` hides animate without scenes and hair
 without hairstyles). Monetization: Telegram Stars credits (SQLite ledger in tgbot/db.py, packages
@@ -130,7 +137,11 @@ matrix with `--sweep '<node>.<input>=a|b'`, `mask.<CONST>=…` and `graph.*`
 variants; `score.py` adds ArcFace identity (antelopev2), histogram reaction to
 the unstyled baseline, and for hair length / fringe / CLIP-rank checks;
 `sheet.py` writes a self-contained contact sheet; `export_catalog.py
-verdicts.json [--ol1nllm DIR]` generates the hairstyle catalogs. The memory
+verdicts.json [--ol1nllm DIR] [--bench out/hair-rN --colours-bench
+out/hair-colours-rN]` generates the hairstyle catalogs, previews and swatches
+(the verdict is a map engine → verdict; Tsumiki takes `--engines`, its
+`HAIR_ENGINE`, Ol1nLLM `--ol1nllm-engines`). Full-size cell images stay on
+the box: `--list-previews` prints the ones to `rsync --files-from` first. The memory
 guard restarts `comfyui.service` only when available RAM sinks below 8 GB and
 the queue is empty — the box is shared with the Ol1nLLM app. Synthetic
 portraits (no personal data) live in `srcs/`.

@@ -52,3 +52,4 @@ flutter:
     - assets/config/
     - assets/comfyui/
     - assets/poses/pose_depth/
+    - assets/hair/

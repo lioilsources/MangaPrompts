@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -56,6 +58,18 @@ void main() {
     }
   });
 
+  test('every catalog entry ships its preview; colours ship a measured swatch', () {
+    // The picker shows the bench's own output per style — a missing file
+    // would fall back to the scissors and nobody would notice in CI.
+    for (final s in kHairstyles) {
+      expect(File(s.preview).existsSync(), isTrue, reason: s.preview);
+    }
+    for (final c in kHairColours) {
+      expect(c.swatch, isNotNull, reason: c.id);
+      expect(c.swatch! >> 24, 0xFF, reason: '${c.id}: opaque ARGB');
+    }
+  });
+
   test('the card is only offered once a hairstyle passed the gate', () {
     expect(
       screenOffered(
@@ -105,6 +119,8 @@ void main() {
     expect(find.text('Man Bun'), findsOneWidget);
     expect(find.text('Pixie Cut'), findsNothing);
 
+    await tester.ensureVisible(find.text('Man Bun'));
+    await tester.pump();
     await tester.tap(find.text('Man Bun'));
     await tester.pump();
     final fab = tester.widget<FloatingActionButton>(
@@ -131,6 +147,10 @@ void main() {
     await tester.tap(find.text('Copper red'));
     await tester.pump();
     expect(find.text('New colour'), findsOneWidget);
+    // Cards are taller than chips; the colour row pushes this one below the
+    // test viewport, and a tap off-screen silently misses.
+    await tester.ensureVisible(find.text('Pixie Cut'));
+    await tester.pump();
     await tester.tap(find.text('Pixie Cut'));
     await tester.pump();
     expect(find.text('New haircut'), findsOneWidget);

@@ -90,8 +90,8 @@ class _HairScreenState extends ConsumerState<HairScreen> {
         styleId: style?.id ?? kKeepCutId,
         block: style?.block ?? kKeepCutBlock,
         styleLabel: style?.label ?? '',
-        shape:
-            (style?.shape ?? const HairShape(length: HairLength.keep)).toJson(),
+        shape: (style?.shape ?? const HairShape(length: HairLength.keep))
+            .toJson(),
         colour: colour?.id,
       );
       ref.invalidate(accountProvider);
@@ -101,7 +101,10 @@ class _HairScreenState extends ConsumerState<HairScreen> {
         MaterialPageRoute(
           builder: (_) => ResultScreen(
             imageUrl: result.url,
-            prompt: [style?.label, colour?.label].whereType<String>().join(' · '),
+            prompt: [
+              style?.label,
+              colour?.label,
+            ].whereType<String>().join(' · '),
             imageBytes: result.bytes,
           ),
         ),
@@ -170,12 +173,16 @@ class _HairScreenState extends ConsumerState<HairScreen> {
                 ChoiceChip(
                   label: const Text('Keep mine'),
                   selected: _colourId == null,
-                  onSelected:
-                      _busy ? null : (_) => setState(() => _colourId = null),
+                  onSelected: _busy
+                      ? null
+                      : (_) => setState(() => _colourId = null),
                 ),
                 for (final g in kHairColourGroups)
                   for (final c in widget.colours.where((c) => c.group == g))
                     ChoiceChip(
+                      avatar: c.swatch == null
+                          ? null
+                          : CircleAvatar(backgroundColor: Color(c.swatch!)),
                       label: Text(c.label),
                       selected: c.id == _colourId,
                       onSelected: _busy
@@ -195,8 +202,9 @@ class _HairScreenState extends ConsumerState<HairScreen> {
                 child: ChoiceChip(
                   label: const Text('Keep my cut'),
                   selected: _styleId == null,
-                  onSelected:
-                      _busy ? null : (_) => setState(() => _styleId = null),
+                  onSelected: _busy
+                      ? null
+                      : (_) => setState(() => _styleId = null),
                 ),
               ),
             if (groups.length > 1)
@@ -218,19 +226,19 @@ class _HairScreenState extends ConsumerState<HairScreen> {
                 ),
                 Wrap(
                   spacing: 8,
-                  runSpacing: 4,
+                  runSpacing: 8,
                   children: [
                     for (final s in hairstylesIn(
                       _group,
                       section,
                       widget.catalog,
                     ))
-                      ChoiceChip(
-                        label: Text(s.label),
+                      _StyleCard(
+                        style: s,
                         selected: s.id == _styleId,
-                        onSelected: _busy
+                        onTap: _busy
                             ? null
-                            : (_) => setState(() => _styleId = s.id),
+                            : () => setState(() => _styleId = s.id),
                       ),
                   ],
                 ),
@@ -258,7 +266,9 @@ class _HairScreenState extends ConsumerState<HairScreen> {
         label: Text(
           _busy
               ? 'Working…'
-              : (_style == null && _colour != null ? 'New colour' : 'New haircut'),
+              : (_style == null && _colour != null
+                    ? 'New colour'
+                    : 'New haircut'),
         ),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
@@ -311,6 +321,73 @@ class _HairScreenState extends ConsumerState<HairScreen> {
                     ),
                 ],
               ),
+      ),
+    );
+  }
+}
+
+/// One hairstyle to pick: the bench's own output for it on the same synthetic
+/// face as every other card, so the row compares hair and nothing else. A
+/// card whose picture was not exported keeps the name over a plain tile.
+class _StyleCard extends StatelessWidget {
+  const _StyleCard({
+    required this.style,
+    required this.selected,
+    required this.onTap,
+  });
+
+  final Hairstyle style;
+  final bool selected;
+  final VoidCallback? onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(10),
+      child: Container(
+        width: 96,
+        padding: const EdgeInsets.all(3),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(10),
+          border: Border.all(
+            color: selected ? scheme.primary : scheme.outlineVariant,
+            width: selected ? 2 : 1,
+          ),
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ClipRRect(
+              borderRadius: BorderRadius.circular(7),
+              child: AspectRatio(
+                aspectRatio: 4 / 5,
+                child: Image.asset(
+                  style.preview,
+                  fit: BoxFit.cover,
+                  errorBuilder: (_, _, _) => ColoredBox(
+                    color: scheme.surfaceContainerHighest,
+                    child: Icon(Icons.content_cut, color: scheme.primary),
+                  ),
+                ),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(2, 4, 2, 2),
+              child: Text(
+                style.label,
+                textAlign: TextAlign.center,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+                style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                  color: selected ? scheme.primary : null,
+                  fontWeight: selected ? FontWeight.w600 : null,
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

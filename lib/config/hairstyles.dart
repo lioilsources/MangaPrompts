@@ -62,6 +62,11 @@ class Hairstyle {
   final String block;
 
   final HairShape shape;
+
+  /// Bundled preview: the bench's own output for this style on the group's
+  /// primary synthetic portrait (export_catalog.py --bench). Same face under
+  /// every style, so the picker compares hair and nothing else.
+  String get preview => 'assets/hair/$id.jpg';
 }
 
 const kHairGroupWomen = 'Women';
@@ -83,11 +88,20 @@ const kHairSections = [
 /// A hair colour the bot knows (`tgbot/haircolours.py` holds the prompt
 /// phrase); the app sends only the id. [group] orders the chips.
 class HairColour {
-  const HairColour({required this.id, required this.label, required this.group});
+  const HairColour({
+    required this.id,
+    required this.label,
+    required this.group,
+    this.swatch,
+  });
 
   final String id;
   final String label;
   final String group;
+
+  /// ARGB of the colour the bench *measured* on the accepted cells — what the
+  /// model paints, not the target range. Null while unmeasured.
+  final int? swatch;
 }
 
 const kHairColourGroups = ['Blonde', 'Red', 'Brown', 'Black & grey', 'Fashion'];
