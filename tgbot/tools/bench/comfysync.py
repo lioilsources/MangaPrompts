@@ -71,7 +71,7 @@ class Comfy:
             if status.get("status_str") == "error":
                 raise CellError(comfy.execution_error_message(status))
             return hist
-        self.interrupt()
+        self.cancel(prompt_id)
         raise CellError(f"timed out after {timeout:.0f} s")
 
     def view(self, ref: dict) -> bytes:
@@ -107,12 +107,35 @@ class Comfy:
         except requests.RequestException:
             pass
 
+    def cancel(self, prompt_id: str) -> None:
+        """Drop *our* prompt. `/interrupt` stops whatever is running, and a
+        bench cell that timed out waiting in the queue is not running — the
+        video render ahead of it is, so a bare interrupt killed that instead.
+        Running → interrupt; pending → delete from the queue; else nothing."""
+        try:
+            q = self.http.get(f"{self.url}/queue", timeout=10).json()
+        except (requests.RequestException, ValueError):
+            return
+        if any(item[1] == prompt_id for item in q.get("queue_running", [])):
+            self.interrupt()
+        elif any(item[1] == prompt_id for item in q.get("queue_pending", [])):
+            try:
+                self.http.post(f"{self.url}/queue", json={"delete": [prompt_id]}, timeout=10)
+            except requests.RequestException:
+                pass
+
     # ── health ────────────────────────────────────────────────────────────
     def stats(self) -> dict | None:
         try:
             return self.http.get(f"{self.url}/system_stats", timeout=10).json()
         except (requests.RequestException, ValueError):
             return None
+
+    def others_busy(self) -> bool:
+        """Someone else's work that a restart or a model unload would hurt:
+        a prompt in ComfyUI's queue, or a video-stack render — whose queue is
+        empty for a second between two beats, exactly when the guard looks."""
+        return self.queue_busy() or video_busy()
 
     def queue_busy(self) -> bool:
         try:
@@ -151,7 +174,7 @@ class Comfy:
         killing the run outright at cell 65/102."""
         free = self.vram_free_gb()
         rss = comfy_rss_gb()
-        if rss is not None and rss > LEAK_RSS_GB and not self.queue_busy():
+        if rss is not None and rss > LEAK_RSS_GB and not self.others_busy():
             # The couple-bench signature: the process swells over a series of
             # jobs and never gives the memory back (45 GB RSS after /free on
             # 2026-09-13). Only a restart returns it; do it while idle.
@@ -159,6 +182,15 @@ class Comfy:
             self.restart(log)
             return
         if free is None:
+            # A video render loading its 27 GB checkpoint can stall
+            # /system_stats; give it time before calling the service dead.
+            waited = 0
+            while video_busy() and waited < VIDEO_STALL_S:
+                log("[guard] ComfyUI is not responding while a video renders — waiting")
+                time.sleep(30)
+                waited += 30
+                if self.stats():
+                    return
             log("[guard] ComfyUI is not responding — restarting")
             self.restart(log)
             return
@@ -170,16 +202,23 @@ class Comfy:
         if after is not None and after >= min_free_gb:
             return
         # Models ComfyUI keeps loaded (--cache-lru 2) are the other big
-        # holder; unloading costs only a reload (video-stack chain.free_models).
-        self.free_models()
-        time.sleep(5)
-        after = self.vram_free_gb()
-        log(f"[guard] asked ComfyUI to unload models → {_fmt(after)} GB")
-        if after is not None and after >= min_free_gb / 2:
-            return
+        # holder; unloading costs only a reload (video-stack chain.free_models)
+        # — but under a video render that reload is its 27 GB checkpoint on
+        # every beat, so there the bench waits instead.
+        if not video_busy():
+            self.free_models()
+            time.sleep(5)
+            after = self.vram_free_gb()
+            log(f"[guard] asked ComfyUI to unload models → {_fmt(after)} GB")
+            if after is not None and after >= min_free_gb / 2:
+                return
         waited = 0
-        while self.queue_busy() and waited < 1800:
-            log(f"[guard] still {_fmt(after)} GB free and the queue is busy — waiting")
+        while self.others_busy():
+            if waited >= OTHERS_WAIT_S:
+                raise CellError(f"{_fmt(after)} GB free and the box stayed busy for "
+                                f"{OTHERS_WAIT_S // 60} min — not restarting under someone else's job")
+            if waited % 300 == 0:
+                log(f"[guard] still {_fmt(after)} GB free and someone else's job is running — waiting")
             time.sleep(30)
             waited += 30
             drop_page_cache()
@@ -204,6 +243,28 @@ class Comfy:
 
 COMFY_ROOT = os.path.expanduser("~/Code/ComfyUI")
 LEAK_RSS_GB = 35.0
+VIDEO_API_HEALTH = "http://127.0.0.1:8096/health"
+# How long the guard sits out someone else's work before giving up on a cell:
+# a minute-long LTX scene renders for well over an hour, and a restart under
+# it would throw that away — failing a bench cell (resumable) is cheaper.
+OTHERS_WAIT_S = 2 * 3600
+VIDEO_STALL_S = 600
+
+
+def video_busy() -> bool:
+    """A video-stack render in flight. video-api runs chain.py as one
+    subprocess for the whole job, so the process spans the gap between two
+    beats, when ComfyUI's queue is briefly empty; the API's own queue covers
+    jobs still waiting for their turn."""
+    try:
+        if subprocess.run(["pgrep", "-f", "chain.py"], capture_output=True, timeout=10).returncode == 0:
+            return True
+    except (OSError, subprocess.SubprocessError):
+        pass
+    try:
+        return int(requests.get(VIDEO_API_HEALTH, timeout=5).json().get("queued", 0)) > 0
+    except (requests.RequestException, ValueError, TypeError):
+        return False
 
 
 def comfy_rss_gb() -> float | None:
