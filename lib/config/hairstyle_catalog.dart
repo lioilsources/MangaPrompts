@@ -6,33 +6,6 @@ import 'hairstyles.dart';
 
 const kHairstyles = <Hairstyle>[
   Hairstyle(
-    id: 'curtain-bangs',
-    label: 'Curtain Bangs',
-    group: kHairGroupWomen,
-    section: 'Bangs',
-    block:
-        'curtain bangs, soft face-framing fringe parted in the middle and swept to both sides, blending into the lengths',
-    shape: HairShape(length: HairLength.keep, bangs: HairBangs.curtain, updo: false),
-  ),
-  Hairstyle(
-    id: 'lob',
-    label: 'Long Bob (Lob)',
-    group: kHairGroupWomen,
-    section: 'Cuts',
-    block:
-        'long bob haircut (lob), one-length hair ending at the collarbone, sleek and slightly longer in front',
-    shape: HairShape(length: HairLength.medium, bangs: HairBangs.none, updo: false),
-  ),
-  Hairstyle(
-    id: 'french-bob',
-    label: 'French Bob',
-    group: kHairGroupWomen,
-    section: 'Cuts',
-    block:
-        'french bob, short chin-length bob with a full straight fringe, effortless parisian look',
-    shape: HairShape(length: HairLength.medium, bangs: HairBangs.full, updo: false),
-  ),
-  Hairstyle(
     id: 'face-framing',
     label: 'Face-Framing Layers',
     group: kHairGroupWomen,
@@ -42,44 +15,119 @@ const kHairstyles = <Hairstyle>[
     shape: HairShape(length: HairLength.keep, bangs: HairBangs.none, updo: false),
   ),
   Hairstyle(
-    id: 'beach-waves',
-    label: 'Beach Waves',
+    id: 'box-braids',
+    label: 'Box Braids',
     group: kHairGroupWomen,
-    section: 'Texture',
+    section: 'Braids',
     block:
-        'beach waves, loose undone tousled waves with natural texture, effortless surf look',
+        'long box braids, many small neat three-strand braids falling past the shoulders',
+    shape: HairShape(length: HairLength.long, bangs: HairBangs.none, updo: false),
+  ),
+  Hairstyle(
+    id: 'dutch-braids',
+    label: 'Dutch Braids',
+    group: kHairGroupWomen,
+    section: 'Braids',
+    block:
+        'two dutch braids, tight raised braids running from the hairline back along both sides of the head',
     shape: HairShape(length: HairLength.keep, bangs: HairBangs.none, updo: false),
   ),
   Hairstyle(
-    id: 'soft-curls',
-    label: 'Soft Curls',
+    id: 'crown-braid',
+    label: 'Crown Braid',
     group: kHairGroupWomen,
-    section: 'Texture',
+    section: 'Braids',
     block:
-        'soft curls, bouncy loose curls with defined ringlets and shine',
-    shape: HairShape(length: HairLength.keep, bangs: HairBangs.none, updo: false),
+        'crown braid, a thick braid wrapped around the head like a halo with all the hair up',
+    shape: HairShape(length: HairLength.keep, bangs: HairBangs.none, updo: true),
   ),
   Hairstyle(
-    id: 'm-skin-fade',
-    label: 'High Skin Fade',
+    id: 'm-buzz',
+    label: 'Buzz Cut',
     group: kHairGroupMen,
     section: 'Short',
     block:
-        'high skin fade, sides shaved down to the skin and blended up high, short textured hair on top',
+        'buzz cut, hair clipped uniformly very short all over the head',
     shape: HairShape(length: HairLength.short, bangs: HairBangs.none, updo: false),
   ),
   Hairstyle(
-    id: 'm-quiff',
-    label: 'Quiff',
+    id: 'm-crew',
+    label: 'Crew Cut',
     group: kHairGroupMen,
-    section: 'Medium',
+    section: 'Short',
     block:
-        'quiff hairstyle, hair on top brushed up and back into a voluminous quiff, shorter tapered sides',
+        'crew cut, short hair slightly longer on top and tapered on the sides and back, clean and neat',
+    shape: HairShape(length: HairLength.short, bangs: HairBangs.none, updo: false),
+  ),
+  Hairstyle(
+    id: 'm-man-bun',
+    label: 'Man Bun',
+    group: kHairGroupMen,
+    section: 'Updos',
+    block:
+        'man bun, long hair pulled back and tied into a bun at the back of the head',
+    shape: HairShape(length: HairLength.keep, bangs: HairBangs.none, updo: true),
+  ),
+  Hairstyle(
+    id: 'm-top-knot',
+    label: 'Top Knot (Undercut)',
+    group: kHairGroupMen,
+    section: 'Updos',
+    block:
+        'men\'s top knot, long hair on top tied into a knot on the crown with shaved undercut sides',
+    shape: HairShape(length: HairLength.keep, bangs: HairBangs.none, updo: true),
+  ),
+  Hairstyle(
+    id: 'm-spiky',
+    label: 'Spiky Hair',
+    group: kHairGroupMen,
+    section: 'Short',
+    block:
+        'spiky hair, short hair styled straight up into sharp textured spikes all over the top',
+    shape: HairShape(length: HairLength.short, bangs: HairBangs.none, updo: false),
+  ),
+  Hairstyle(
+    id: 'm-cornrows',
+    label: 'Cornrows',
+    group: kHairGroupMen,
+    section: 'Short',
+    block:
+        'cornrows, hair braided flat to the scalp in straight neat rows running back from the hairline',
     shape: HairShape(length: HairLength.short, bangs: HairBangs.none, updo: false),
   ),
 ];
 
 const kHairColours = <HairColour>[
+  HairColour(
+    id: 'platinum-blonde',
+    label: 'Platinum blonde',
+    group: 'Blonde',
+  ),
+  HairColour(
+    id: 'ash-blonde',
+    label: 'Ash blonde',
+    group: 'Blonde',
+  ),
+  HairColour(
+    id: 'honey-blonde',
+    label: 'Honey blonde',
+    group: 'Blonde',
+  ),
+  HairColour(
+    id: 'copper-red',
+    label: 'Copper red',
+    group: 'Red',
+  ),
+  HairColour(
+    id: 'fox-red',
+    label: 'Fox red',
+    group: 'Red',
+  ),
+  HairColour(
+    id: 'auburn',
+    label: 'Auburn',
+    group: 'Red',
+  ),
   HairColour(
     id: 'burgundy',
     label: 'Burgundy',
@@ -99,5 +147,35 @@ const kHairColours = <HairColour>[
     id: 'blue-black',
     label: 'Blue black',
     group: 'Black & grey',
+  ),
+  HairColour(
+    id: 'silver-grey',
+    label: 'Silver grey',
+    group: 'Black & grey',
+  ),
+  HairColour(
+    id: 'pastel-pink',
+    label: 'Pastel pink',
+    group: 'Fashion',
+  ),
+  HairColour(
+    id: 'hot-pink',
+    label: 'Hot pink',
+    group: 'Fashion',
+  ),
+  HairColour(
+    id: 'lavender',
+    label: 'Lavender',
+    group: 'Fashion',
+  ),
+  HairColour(
+    id: 'electric-blue',
+    label: 'Electric blue',
+    group: 'Fashion',
+  ),
+  HairColour(
+    id: 'teal',
+    label: 'Mermaid teal',
+    group: 'Fashion',
   ),
 ];
