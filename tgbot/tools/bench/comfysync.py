@@ -20,6 +20,13 @@ class CellError(Exception):
     pass
 
 
+def _fmt(gb: float | None) -> str:
+    """`f"{x:.1f}"` raises on None instead of printing it — the crash that
+    ended round 2 at cell 65/102 (comfyui.service had died mid page-cache
+    check, so `after` came back None)."""
+    return "?" if gb is None else f"{gb:.1f}"
+
+
 class Comfy:
     def __init__(self, url: str = "http://127.0.0.1:8188"):
         self.url = url.rstrip("/")
@@ -131,7 +138,17 @@ class Comfy:
         files (posix_fadvise DONTNEED, no root needed — video-stack's
         chain.drop_page_cache, measured 7 → 53 GB free in 2 s); only if that
         is not enough and nobody else's job is queued, restart the service.
-        The box is shared with the Ol1nLLM app and video-stack."""
+        The box is shared with the Ol1nLLM app and video-stack.
+
+        `vram_free_gb()` returning None means ComfyUI is not answering at
+        all, not "plenty free" — round 2 (2026-09-14) treated the two the
+        same, so once the service actually died the guard fell straight
+        through to rendering, which then failed every remaining cell in
+        ~0 s each instead of trying to bring it back. Whatever `after` a
+        step reads also goes through `_fmt`, not a bare `:.1f`: the second
+        half of that same night, a page-cache drop that itself raced a dead
+        server produced `after = None` and crashed the format string,
+        killing the run outright at cell 65/102."""
         free = self.vram_free_gb()
         rss = comfy_rss_gb()
         if rss is not None and rss > LEAK_RSS_GB and not self.queue_busy():
@@ -141,11 +158,15 @@ class Comfy:
             log(f"[guard] ComfyUI holds {rss:.0f} GB RSS with an empty queue — restarting")
             self.restart(log)
             return
-        if free is None or free >= min_free_gb:
+        if free is None:
+            log("[guard] ComfyUI is not responding — restarting")
+            self.restart(log)
+            return
+        if free >= min_free_gb:
             return
         n = drop_page_cache()
         after = self.vram_free_gb()
-        log(f"[guard] {free:.1f} GB free → dropped page cache of {n} files → {after:.1f} GB")
+        log(f"[guard] {free:.1f} GB free → dropped page cache of {n} files → {_fmt(after)} GB")
         if after is not None and after >= min_free_gb:
             return
         # Models ComfyUI keeps loaded (--cache-lru 2) are the other big
@@ -153,19 +174,19 @@ class Comfy:
         self.free_models()
         time.sleep(5)
         after = self.vram_free_gb()
-        log(f"[guard] asked ComfyUI to unload models → {after:.1f} GB")
+        log(f"[guard] asked ComfyUI to unload models → {_fmt(after)} GB")
         if after is not None and after >= min_free_gb / 2:
             return
         waited = 0
         while self.queue_busy() and waited < 1800:
-            log(f"[guard] still {after:.1f} GB free and the queue is busy — waiting")
+            log(f"[guard] still {_fmt(after)} GB free and the queue is busy — waiting")
             time.sleep(30)
             waited += 30
             drop_page_cache()
             after = self.vram_free_gb()
             if after is not None and after >= min_free_gb / 2:
                 return
-        log(f"[guard] {after} GB free — restarting comfyui.service")
+        log(f"[guard] {_fmt(after)} GB free — restarting comfyui.service")
         self.restart(log)
 
     def restart(self, log=print) -> None:
