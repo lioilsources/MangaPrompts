@@ -51,15 +51,6 @@ const kHairstyles = <Hairstyle>[
     shape: HairShape(length: HairLength.short, bangs: HairBangs.none, updo: false),
   ),
   Hairstyle(
-    id: 'm-crew',
-    label: 'Crew Cut',
-    group: kHairGroupMen,
-    section: 'Short',
-    block:
-        'crew cut, short hair slightly longer on top and tapered on the sides and back, clean and neat',
-    shape: HairShape(length: HairLength.short, bangs: HairBangs.none, updo: false),
-  ),
-  Hairstyle(
     id: 'm-man-bun',
     label: 'Man Bun',
     group: kHairGroupMen,

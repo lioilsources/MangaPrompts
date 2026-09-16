@@ -283,3 +283,59 @@ Vedlejší oprava: `export_catalog.py` bez `--colours-bench` tiše zahazoval
 naměřené vzorky barev, protože si je počítal jen z běhu, který na exportním
 stroji většinou není. Vzorky teď žijí v `tgbot/tools/bench/swatches.json`,
 kam je `--colours-bench` zapisuje a odkud se čtou vždycky.
+
+## Kolo 2b — střih a barva naráz (2026-09-16)
+
+384 buněk: 6 střihů × 16 barev × 2 předlohy × 2 enginy, `out/hair-r2b`.
+Otázka byla, jestli barva střih nerozbije a naopak — katalog je pak součin,
+ne součet.
+
+**Odpověď: jsou nezávislé, s jednou výjimkou.** Rozhoduje ale **předloha**,
+ne barva. Rozpad `recognised` po předlohách to ukazuje bez diskuse (podíl
+z 16 barev):
+
+| střih | engine | w-long | w-bangs-3q |
+|---|---|---|---|
+| lob | kontext | 14/16 | **0/16** |
+| lob | sdxl | 16/16 | **1/16** |
+| curtain-bangs | kontext | 16/16 | **3/16** |
+| pixie | sdxl | 16/16 | 16/16 |
+| box-braids | kontext | 16/16 | 15/16 |
+
+Uvnitř jedné předlohy je to buď skoro všech 16 barev, nebo skoro žádná —
+barva tedy s výsledkem nehýbe. Co hýbe, je `w-bangs-3q`: tříčtvrteční portrét
+s ofinou. CLIP tam místo střihu vidí `blunt-bangs` (10 z 18 pádů u lobu,
+8 z 13 u záclonové ofiny) — ofina z předlohy zůstává a přebije střih.
+Podezřelý je čelní pás v masce (`hairmask.py`, `buildHairMask`), který je
+počítaný na čelní pohled. **To je opravitelná chyba, ne vlastnost modelu**,
+a týká se běžné selfie.
+
+**Výjimka: `m-crew`.** Bez barvy prošel v kole 2 na dvou předlohách ze tří;
+s barvou je `recognised` **1/32 na Kontextu a 0/32 na SDXL**, na obou
+předlohách. CLIP místo něj vidí `m-wolf-cut`, `m-ivy-league`, `m-undercut` —
+barevná instrukce přebije instrukci o délce. Appka barvu vždy nabízí spolu se
+střihem, takže by to byla past: `m-crew` jde z katalogů ven (verdikt
+přepsaný na `hair-r2b`), zpátky až po hustším měření bez barvy.
+
+**Barvy: SDXL je teplý koloristika, Kontext umí všechno.** Podíl `colour_ok`
+z 12 buněk na engine:
+
+| | Kontext | SDXL |
+|---|---|---|
+| auburn, burgundy, honey balayage, jet black, blue black | 7–12/12 | **12/12** |
+| copper red, fox red, pastel pink | 11–12/12 | 11/12 |
+| platinum / ash blonde | 10–12/12 | **5/12** |
+| honey blonde | 6/12 | **2/12** |
+| silver grey, teal | 12/12 | **4–5/12** |
+| electric blue | 7/12 | **2/12** |
+
+Studené a světlé odstíny SDXL nezvládá ani ve dvojici — potvrzuje to
+samostatné měření z kola 2 a **je to nezávislé potvrzení, že gate patří per
+engine**: blond a pastely přes Kontext, teplé a tmavé přes SDXL, který je
+v nich naopak lepší (auburn 12/12 proti 7/12 na Kontextu).
+
+**Metodická poznámka: jedna buňka na předlohu je moc málo.** Kolo 2 mělo
+jednu, kolo 2b jich má šestnáct, a dva verdikty se otočily —
+`pixie`/`w-long` z „NE" na 14/16, `box-braids`/`w-bangs-3q` z „NE" na 15/16.
+Verdikty blízko prahu jsou tedy hod mincí; příští kolo má mít víc buněk na
+kombinaci, ne víc kombinací.
