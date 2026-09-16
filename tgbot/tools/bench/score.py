@@ -33,8 +33,15 @@ from PIL import Image  # noqa: E402
 import catalog  # noqa: E402
 import haircolours  # noqa: E402
 import hairmask as hm  # noqa: E402
+import structure  # noqa: E402
 from comfy import prepare_workflow  # noqa: E402
 from comfysync import Comfy  # noqa: E402
+
+#: Verze sady metrik. Spočítané buňky se recyklují jen při shodě — bez toho
+#: přežila stará čísla změnu kódu potichu: přidání `structure_ok` se v
+#: přeskórovaném běhu vůbec neprojevilo, protože každá buňka se vzala z
+#: předchozího metrics.json. Bumpni při každé změně toho, co se počítá.
+METRICS_VERSION = 2
 
 INSIGHTFACE_ROOT = Path.home() / "Code" / "ComfyUI" / "models" / "insightface"
 CLIP_MODEL = "openai/clip-vit-large-patch14"
@@ -229,7 +236,9 @@ def score(run: Path, url: str, cache: Path) -> dict:
         if row["status"] != "done":
             out_cells[key] = {"status": row["status"], "error": row.get("error")}
             continue
-        if key in prev["cells"] and prev["cells"][key].get("scored_file") == row["file"]:
+        if (prev.get("metrics_version") == METRICS_VERSION
+                and key in prev["cells"]
+                and prev["cells"][key].get("scored_file") == row["file"]):
             out_cells[key] = prev["cells"][key]
             continue
         src = src_info(row["src"])
@@ -285,13 +294,30 @@ def score(run: Path, url: str, cache: Path) -> dict:
                     clip_rank=rank_out, clip_rank_src=rank_src,
                     clip_top_other=labels[int(p_out.argmax())],
                 )
+                # `recognised` se počítá dál, ale **negatuje** — je to
+                # diagnostika, ne verdikt. Na reálných předlohách CLIP v sadě
+                # 31–34 nálepek jedné skupiny netrefí tři z šesti a na ženský
+                # portrét říká `face-framing` bez ohledu na obsah
+                # (`metric_check.py`). Měřil tedy rozlišitelnost nálepek, ne
+                # věrnost účesu.
                 m["recognised"] = bool(rank_out <= THRESHOLDS["clip_top"] and (
                     p_out[t] - p_src[t] >= THRESHOLDS["clip_gain"] or (rank_out == 1 and rank_src == 1)
                 ))
+                # Co geometrie nevidí: jak jsou vlasy uspořádané. Ptáme se jen
+                # tam, kde to CLIP unese (copánky, kudrny) — délku hlídá
+                # `below`, ofinu `cover`, drdol `updo_below_max`.
+                if structure.measurable(style):
+                    keys = list(structure.CLASSES)
+                    p_st = clip_probs(head_crop(Image.fromarray(out_img), box),
+                                      [structure.TEXTS[k] for k in keys])
+                    m["structure"] = keys[int(p_st.argmax())]
+                    m["structure_p"] = round(float(p_st.max()), 3)
+                    m["structure_ok"] = m["structure"] == structure.structure_class(style)
         out_cells[key] = m
         print(f"{row['style']:22} {row['engine']:5} {row['src']:18} {json.dumps({k: v for k, v in m.items() if k not in ('status', 'scored_file')})}", flush=True)
 
-    return {"cells": out_cells, "thresholds": THRESHOLDS, "summary": summarise(manifest, out_cells)}
+    return {"metrics_version": METRICS_VERSION, "cells": out_cells,
+            "thresholds": THRESHOLDS, "summary": summarise(manifest, out_cells)}
 
 
 def summarise(manifest: dict, metrics: dict) -> dict:
@@ -324,12 +350,23 @@ def summarise(manifest: dict, metrics: dict) -> dict:
         if done and s["clean"] < 1:
             reasons.append("not clean")
         if manifest["task"] == "hair":
-            for check in ("length_ok", "bangs_ok", "recognised", "colour_ok"):
+            # `recognised` se reportuje, ale negatuje — viz komentář u jeho
+            # výpočtu. Gatují jen měření, která projdou na reálných předlohách.
+            for check in ("length_ok", "bangs_ok", "structure_ok", "colour_ok"):
                 vals = [m[check] for m in done if m.get(check) is not None]
                 rate = sum(vals) / len(vals) if vals else None
                 s[check] = None if rate is None else round(rate, 2)
                 if rate is not None and rate < THRESHOLDS["rate"]:
                     reasons.append(f"{check} {rate:.0%}")
+            s["recognised"] = (lambda v: None if not v else round(sum(v) / len(v), 2))(
+                [m["recognised"] for m in done if m.get("recognised") is not None])
+            # Styl, u kterého se nemá změnit délka, nemá ofinu a je to volná
+            # struktura, neprověří žádná metrika — nemůže selhat, takže by
+            # „prošel" znamenalo jen „nedal se změřit". To není totéž a do
+            # katalogu to nepatří; `face-framing` takhle prošel celá tři kola.
+            st_style = catalog.hairstyles().get(style.split("+", 1)[0])
+            if st_style is not None and structure.gated_by(st_style) == "nothing":
+                reasons.append("nezměřitelné (délka keep, bez ofiny, volné vlasy)")
         else:
             reacts = [m["reaction"] for m in done if m.get("reaction") is not None]
             s["reaction_mean"] = round(sum(reacts) / len(reacts), 3) if reacts else None
@@ -342,8 +379,9 @@ def summarise(manifest: dict, metrics: dict) -> dict:
 def write_summary_md(run: Path, manifest: dict, metrics: dict) -> None:
     lines = [f"# {run.name} — {manifest['task']}", ""]
     if manifest["task"] == "hair":
-        lines += ["| style | engine | sweep | done | identity min/mean | length | bangs | CLIP | colour | clean | auto |",
-                  "|---|---|---|---|---|---|---|---|---|---|---|"]
+        # `recognised` je až za `auto`: reportuje se, ale nerozhoduje.
+        lines += ["| style | engine | sweep | done | identity min/mean | length | bangs | structure | colour | clean | (recognised) | auto |",
+                  "|---|---|---|---|---|---|---|---|---|---|---|---|"]
     else:
         lines += ["| style | engine | medium | sweep | done | identity min/mean | reaction | clean | auto |",
                   "|---|---|---|---|---|---|---|---|---|"]
@@ -356,7 +394,7 @@ def write_summary_md(run: Path, manifest: dict, metrics: dict) -> None:
         done = f"{s['done']}/{s['cells']}" + (f" ({s['refused']} refused)" if s["refused"] else "")
         if manifest["task"] == "hair":
             lines.append(f"| {style} | {engine} | {sweep} | {done} | {ident} | {fmt(s.get('length_ok'))} | "
-                         f"{fmt(s.get('bangs_ok'))} | {fmt(s.get('recognised'))} | {fmt(s.get('colour_ok'))} | {fmt(s['clean'])} | {auto} |")
+                         f"{fmt(s.get('bangs_ok'))} | {fmt(s.get('structure_ok'))} | {fmt(s.get('colour_ok'))} | {fmt(s['clean'])} | {fmt(s.get('recognised'))} | {auto} |")
         else:
             lines.append(f"| {style} | {engine} | {medium} | {sweep} | {done} | {ident} | "
                          f"{s.get('reaction_mean') if s.get('reaction_mean') is not None else '—'} | {fmt(s['clean'])} | {auto} |")

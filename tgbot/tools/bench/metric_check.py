@@ -67,12 +67,81 @@ def group_of(src: str) -> str:
     return "Men" if Path(src).name.startswith("m-") else "Women"
 
 
+def check_structure(run: Path) -> None:
+    """Umí CLIP rozeznat třídy struktury (structure.py)?
+
+    Dvě části. **Předlohy** jsou tvrdá pravda: jsou to reálné fotky volných
+    vlasů, takže musí vyjít `loose`; když ne, klasifikátor si vymýšlí
+    strukturu tam, kde žádná není, a nesmí gatovat nic.
+
+    **Buňky** ukazují, jestli se CLIP na dané třídě vůbec chytá. Vysoká shoda
+    znamená, že tu strukturu vidí; shoda kolem náhody neodliší „model to
+    neudělal" od „CLIP to nevidí" — a na takovou třídu se gate ptát nemá.
+    """
+    import score as sc
+    import structure as st
+
+    styles = {h["id"]: h for h in json.loads(
+        (HERE / "candidates" / "hairstyles.json").read_text())}
+    cells = json.loads((run / "manifest.json").read_text())["cells"]
+    cells = list(cells.values()) if isinstance(cells, dict) else cells
+    texts = [f"a photo of a person with {st.TEXTS[k]}" for k in st.CLASSES]
+
+    def classify(img, box):
+        p = sc.clip_probs(sc.head_crop(img, box), texts)
+        return st.CLASSES[int(p.argmax())], float(p.max())
+
+    print("=== předlohy (volné vlasy ⇒ musí vyjít loose) ===")
+    boxes: dict[str, list] = {}
+    for c in cells:
+        if c.get("face_box"):
+            boxes.setdefault(Path(c["src"]).name, c["face_box"])
+    bad = 0
+    for name, box in sorted(boxes.items()):
+        got, p = classify(Image.open(run / "srcs" / name).convert("RGB"), box)
+        bad += got != "loose"
+        print("%-18s %-9s %.2f  %s" % (name, got, p, "ok" if got == "loose" else "MIMO"))
+
+    print()
+    print("=== buňky podle třídy (shoda s tím, co se objednalo) ===")
+    hits: dict[str, list] = {}
+    for c in cells:
+        s = styles.get(c["style"])
+        if s is None or c.get("status") != "done" or not c.get("face_box"):
+            continue
+        hits.setdefault(st.structure_class(s), []).append(c)
+    for cls in st.CLASSES:
+        group = hits.get(cls, [])
+        if not group:
+            continue
+        # Stovky buněk nejsou potřeba, ať se to dá pouštět před každým kolem.
+        sample = group[:: max(1, len(group) // 40)][:40]
+        n = 0
+        for c in sample:
+            got, _ = classify(
+                Image.open(run / c["file"]).convert("RGB"), c["face_box"])
+            n += got == cls
+        print("%-9s %3d/%3d buněk (ze %d)" % (cls, n, len(sample), len(group)))
+
+    print()
+    if bad:
+        print(f"{bad} předloh vyšlo jinak než loose — klasifikátor si vymýšlí "
+              f"strukturu; takhle gatovat nesmí.")
+    else:
+        print("Předlohy vycházejí loose. Gatovat lze třídy s vysokou shodou buněk.")
+    sys.exit(1 if bad else 0)
+
+
 def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("run", type=Path)
     ap.add_argument("--coarse", action="store_true",
                     help="místo katalogu nálepek zkusit hrubé třídy")
+    ap.add_argument("--structure", action="store_true",
+                    help="zkusit třídy struktury (structure.py) na předlohách i buňkách")
     args = ap.parse_args()
+    if args.structure:
+        return check_structure(args.run)
 
     import score as sc
 
