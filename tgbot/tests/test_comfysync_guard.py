@@ -25,6 +25,7 @@ def make_comfy(monkeypatch, *, free_sequence, rss=None, queue_busy=False, video=
     monkeypatch.setattr(c, "free_models", lambda: None)
     monkeypatch.setattr(comfysync, "drop_page_cache", lambda: 0)
     monkeypatch.setattr(comfysync, "video_busy", lambda: video)
+    monkeypatch.setattr(comfysync, "comfy_unit_state", lambda: "failed")
     monkeypatch.setattr(comfysync.time, "sleep", lambda s: None)
     return c
 
@@ -100,4 +101,28 @@ def test_a_timed_out_cell_cancels_itself_not_the_running_render(monkeypatch):
     posts.clear()
     c.cancel("video-beat")  # our own prompt running → interrupt is right
     assert posts == [(f"{c.url}/interrupt", None)]
+
+
+# ── the box's own day/night switch ──────────────────────────────────────
+# rag-schedule.timer stops comfyui.service at 02:00 for the corpus
+# enrichment; on 2026-09-16 the guard brought it straight back up.
+
+def test_a_deliberately_stopped_comfyui_is_not_restarted(monkeypatch):
+    c = make_comfy(monkeypatch, free_sequence=[None])
+    monkeypatch.setattr(comfysync, "comfy_unit_state", lambda: "inactive")
+    ran = []
+    monkeypatch.setattr(comfysync.subprocess, "run",
+                        lambda *a, **k: ran.append(a[0]) or type("R", (), {"stdout": "", "returncode": 0})())
+    with pytest.raises(comfysync.CellError, match="inactive"):
+        c.guard(min_free_gb=20, log=lambda m: None)
+    assert not any("restart" in " ".join(cmd) for cmd in ran)
+
+
+def test_a_failed_comfyui_is_restarted(monkeypatch):
+    c = make_comfy(monkeypatch, free_sequence=[None])
+    monkeypatch.setattr(comfysync, "comfy_unit_state", lambda: "failed")
+    calls = []
+    monkeypatch.setattr(c, "restart", lambda log: calls.append("restart"))
+    c.guard(min_free_gb=20, log=lambda m: None)
+    assert calls == ["restart"]
 

@@ -229,6 +229,15 @@ class Comfy:
         self.restart(log)
 
     def restart(self, log=print) -> None:
+        # A unit someone stopped on purpose stays stopped. The SPARK day/night
+        # switch (rag-schedule.timer) takes comfyui.service down at 02:00 for
+        # the corpus enrichment; on 2026-09-16 the guard saw "not responding"
+        # and brought it straight back up, next to the director it was meant
+        # to make room for. `inactive` is a deliberate stop — `failed` (or a
+        # hung `active`) is what a restart is for.
+        if comfy_unit_state() == "inactive":
+            raise CellError("comfyui.service je zastavená (inactive) — někdo ji vypnul "
+                            "schválně (noční okno?), bench ji nenahazuje")
         subprocess.run(["systemctl", "--user", "restart", "comfyui.service"], check=False)
         deadline = time.time() + 300
         time.sleep(15)
@@ -265,6 +274,17 @@ def video_busy() -> bool:
         return int(requests.get(VIDEO_API_HEALTH, timeout=5).json().get("queued", 0)) > 0
     except (requests.RequestException, ValueError, TypeError):
         return False
+
+
+def comfy_unit_state() -> str | None:
+    """systemctl's word for comfyui.service: active | inactive | failed |
+    activating | deactivating; None when systemctl itself is unavailable."""
+    try:
+        r = subprocess.run(["systemctl", "--user", "is-active", "comfyui.service"],
+                           capture_output=True, text=True, timeout=10)
+    except (OSError, subprocess.SubprocessError):
+        return None
+    return r.stdout.strip() or None
 
 
 def comfy_rss_gb() -> float | None:
