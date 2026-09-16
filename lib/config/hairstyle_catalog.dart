@@ -6,12 +6,147 @@ import 'hairstyles.dart';
 
 const kHairstyles = <Hairstyle>[
   Hairstyle(
-    id: 'face-framing',
-    label: 'Face-Framing Layers',
+    id: 'long-layered',
+    label: 'Long Layered Haircut',
     group: kHairGroupWomen,
     section: 'Cuts',
     block:
-        'face-framing layers, shorter layered pieces around the face blending into the lengths, soft and flattering',
+        'long layered haircut, long hair past the shoulders cut in soft flowing layers, movement and volume through the lengths',
+    shape: HairShape(length: HairLength.long, bangs: HairBangs.none, updo: false),
+  ),
+  Hairstyle(
+    id: 'lob',
+    label: 'Long Bob (Lob)',
+    group: kHairGroupWomen,
+    section: 'Cuts',
+    block:
+        'long bob haircut (lob), one-length hair ending at the collarbone, sleek and slightly longer in front',
+    shape: HairShape(length: HairLength.medium, bangs: HairBangs.none, updo: false),
+  ),
+  Hairstyle(
+    id: 'bob',
+    label: 'Bob Cut',
+    group: kHairGroupWomen,
+    section: 'Cuts',
+    block:
+        'classic bob haircut, chin-length hair cut straight around the head, smooth and even',
+    shape: HairShape(length: HairLength.medium, bangs: HairBangs.none, updo: false),
+  ),
+  Hairstyle(
+    id: 'italian-bob',
+    label: 'Italian Bob',
+    group: kHairGroupWomen,
+    section: 'Cuts',
+    block:
+        'italian bob, full voluminous jaw-length bob with a soft bend at the ends, glossy and elegant',
+    shape: HairShape(length: HairLength.medium, bangs: HairBangs.none, updo: false),
+  ),
+  Hairstyle(
+    id: 'wolf-cut',
+    label: 'Wolf Cut',
+    group: kHairGroupWomen,
+    section: 'Cuts',
+    block:
+        'wolf cut, shaggy layered haircut mixing a shag and a mullet, choppy layers on top, wispy longer back, messy texture',
+    shape: HairShape(length: HairLength.medium, bangs: HairBangs.wispy, updo: false),
+  ),
+  Hairstyle(
+    id: 'pixie',
+    label: 'Pixie Cut',
+    group: kHairGroupWomen,
+    section: 'Cuts',
+    block:
+        'pixie cut, very short cropped women\'s haircut, short layers on top, tapered at the nape and around the ears',
+    shape: HairShape(length: HairLength.short, bangs: HairBangs.none, updo: false),
+  ),
+  Hairstyle(
+    id: 'bixie',
+    label: 'Bixie Cut',
+    group: kHairGroupWomen,
+    section: 'Cuts',
+    block:
+        'bixie cut, a cross between a bob and a pixie, ear-length layered short hair with soft texture',
+    shape: HairShape(length: HairLength.short, bangs: HairBangs.none, updo: false),
+  ),
+  Hairstyle(
+    id: 'blunt-cut',
+    label: 'Blunt Cut',
+    group: kHairGroupWomen,
+    section: 'Cuts',
+    block:
+        'blunt haircut, hair cut in one straight sharp line at the shoulders with no layers, thick clean ends',
+    shape: HairShape(length: HairLength.medium, bangs: HairBangs.none, updo: false),
+  ),
+  Hairstyle(
+    id: 'wispy-bangs',
+    label: 'Wispy Bangs',
+    group: kHairGroupWomen,
+    section: 'Bangs',
+    block:
+        'wispy bangs, thin see-through fringe with soft feathery ends brushing the eyebrows',
+    shape: HairShape(length: HairLength.keep, bangs: HairBangs.wispy, updo: false),
+  ),
+  Hairstyle(
+    id: 'beach-waves',
+    label: 'Beach Waves',
+    group: kHairGroupWomen,
+    section: 'Texture',
+    block:
+        'beach waves, loose undone tousled waves with natural texture, effortless surf look',
+    shape: HairShape(length: HairLength.keep, bangs: HairBangs.none, updo: false),
+  ),
+  Hairstyle(
+    id: 'soft-curls',
+    label: 'Soft Curls',
+    group: kHairGroupWomen,
+    section: 'Texture',
+    block:
+        'soft curls, bouncy loose curls with defined ringlets and shine',
+    shape: HairShape(length: HairLength.keep, bangs: HairBangs.none, updo: false),
+  ),
+  Hairstyle(
+    id: 'messy-bun',
+    label: 'Messy Bun',
+    group: kHairGroupWomen,
+    section: 'Updos',
+    block:
+        'messy bun, hair twisted into a loose casual bun on top of the head with soft strands falling out',
+    shape: HairShape(length: HairLength.keep, bangs: HairBangs.none, updo: true),
+  ),
+  Hairstyle(
+    id: 'top-knot',
+    label: 'Top Knot',
+    group: kHairGroupWomen,
+    section: 'Updos',
+    block:
+        'top knot, hair pulled up into a tight neat knot high on top of the head',
+    shape: HairShape(length: HairLength.keep, bangs: HairBangs.none, updo: true),
+  ),
+  Hairstyle(
+    id: 'half-up',
+    label: 'Half-Up Half-Down',
+    group: kHairGroupWomen,
+    section: 'Updos',
+    block:
+        'half-up half-down hairstyle, the top section tied back on the crown while the rest of the hair hangs loose',
+    shape: HairShape(length: HairLength.keep, bangs: HairBangs.none, updo: true),
+  ),
+  Hairstyle(
+    id: 'hime-cut',
+    label: 'Hime Cut',
+    group: kHairGroupWomen,
+    section: 'Cuts',
+    block:
+        'hime cut, long straight hair with a blunt full fringe and blunt cheek-length side locks framing the face',
+    shape: HairShape(length: HairLength.keep, bangs: HairBangs.full, updo: false),
+  ),
+  Hairstyle(
+    id: 'hollywood-waves',
+    label: 'Hollywood Waves',
+    group: kHairGroupWomen,
+    section: 'Texture',
+    block:
+        'old hollywood waves, glossy sculpted s-shaped waves swept to one side, 1940s glamour',
     shape: HairShape(length: HairLength.keep, bangs: HairBangs.none, updo: false),
   ),
   Hairstyle(
@@ -42,12 +177,102 @@ const kHairstyles = <Hairstyle>[
     shape: HairShape(length: HairLength.keep, bangs: HairBangs.none, updo: true),
   ),
   Hairstyle(
+    id: 'space-buns',
+    label: 'Space Buns',
+    group: kHairGroupWomen,
+    section: 'Updos',
+    block:
+        'space buns, two small round buns high on top of the head, one on each side',
+    shape: HairShape(length: HairLength.keep, bangs: HairBangs.none, updo: true),
+  ),
+  Hairstyle(
+    id: 'm-low-taper',
+    label: 'Low Taper Fade',
+    group: kHairGroupMen,
+    section: 'Short',
+    block:
+        'low taper fade, short hair on top with the sides gradually tapered shorter just above the ears and neckline',
+    shape: HairShape(length: HairLength.short, bangs: HairBangs.none, updo: false),
+  ),
+  Hairstyle(
+    id: 'm-skin-fade',
+    label: 'High Skin Fade',
+    group: kHairGroupMen,
+    section: 'Short',
+    block:
+        'high skin fade, sides shaved down to the skin and blended up high, short textured hair on top',
+    shape: HairShape(length: HairLength.short, bangs: HairBangs.none, updo: false),
+  ),
+  Hairstyle(
     id: 'm-buzz',
     label: 'Buzz Cut',
     group: kHairGroupMen,
     section: 'Short',
     block:
         'buzz cut, hair clipped uniformly very short all over the head',
+    shape: HairShape(length: HairLength.short, bangs: HairBangs.none, updo: false),
+  ),
+  Hairstyle(
+    id: 'm-crew',
+    label: 'Crew Cut',
+    group: kHairGroupMen,
+    section: 'Short',
+    block:
+        'crew cut, short hair slightly longer on top and tapered on the sides and back, clean and neat',
+    shape: HairShape(length: HairLength.short, bangs: HairBangs.none, updo: false),
+  ),
+  Hairstyle(
+    id: 'm-ivy-league',
+    label: 'Ivy League',
+    group: kHairGroupMen,
+    section: 'Short',
+    block:
+        'ivy league haircut, a longer crew cut with enough length on top for a side part, neatly tapered sides',
+    shape: HairShape(length: HairLength.short, bangs: HairBangs.none, updo: false),
+  ),
+  Hairstyle(
+    id: 'm-textured-fringe',
+    label: 'Textured Fringe',
+    group: kHairGroupMen,
+    section: 'Short',
+    block:
+        'textured fringe haircut, short hair with a full piecey fringe pushed forward over the forehead, skin fade sides',
+    shape: HairShape(length: HairLength.short, bangs: HairBangs.full, updo: false),
+  ),
+  Hairstyle(
+    id: 'm-side-part',
+    label: 'Classic Side Part',
+    group: kHairGroupMen,
+    section: 'Short',
+    block:
+        'classic side part haircut, hair neatly combed to one side with a defined part, tapered sides',
+    shape: HairShape(length: HairLength.short, bangs: HairBangs.none, updo: false),
+  ),
+  Hairstyle(
+    id: 'm-faux-hawk',
+    label: 'Faux Hawk',
+    group: kHairGroupMen,
+    section: 'Short',
+    block:
+        'faux hawk, hair on top styled up toward a central ridge with tapered sides',
+    shape: HairShape(length: HairLength.short, bangs: HairBangs.none, updo: false),
+  ),
+  Hairstyle(
+    id: 'm-modern-mullet',
+    label: 'Modern Mullet',
+    group: kHairGroupMen,
+    section: 'Medium',
+    block:
+        'modern mullet, short textured hair on top and sides with noticeably longer hair at the back of the neck',
+    shape: HairShape(length: HairLength.medium, bangs: HairBangs.none, updo: false),
+  ),
+  Hairstyle(
+    id: 'm-quiff',
+    label: 'Quiff',
+    group: kHairGroupMen,
+    section: 'Medium',
+    block:
+        'quiff hairstyle, hair on top brushed up and back into a voluminous quiff, shorter tapered sides',
     shape: HairShape(length: HairLength.short, bangs: HairBangs.none, updo: false),
   ),
   Hairstyle(
@@ -67,6 +292,15 @@ const kHairstyles = <Hairstyle>[
     block:
         'men\'s top knot, long hair on top tied into a knot on the crown with shaved undercut sides',
     shape: HairShape(length: HairLength.keep, bangs: HairBangs.none, updo: true),
+  ),
+  Hairstyle(
+    id: 'm-mohawk',
+    label: 'Mohawk',
+    group: kHairGroupMen,
+    section: 'Short',
+    block:
+        'mohawk, a strip of spiked hair running down the middle of the head with both sides shaved to the skin',
+    shape: HairShape(length: HairLength.short, bangs: HairBangs.none, updo: false),
   ),
   Hairstyle(
     id: 'm-spiky',

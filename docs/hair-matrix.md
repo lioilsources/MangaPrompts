@@ -386,3 +386,35 @@ vyholeno) — a tam funguje. Přegatování na tomhle základě je další krok.
 
 **Metodika:** metrika, která neprojde na vstupu, nemá soudit výstup.
 `metric_check.py` se pouští **před** kolem, ne až když výsledky nedávají smysl.
+
+## Kolo 2 přegatováno bez `recognised` (2026-09-16)
+
+`out/hair-r2` a `out/hair-colours-r2` přeskórované znovu (`score.py`,
+`METRICS_VERSION=2`), verdikty přepočítané z čistých dat (`verdicts.py`),
+katalogy vygenerované ze stejného zdroje pro obě appky
+(`export_catalog.py`).
+
+**Ol1nLLM: 7 → 50 účesů, 8 → 17 barev. Tsumiki: 10 → 35 účesů, 16 → 17 barev.**
+
+| | Kontext i SDXL | jen Kontext | jen SDXL | celkem |
+|---|---|---|---|---|
+| Ol1nLLM (musí mít aspoň jeden) | 42 | 9 | — | 50 |
+| Tsumiki (`--engines kontext`) | — | — | — | 35 |
+
+Dvě věci, které se tím vrátily na místo:
+
+- **`m-crew`**, stažený minulý zápis kvůli `recognised 1/32`, je zpátky —
+  `length_ok`/`bangs_ok`/`structure_ok` ho přijaly na obou enginech bez
+  výhrad. Ten pád byl artefakt metriky, ne modelu; poznámka o barvě z kola 2b
+  (viz výš) platí dál, dokud se 2b nepřeskóruje taky.
+- **`face-framing`** teď padá jako `nezměřitelné` na obou enginech — přesně
+  jak popisuje sekce výš. Byl to jediný ženský účes v Tsumiki mimo copánky;
+  teď ho nahrazuje 19 dalších skutečně změřených položek.
+
+Ženských účesů v Tsumiki: **4 → 20** — to byla samotná otázka, na kterou
+tohle kolo odpovídá. Mužských 5 → 15.
+
+`out/hair-r2b` (kolo střih×barva) je zatím na staré verzi metrik — verdikty
+z něj `verdicts.py` schválně nebere (řeší dvojici, ne engine sólo), takže na
+katalog nemá vliv; přeskórování je až další krok, pokud se bude chtít gatovat
+i kombinace.
