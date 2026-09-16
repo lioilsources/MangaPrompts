@@ -339,3 +339,50 @@ jednu, kolo 2b jich má šestnáct, a dva verdikty se otočily —
 `pixie`/`w-long` z „NE" na 14/16, `box-braids`/`w-bangs-3q` z „NE" na 15/16.
 Verdikty blízko prahu jsou tedy hod mincí; příští kolo má mít víc buněk na
 kombinaci, ne víc kombinací.
+
+## Metrika `recognised` neprojde na vlastních předlohách (2026-09-16)
+
+Hypotéza z kola 2b — že `w-bangs-3q` láme střihy kvůli čelnímu pásu v masce —
+**je vyvrácená**. Výstup `lob` na té předloze je učebnicový lob: jednolitý,
+po klíční kost, ofina pryč, správná barva. Maska je v pořádku, model je
+v pořádku. Mimo je metrika.
+
+`metric_check.py` pouští `recognised` na **předlohách**, kde pravdu známe —
+jsou to skutečné fotky a leží v repu. Výsledek na kole 2:
+
+| předloha | co na ní je | co říká CLIP | rank pravdy |
+|---|---|---|---|
+| `w-long` | dlouhé rovné vlasy | `face-framing` 0,42 | 3 |
+| `w-bangs-3q` | lob s rovnou ofinou | `face-framing` 0,15 | **9** |
+| `w-curly-short` | krátké vlny | `face-framing` 0,46 | 2 |
+| `m-short` | krátký sestřih | `m-pompadour` 0,12 | **12** |
+| `m-receding` | caesar | `m-crew` 0,19 | **7** |
+
+**Tři z šesti předloh metrika nepozná.** A `face-framing` vyhrává na všech
+třech ženských fotkách bez ohledu na to, co na nich je — je to výchozí
+odpověď CLIPu na ženský portrét. Gate přitom u nálepky, která je první i na
+předloze, přeskakuje požadavek na zisk (`rank_out == 1 and rank_src == 1`),
+takže `face-framing` prošel **tím, že je výchozí odpověď**, ne tím, že se
+vyrenderoval.
+
+Tím se vysvětluje složení katalogů: projdou copánky (CLIP je hlásí s 0,99–1,00,
+mají jednoznačnou strukturu) a `face-framing` (artefakt). Všechno ostatní jsou
+pro CLIP blízká synonyma v sadě 31–34 nálepek jedné skupiny — `lob`, `bob`,
+`french-bob`, `blunt-bangs`, `long-layered` — a mezi nimi netrefí ani reálnou
+fotku.
+
+**Nepomáhá ani hrubší sada tříd.** Na šesti třídách (pixie / bob / lob / long /
+updo / braids, `--coarse`) pozná CLIP strukturu (copánky 0,99, pixie
+0,56–0,75), ale **délku ne**: `lob` i dlouhé vlasy hlásí jako `bob`
+(lob ≈ 0,00), takže tři z šesti předloh jsou mimo i tady. Není to volbou
+nálepek ani ořezem — zkoušeno s celou fotkou i s výřezem podloženým na
+čtverec (CLIP procesor portrét středově ořízne), rozdíl žádný.
+
+**Kam to vede.** Délku a ofinu bench měří geometricky už teď — `below`
+(nejnižší vlasy pod bradou v jednotkách výšky tváře) → `length_ok`, `cover`
+→ `bangs_ok`. Objektivně a správně. CLIP tedy nemá odpovídat na délku; má
+odpovídat na to, co geometrie nevidí — strukturu (copánky, kudrny, drdol,
+vyholeno) — a tam funguje. Přegatování na tomhle základě je další krok.
+
+**Metodika:** metrika, která neprojde na vstupu, nemá soudit výstup.
+`metric_check.py` se pouští **před** kolem, ne až když výsledky nedávají smysl.
