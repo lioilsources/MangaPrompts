@@ -68,8 +68,20 @@ def load_bench(d: Path) -> tuple[dict, dict]:
 
 
 def preview_cell(bench: tuple[dict, dict], style: dict, engines: list[str]) -> dict | None:
-    """The cell shown as the style's preview: recognised on the primary
-    portrait if possible, else the best (recognised, identity) among sources."""
+    """The cell shown as the style's preview.
+
+    **Primární předloha vyhrává nade vším ostatním.** Celý smysl náhledů je,
+    že je na každém řádku tatáž tvář, takže oko porovnává jen vlasy; náhled
+    z jiné fotky ten smysl ruší — v listu se najednou objeví jiný člověk na
+    jiném pozadí. Dřív byl v klíči první `recognised`, takže buňka rozpoznaná
+    na *jiné* předloze přebila nerozpoznanou na té primární: `pixie`,
+    `half-up` a `space-buns` tím v Tsumiki dostaly blondýnu na modrém, zatímco
+    zbytek listu byl brunet na šedém. `recognised` navíc od přegatování
+    nerozhoduje ani o katalogu (neprojde na reálných předlohách,
+    viz `metric_check.py`), takže nemá co řídit ani náhledy.
+
+    Mezi buňkami téže předlohy rozhoduje identita — tam je to vlastnost
+    obrázku, ne nálepky."""
     cells, metrics = bench
     primary = PRIMARY_SRC[style["group"]]
     best, best_key = None, None
@@ -77,7 +89,7 @@ def preview_cell(bench: tuple[dict, dict], style: dict, engines: list[str]) -> d
         if c.get("style") != style["id"] or c.get("engine") not in engines or c.get("status") != "done":
             continue
         m = metrics.get(k, {})
-        key = (bool(m.get("recognised")), c["src"] == primary, m.get("identity") or 0.0)
+        key = (c["src"] == primary, m.get("identity") or 0.0)
         if best_key is None or key > best_key:
             best, best_key = c, key
     return best
