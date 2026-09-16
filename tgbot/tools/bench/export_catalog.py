@@ -115,23 +115,42 @@ def swatch(bench: tuple[dict, dict], colour_id: str, engines: list[str]) -> str 
                       sum(x["b"] for x in labs) / n)
 
 
-def accepted(verdicts: dict, key: str, engines: list[str]) -> bool:
+def engines_of(verdicts: dict, key: str, engines: list[str]) -> list[str]:
+    """Which of `engines` accepted this entry, in the order given.
+
+    The gate is per engine and the two disagree in *both* directions: Kontext
+    keeps platinum blonde platinum where SDXL paints it brown (colour_ok 0%),
+    SDXL keeps a lob or a pixie recognisable where Kontext loses it
+    (recognised 33%). Demanding every engine threw away 20 measured, passing
+    entries — most of the everyday haircuts — so an entry ships as soon as one
+    engine accepts it and carries which, and the app runs it there.
+    """
     v = verdicts.get(key, {}).get("verdict")
-    if isinstance(v, dict):
-        return all(v.get(e) == "accept" for e in engines)
-    return v == "accept"
+    if not isinstance(v, dict):
+        return list(engines) if v == "accept" else []
+    return [e for e in engines if v.get(e) == "accept"]
 
 
-def accepted_colours(verdicts: dict, engines: list[str]) -> list[tuple[str, dict]]:
+def accepted(verdicts: dict, key: str, engines: list[str]) -> bool:
+    return bool(engines_of(verdicts, key, engines))
+
+
+def accepted_colours(verdicts: dict,
+                     engines: list[str]) -> list[tuple[str, dict, list[str]]]:
     """Colours are gated like styles, under "colour:<id>" keys in verdicts.json."""
     sys.path.insert(0, str(HERE.parents[1]))
     import haircolours
 
-    return [(cid, c) for cid, c in haircolours.COLOURS.items()
-            if accepted(verdicts, f"colour:{cid}", engines)]
+    return [(cid, c, es) for cid, c in haircolours.COLOURS.items()
+            if (es := engines_of(verdicts, f"colour:{cid}", engines))]
 
 
-def ol1nllm_catalog(styles: list[dict], repo: Path, colours: list[tuple[str, dict]],
+def dart_engines(engines: list[str]) -> str:
+    return "[" + ", ".join(f"HairEngine.{e}" for e in engines) + "]"
+
+
+def ol1nllm_catalog(styles: list[tuple[dict, list[str]]], repo: Path,
+                    colours: list[tuple[str, dict, list[str]]],
                     swatches: dict[str, str] | None = None) -> None:
     """Same survivors for Ol1nLLM's Kadeřník, Czech labels."""
     target = repo / "lib" / "models" / "hairstyle_catalog.dart"
@@ -149,7 +168,7 @@ def ol1nllm_catalog(styles: list[dict], repo: Path, colours: list[tuple[str, dic
         "",
         "const kHairstyles = <HairstylePreset>[",
     ]
-    for c in styles:
+    for c, es in styles:
         sh = c["shape"]
         label = c["cs"][:1].upper() + c["cs"][1:]
         lines += [
@@ -161,17 +180,19 @@ def ol1nllm_catalog(styles: list[dict], repo: Path, colours: list[tuple[str, dic
             "    block:",
             f"        {dart_str(c['block'])},",
             f"    shape: HairShape(length: HairLength.{sh['length']}, bangs: HairBangs.{sh['bangs']}, updo: {str(sh['updo']).lower()}),",
+            f"    engines: {dart_engines(es)},",
             "  ),",
         ]
     lines.append("];")
     lines += ["", "const kHairColours = <HairColourPreset>["]
-    for cid, c in colours:
+    for cid, c, es in colours:
         lines += [
             "  HairColourPreset(",
             f"    id: {dart_str(cid)},",
             f"    label: {dart_str(c['cs'][:1].upper() + c['cs'][1:])},",
             f"    phrase: {dart_str(c['phrase'])},",
             *([f"    swatch: 0xFF{swatches[cid]},"] if swatches and swatches.get(cid) else []),
+            f"    engines: {dart_engines(es)},",
             "  ),",
         ]
     lines.append("];")
@@ -199,23 +220,42 @@ def main() -> None:
     bench = load_bench(args.bench) if args.bench else None
     cbench = load_bench(args.colours_bench) if args.colours_bench else None
 
-    def previews(styles: list[dict], engines: list[str], assets: Path) -> None:
+    def previews(styles: list[tuple[dict, list[str]]], assets: Path) -> None:
         if not bench:
             return
         assets.mkdir(parents=True, exist_ok=True)
-        for c in styles:
-            cell = preview_cell(bench, c, engines)
+        # The picture comes from an engine that *accepted* the style, not from
+        # the app's whole list — a preview rendered where the gate rejected it
+        # would advertise the failure.
+        for c, es in styles:
+            cell = preview_cell(bench, c, es)
             if cell is None:
-                sys.exit(f"{c['id']}: v {args.bench} není žádná buňka pro {engines}")
+                sys.exit(f"{c['id']}: v {args.bench} není žádná buňka pro {es}")
             write_preview(args.bench, cell, assets / f"{c['id']}.jpg")
         # nothing stale: a style that left the gate leaves its picture too
-        keep = {f"{c['id']}.jpg" for c in styles}
+        keep = {f"{c['id']}.jpg" for c, _ in styles}
         for old in assets.glob("*.jpg"):
             if old.name not in keep:
                 old.unlink()
 
-    def swatches(colours: list[tuple[str, dict]], engines: list[str]) -> dict[str, str]:
-        return {cid: h for cid, _ in colours if cbench and (h := swatch(cbench, cid, engines))}
+    # Measured swatches survive an export run without --colours-bench. The run
+    # dir lives on the bench box, so most exports do not have it mounted — and
+    # dropping the colour a model actually paints, just because this run could
+    # not recompute it, silently unmeasures the catalog.
+    store = HERE / "swatches.json"
+    measured = json.loads(store.read_text()) if store.exists() else {}
+
+    def swatches(colours: list[tuple[str, dict, list[str]]]) -> dict[str, str]:
+        if cbench:
+            fresh = {cid: h for cid, _, es in colours
+                     if (h := swatch(cbench, cid, es))}
+            measured.update(fresh)
+            store.write_text(json.dumps(measured, indent=2, sort_keys=True) + "\n")
+        return {cid: h for cid, _, _ in colours if (h := measured.get(cid))}
+
+    def gated(engines: list[str]) -> list[tuple[dict, list[str]]]:
+        return [(c, es) for c in cands
+                if (es := engines_of(verdicts, c["id"], engines))]
 
     if args.list_previews:
         if not bench:
@@ -224,25 +264,24 @@ def main() -> None:
         for engines in (split(args.engines), split(args.ol1nllm_engines) if args.ol1nllm else []):
             if not engines:
                 continue
-            for c in cands:
-                if accepted(verdicts, c["id"], engines):
-                    cell = preview_cell(bench, c, engines)
-                    if cell and cell["file"] not in seen:
-                        seen.add(cell["file"])
-                        print(cell["file"])
+            for c, es in gated(engines):
+                cell = preview_cell(bench, c, es)
+                if cell and cell["file"] not in seen:
+                    seen.add(cell["file"])
+                    print(cell["file"])
         return
 
     if args.ol1nllm:
         engines = split(args.ol1nllm_engines)
-        styles = [c for c in cands if accepted(verdicts, c["id"], engines)]
+        styles = gated(engines)
         colours = accepted_colours(verdicts, engines)
-        ol1nllm_catalog(styles, args.ol1nllm, colours, swatches(colours, engines))
-        previews(styles, engines, args.ol1nllm / "assets" / "hair")
+        ol1nllm_catalog(styles, args.ol1nllm, colours, swatches(colours))
+        previews(styles, args.ol1nllm / "assets" / "hair")
     engines = split(args.engines)
-    styles = [c for c in cands if accepted(verdicts, c["id"], engines)]
+    styles = gated(engines)
     colours = accepted_colours(verdicts, engines)
-    sw = swatches(colours, engines)
-    previews(styles, engines, REPO / "assets" / "hair")
+    sw = swatches(colours)
+    previews(styles, REPO / "assets" / "hair")
     lines = [
         "// GENERATED by tgbot/tools/bench/export_catalog.py from the bench verdicts",
         "// (docs/hair-matrix.md). Do not edit by hand: change the candidate in",
@@ -252,7 +291,7 @@ def main() -> None:
         "",
         "const kHairstyles = <Hairstyle>[",
     ]
-    for c in styles:
+    for c, es in styles:
         sh = c["shape"]
         lines += [
             "  Hairstyle(",
@@ -267,7 +306,7 @@ def main() -> None:
         ]
     lines.append("];")
     lines += ["", "const kHairColours = <HairColour>["]
-    for cid, c in colours:
+    for cid, c, _ in colours:
         lines += [
             "  HairColour(",
             f"    id: {dart_str(cid)},",

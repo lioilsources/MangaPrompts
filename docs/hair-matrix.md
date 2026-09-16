@@ -240,3 +240,46 @@ Copánky (box, dutch, crown, cornrows) prošly napříč: mají jasnou siluetu,
 kterou CLIP na každé předloze pozná. Nejčastější důvod pádu zůstává
 `recognised` — sousední střihy (bob/lob/blunt) pro CLIP splývají, jak už
 ukázalo kolo 1.
+
+## Gate je per engine, ne průnik (2026-09-16)
+
+Řádek „jen na SDXL“ výš je dvacet položek, které bench **změřil a přijal**
+a které nedostala žádná appka: Ol1nLLM chtěl průnik obou enginů, Tsumiki jede
+jen na Kontextu. A nejsou to okrajové věci — `lob`, `bob`, `pixie`,
+`curtain-bangs`, `french-bob`, `messy-bun`, `soft-curls`, `top-knot` jsou
+zrovna ty běžné střihy, kvůli kterým katalog vypadal skoro jen na copánky.
+
+Průnik dával smysl, dokud se čekalo, že se enginy shodnou. Neshodnou se, a to
+**v obou směrech**:
+
+| | Kontext | SDXL |
+|---|---|---|
+| platinová/popelavá/medová blond, hot pink, teal | drží odstín | `colour_ok 0 %` — přemaluje na hnědou |
+| lob, bob, pixie, curtain bangs | `recognised 33 %` | drží siluetu |
+
+Jsou to dva různé nástroje, ne dvě verze téhož. Položka proto od tohoto kola
+jde ven, jakmile ji přijme **jeden** engine, a nese **který**
+(`engines_of()` v `export_catalog.py`, pole `engines:` v obou katalozích).
+
+**Appka pak vybírá engine podle účesu, ne podle modelu.** V Ol1nLLM to dělá
+`planHairRun()`: styl určí engine, engine určí model
+(`kHairEngineModel` — Kontext `flux-fill`, SDXL `juggernaut-xl`). Opačné
+pořadí by znamenalo, že styl změřený jen na SDXL je dostupný náhodou, podle
+toho, čím uživatel zrovna generoval. Model je u SDXL uvedený **jmenovitě**,
+protože bench měřil `Juggernaut-XL_v9_RunDiffusionPhoto_v2`; jiný SDXL
+checkpoint tentýž graf vyrenderuje, ale žádný verdikt ho nepokrývá a katalog
+je pravdivý jen tak, jak je pravdivý model pod ním.
+
+Když styl a barva nemají společný engine (blond lob — blond prošla jen na
+Kontextu, lob jen na SDXL), vyhraje styl a appka to řekne v hlášce. Odmítnout
+věrohodný požadavek je horší než ho spustit s výhradou; úkol gate je říkat
+pravdu, ne zakazovat.
+
+Katalogy: **Ol1nLLM 29 účesů + 17 barev** (bylo 7 + 8) — 15 položek na obou
+enginech, 11 jen Kontext, 20 jen SDXL. Tsumiki zatím beze změny (10 + 16),
+dokud neumí druhý engine.
+
+Vedlejší oprava: `export_catalog.py` bez `--colours-bench` tiše zahazoval
+naměřené vzorky barev, protože si je počítal jen z běhu, který na exportním
+stroji většinou není. Vzorky teď žijí v `tgbot/tools/bench/swatches.json`,
+kam je `--colours-bench` zapisuje a odkud se čtou vždycky.

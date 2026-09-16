@@ -37,18 +37,36 @@ def test_hairstyle_candidates_are_well_formed():
         assert "__HAIRCOLOR__" not in c["block"]
 
 
-def test_each_app_gets_what_passed_on_its_own_engines():
+def test_an_entry_ships_as_soon_as_one_engine_accepts_it():
+    """The gate is per engine, not an intersection.
+
+    Demanding every engine threw away 20 measured, passing entries (most of
+    the everyday haircuts), because the two disagree in both directions —
+    Kontext knows platinum blonde, SDXL keeps a lob recognisable. An entry
+    ships as soon as one accepts it and carries which; the app runs it there.
+    """
     import export_catalog as ex
 
     v = {
         "both": {"verdict": "accept"},
         "kontext-only": {"verdict": {"kontext": "accept", "sdxl": "reject"}},
+        "sdxl-only": {"verdict": {"kontext": "reject", "sdxl": "accept"}},
         "colour:platinum-blonde": {"verdict": {"kontext": "accept", "sdxl": "reject"}},
         "no": {"verdict": "reject"},
     }
-    assert ex.accepted(v, "both", ["kontext", "sdxl"])
-    assert ex.accepted(v, "kontext-only", ["kontext"])
-    assert not ex.accepted(v, "kontext-only", ["kontext", "sdxl"])
-    assert not ex.accepted(v, "no", ["kontext"]) and not ex.accepted(v, "missing", ["kontext"])
-    assert [c for c, _ in ex.accepted_colours(v, ["kontext"])] == ["platinum-blonde"]
-    assert ex.accepted_colours(v, ["kontext", "sdxl"]) == []
+    both = ["kontext", "sdxl"]
+    # A flat "accept" predates per-engine verdicts: it means every engine asked.
+    assert ex.engines_of(v, "both", both) == both
+    assert ex.engines_of(v, "kontext-only", both) == ["kontext"]
+    assert ex.engines_of(v, "sdxl-only", both) == ["sdxl"]
+    assert ex.engines_of(v, "sdxl-only", ["kontext"]) == []
+    assert ex.engines_of(v, "no", both) == [] and ex.engines_of(v, "missing", both) == []
+    # …and the order is the caller's, so the app's preferred engine stays first.
+    assert ex.engines_of(v, "both", ["sdxl", "kontext"]) == ["sdxl", "kontext"]
+
+    assert ex.accepted(v, "kontext-only", both)
+    assert not ex.accepted(v, "sdxl-only", ["kontext"])
+    assert [(c, es) for c, _, es in ex.accepted_colours(v, both)] == [
+        ("platinum-blonde", ["kontext"])
+    ]
+    assert ex.accepted_colours(v, ["sdxl"]) == []
