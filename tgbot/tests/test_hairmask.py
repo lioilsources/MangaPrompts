@@ -233,3 +233,21 @@ def test_blob_mode_hides_the_old_silhouette(monkeypatch):
     assert blob.area > hair_mode.area
     assert (blob.mask | ~hair_mode.mask).all()  # a superset
     assert not (blob.mask & a.features).any()
+
+
+def test_composite_feather_follows_the_photo_size():
+    # Bench portrait keeps about the template's 6/12 px; a phone photo gets a
+    # proportionally soft edge instead of a hard seam. Same numbers as the
+    # Dart mirror (hair_mask_test.dart).
+    assert hm.feather_px(832, 1216) == (7, 18)
+    assert hm.feather_px(1450, 2576) == (15, 39)
+    assert hm.feather_px(2576, 1450) == (15, 39)
+    assert hm.feather_px(10, 10) == (1, 1)
+    mask = hm.to_png(np.zeros((2576, 1450), dtype=bool))
+    wf = {
+        "17": {"class_type": "GrowMaskWithBlur", "inputs": {"expand": 6, "blur_radius": 12.0}},
+        "90": {"class_type": "InpaintCropImproved", "inputs": {"mask_blend_pixels": 32}},
+    }
+    assert hm.apply_feather(wf, mask) == (15, 39)
+    assert wf["17"]["inputs"] == {"expand": 15, "blur_radius": 39.0}
+    assert wf["90"]["inputs"] == {"mask_blend_pixels": 32}  # SDXL graph untouched

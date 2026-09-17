@@ -1,8 +1,12 @@
 """Inpaint mask for the Hairdresser card, from face-parsing masks.
 
 `hair_analyse.api.json` runs face parsing on the portrait and saves four
-binary masks (hair, face, hat, eyes+brows). This module turns them into the
-one mask the inpaint workflow repaints (white = repaint):
+binary masks (hair, face, hat, eyes+brows). The hair mask is the union of two
+parsers: `FaceSegment` (CelebAMask-HQ, trained on face crops) stops at the
+chest on a phone selfie — 1.0 face heights below the chin where the hair
+reached 1.4 — and whatever it misses survives the repaint; `ClothesSegment`
+(ATR, full body) reaches the ends. This module turns the masks into the one
+mask the inpaint workflow repaints (white = repaint):
 
 1. the old hair and any hat, dilated so no stray strands survive;
 2. a forehead band when the new style has a fringe;
@@ -68,6 +72,12 @@ MIN_MASK_AREA = 0.02
 WORK_SIDE = 768
 # Below this share of the image there is no hair to take a colour from.
 MIN_HAIR_FOR_COLOUR = 0.005
+# Soft edge of the Kontext composite (GrowMaskWithBlur in
+# flux_hair_kontext.api.json) as a share of the photo's long side. The graph
+# ships 6 px expand / 12 px blur: right for the bench's 1216 px portraits,
+# half a percent of a 2576 px phone photo — a hard seam there.
+FEATHER_EXPAND = 0.006
+FEATHER_BLUR = 0.015
 
 
 class HairMaskError(ValueError):
@@ -359,6 +369,28 @@ def estimate_colour(rgb: np.ndarray, hair: np.ndarray) -> str | None:
     has too little hair to read one (the prompt then says "natural")."""
     lab = hair_lab(rgb, hair)
     return None if lab is None else colour_name((lab["L"], lab["a"], lab["b"]))
+
+
+# ── Composite edge ──────────────────────────────────────────────────────────
+
+
+def feather_px(width: int, height: int) -> tuple[int, int]:
+    """(expand, blur) in pixels for a photo of width×height."""
+    side = max(width, height)
+    return max(1, round(FEATHER_EXPAND * side)), max(1, round(FEATHER_BLUR * side))
+
+
+def apply_feather(workflow: dict, mask_png: bytes) -> tuple[int, int]:
+    """Scale every GrowMaskWithBlur in `workflow` (the Kontext composite edge)
+    to the mask's size, which is the photo's. Graphs without one (SDXL inpaint
+    blends inside its crop) are left alone. Returns the (expand, blur) used."""
+    with Image.open(io.BytesIO(mask_png)) as im:
+        expand, blur = feather_px(*im.size)
+    for node in workflow.values():
+        if node.get("class_type") == "GrowMaskWithBlur":
+            node["inputs"]["expand"] = expand
+            node["inputs"]["blur_radius"] = float(blur)
+    return expand, blur
 
 
 # ── One call for the bot ────────────────────────────────────────────────────

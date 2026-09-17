@@ -53,8 +53,11 @@ picks the **engine** (`RESTYLE_ENGINES` in `tgbot/config.py`): photo runs
 `RESTYLE_CHECKPOINTS`). Measurements: `docs/restyle-flux-results.md`.
 The fourth card, **Try a haircut** (`hair_screen.dart`, `POST /api/hair`),
 repaints only the hair of a portrait: a free analysis pass (face parsing,
-`hair_analyse.api.json`) feeds `tgbot/hairmask.py`, which builds the inpaint
-mask from the style's shape and reads the hair colour; the prompt is written
+`hair_analyse.api.json`; hair = `FaceSegment` ∪ `ClothesSegment`, because the
+face parser stops at the chest on a phone selfie) feeds `tgbot/hairmask.py`,
+which builds the inpaint mask from the style's shape — a down style never has
+`length: keep`, that is for fringes, updos and colour only
+(`test_bench_catalog.py`) — and reads the hair colour; the prompt is written
 server-side per `HAIR_ENGINE` (`tgbot/hairprompt.py`), optionally with a new
 colour (`tgbot/haircolours.py`; style id `keep-cut` = colour only, mask of the old
 hair without an envelope); billing starts only after

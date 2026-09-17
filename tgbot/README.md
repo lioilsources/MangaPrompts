@@ -228,16 +228,28 @@ venv/bin/python -m pytest tests/ -q
 Portrét + účes → tatáž fotka s novým střihem. Dva prompty do ComfyUI:
 
 1. **Analýza zdarma** (`hair_analyse.api.json`): ComfyUI-RMBG `FaceSegment`
-   (vlasy, tvář, oči+obočí) a `ClothesSegment` (čepice; `FaceSegment` třídu Hat
-   nevystavuje), bez difuze. Čeká se ve stejné frontě jako ostatní joby
-   (`HAIR_ANALYSE_TIMEOUT`). Výpadek → 502, nic se nestrhne.
+   (vlasy kolem hlavy, tvář, oči+obočí) a `ClothesSegment` (čepice —
+   `FaceSegment` třídu Hat nevystavuje — a vlasy přes tělo), bez difuze.
+   Maska vlasů je **sjednocení obou** (`MaskComposite or`): `FaceSegment`
+   (CelebAMask-HQ, výřezy obličejů) na selfie z telefonu končí u hrudníku,
+   1,0 výšky tváře pod bradou, kde vlasy sahaly do 1,4, a co nenajde,
+   přežije přemalování; `ClothesSegment` (ATR, celé tělo) dosáhne ke koncům.
+   Bench předlohy mají vlasy oříznuté rámem, takže to neviděl
+   (`docs/hair-matrix.md`, 2026-09-17). Čeká se ve stejné frontě jako ostatní
+   joby (`HAIR_ANALYSE_TIMEOUT`). Výpadek → 502, nic se nestrhne.
 2. `hairmask.prepare`: maska = staré vlasy + čepice (dilatace), pás na čele
    u ofiny, obálka podle `shape.length` (kam smí nové vlasy), minus obličej;
-   barva vlasů z nasvícených pramenů. Fotka bez tváře / s malou tváří / bez
-   vlasů → 400 s hláškou pro uživatele, **nic se nestrhne**.
+   barva vlasů z nasvícených pramenů. `keep` obálku nemá — maska je jen stará
+   silueta, správně pro ofinu, drdol a `keep-cut`; styl bez ofiny a bez `updo`
+   (vlny, copy) musí v `candidates/hairstyles.json` nést délku, jinak na
+   staženém účesu nemá kam růst (`test_bench_catalog.py`). Fotka bez tváře /
+   s malou tváří / bez vlasů → 400 s hláškou pro uživatele, **nic se nestrhne**.
 3. Teprve pak `spend_generation`, upload masky pod per-job jménem, prompt z
    `hairprompt.py` podle `HAIR_ENGINE` (Fill a SDXL chtějí popis fotky, Kontext
-   instrukci) a inpaint graf. Selhání submitu → refund, jako u restyle.
+   instrukci) a inpaint graf; `hairmask.apply_feather` škáluje měkký okraj
+   Kontext kompozitu (`GrowMaskWithBlur`) podle fotky — šablonových 6/12 px
+   sedí benchi, na 2576 px fotce to byl tvrdý šev. Selhání submitu → refund,
+   jako u restyle.
 
 `/api/hair` bere `style_id`, `block`, `style` (popisek do chatu), `shape`
 (`length` keep/short/medium/long, `bangs` none/full/side/curtain/wispy, `updo`)

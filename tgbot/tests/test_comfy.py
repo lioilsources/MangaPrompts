@@ -214,6 +214,15 @@ def test_hair_analyse_saves_four_named_masks():
         ["tsumiki_hair_mask", "tsumiki_face_mask", "tsumiki_hat_mask", "tsumiki_features_mask"]
     )
     assert not [n for n in wf.values() if n["class_type"] == "KSampler"]
+    # The hair mask is FaceSegment ∪ ClothesSegment: the face parser stops at
+    # the chest on a phone selfie and whatever it misses survives the repaint.
+    save = next(n for n in wf.values()
+                if n["class_type"] == "SaveImage" and n["inputs"]["filename_prefix"] == "tsumiki_hair_mask")
+    union = wf[wf[save["inputs"]["images"][0]]["inputs"]["mask"][0]]
+    assert union["class_type"] == "MaskComposite" and union["inputs"]["operation"] == "or"
+    face, body = wf[union["inputs"]["destination"][0]], wf[union["inputs"]["source"][0]]
+    assert (face["class_type"], face["inputs"]["Hair"]) == ("FaceSegment", True)
+    assert (body["class_type"], body["inputs"]["Hair"]) == ("ClothesSegment", True)
 
 
 def test_mask_placeholder_left_alone_without_a_mask():

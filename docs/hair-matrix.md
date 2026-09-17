@@ -418,3 +418,59 @@ tohle kolo odpovídá. Mužských 5 → 15.
 z něj `verdicts.py` schválně nebere (řeší dvojici, ne engine sólo), takže na
 katalog nemá vliv; přeskórování je až další krok, pokud se bude chtít gatovat
 i kombinace.
+
+## Reálné selfie: maska končí u hrudníku (2026-09-17)
+
+Tři glitche z Ol1nLLM na fotkách z telefonu (1450×2576, tvář ~800 px):
+drdol nechal dlouhé blond vlasy na ramenou, stříbrné dlouhé vlasy skončily
+rovnou čarou a pod ní zůstala blond, plážové vlny na staženém účesu vyšly
+jako useknuté mikádo. Změřeno přímo proti SPARKu stejným kódem, jaký posílá
+appka (`hair_analyse.api.json` + `hairmask.build_mask`).
+
+**1. `FaceSegment` dlouhé vlasy nevidí.** Nejnižší řádek vlasů v jednotkách
+výšky tváře pod bradou:
+
+| předloha | FaceSegment 512 (do teď) | FaceSegment 1024 | ClothesSegment Hair |
+|---|---|---|---|
+| dlouhé blond, světlé tričko | 1,00 | 1,27 | **1,40** (= konce vlasů) |
+| dlouhé blond, tmavý bar (výstup s drdolem) | 0,81 | 1,30 | **1,35** |
+| bench `w-long` | 1,02 | 1,02 | 1,02 |
+
+Face parsing (SegFormer na CelebAMask-HQ, tj. výřezy obličejů, vstup
+zmáčknutý na 512×512) ztrácí spodní třetinu vlasů, kde leží na tričku; na
+tmavém pozadí končí ještě výš. Bench to neviděl, protože syntetické předlohy
+mají vlasy oříznuté rámem přesně tam, kam face parsing dosáhne (1,02 =
+spodní okraj obrázku). `blob` z toho udělá rovný obdélník: co je pod jeho
+hranou, zůstane původní — proto rovná čára a blond konce.
+
+Oprava: maska vlasů je sjednocení `FaceSegment ∪ ClothesSegment` (třída
+`Hair`, SegFormer-B2 na ATR, celé tělo) přes `MaskComposite or` v grafu;
+prefix výstupu se nemění, bot ani appka o tom nevědí. Na téže fotce po
+opravě `tsumiki_hair_mask` 1,40, maska drdolu (`keep`+`updo`) 1,46 fh pod
+bradou místo 1,05. `FaceSegment` na 1024 by pomohl taky (1,27), ale změnil
+by všechny čtyři masky a s nimi kalibraci pásu ofiny a ochrany obočí;
+nechává se na 512.
+
+**2. `keep` nemá obálku.** Na staženém účesu (vlasy jen na temeni) je maska
+`keep` stylu bez ofiny a bez `updo` obdélník kolem temene, spodní hrana
+0,32 fh *nad* bradou, plocha 7 %; Kontext dlouhé vlasy vygeneroval, kompozit
+je pustil jen uvnitř. `medium` dá +0,70, `long` +1,21 (okraj obrazu).
+V kandidátech mělo `keep` 26 z 50 stylů katalogu Ol1nLLM. `keep` je správně
+pro ofinu, drdol a `keep-cut` (žijí tam, kde staré vlasy jsou); vlny,
+kudrliny, hime, copy dostávají `long` (beach-waves, soft-curls, messy-waves,
+hollywood-waves, hime-cut, dutch-braids; z odmítnutých i sleek-straight,
+side-undercut, face-framing). Invariant „`keep` jen s ofinou nebo `updo`“
+hlídá `test_bench_catalog.py` i `test/hairstyle_catalog_test.dart`.
+Verdikty těch šesti stylů jsou z masky bez obálky; s `long` obálkou se maska
+změní a patří přeměřit.
+
+**3. Šev kompozitu.** `GrowMaskWithBlur` měl pevných 6/12 px — půl procenta
+2576 px fotky. `hairmask.apply_feather` (a `hairFeatherPx` v appce) ho
+škáluje na 0,6 % / 1,5 % delší strany (bench 1216 px: 7/18, telefon 2576 px:
+15/39). Tónový posun trička uvnitř obdélníku, který Kontext přegeneroval,
+to jen změkčí, neodstraní.
+
+**Co dál:** do `srcs/` přidat dvě až tři syntetické předlohy komponované
+jako selfie (vlasy přes hruď na světlém tričku, stažené vlasy, tmavé
+pozadí) a přeměřit `keep`→`long` styly; bench jinak tuhle třídu chyb dál
+neuvidí.
