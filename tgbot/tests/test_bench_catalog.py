@@ -33,7 +33,12 @@ def test_hairstyle_candidates_are_well_formed():
     assert len(cands) >= 50
     for c in cands.values():
         assert c["group"] in ("Women", "Men")
-        assert c["shape"]["length"] in ("keep", "short", "medium", "long")
+        sh = c["shape"]
+        assert sh["length"] in ("keep", "short", "medium", "long")
+        # `keep` = no envelope, the mask is the old hair's silhouette. Right for
+        # a fringe or an updo, wrong for waves or braids on a tied-back source:
+        # the new hair had no room and came back as a clipped bob.
+        assert sh["length"] != "keep" or sh["bangs"] != "none" or sh["updo"], c["id"]
         assert "__HAIRCOLOR__" not in c["block"]
 
 

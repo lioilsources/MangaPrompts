@@ -588,6 +588,9 @@ async def hair(req: HairRequest, user_id: int = Depends(current_user_id)):
                     mask_name=mask_name,
                     checkpoint=config.HAIR_CHECKPOINT if engine == "sdxl" else None,
                 )
+                # Kontext composite edge scaled to the photo — the template's
+                # 6/12 px were a hard seam on a phone photo (no-op for SDXL).
+                hairmask.apply_feather(wf, mask_png)
                 prompt_id, queue_number = await comfy.queue_prompt(session, wf)
             except (ComfyError, aiohttp.ClientError, asyncio.TimeoutError) as e:
                 db.undo_usage(usage_id)

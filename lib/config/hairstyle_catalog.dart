@@ -93,7 +93,7 @@ const kHairstyles = <Hairstyle>[
     section: 'Texture',
     block:
         'beach waves, loose undone tousled waves with natural texture, effortless surf look',
-    shape: HairShape(length: HairLength.keep, bangs: HairBangs.none, updo: false),
+    shape: HairShape(length: HairLength.long, bangs: HairBangs.none, updo: false),
   ),
   Hairstyle(
     id: 'soft-curls',
@@ -102,7 +102,7 @@ const kHairstyles = <Hairstyle>[
     section: 'Texture',
     block:
         'soft curls, bouncy loose curls with defined ringlets and shine',
-    shape: HairShape(length: HairLength.keep, bangs: HairBangs.none, updo: false),
+    shape: HairShape(length: HairLength.long, bangs: HairBangs.none, updo: false),
   ),
   Hairstyle(
     id: 'messy-bun',
@@ -138,7 +138,7 @@ const kHairstyles = <Hairstyle>[
     section: 'Cuts',
     block:
         'hime cut, long straight hair with a blunt full fringe and blunt cheek-length side locks framing the face',
-    shape: HairShape(length: HairLength.keep, bangs: HairBangs.full, updo: false),
+    shape: HairShape(length: HairLength.long, bangs: HairBangs.full, updo: false),
   ),
   Hairstyle(
     id: 'hollywood-waves',
@@ -147,7 +147,7 @@ const kHairstyles = <Hairstyle>[
     section: 'Texture',
     block:
         'old hollywood waves, glossy sculpted s-shaped waves swept to one side, 1940s glamour',
-    shape: HairShape(length: HairLength.keep, bangs: HairBangs.none, updo: false),
+    shape: HairShape(length: HairLength.long, bangs: HairBangs.none, updo: false),
   ),
   Hairstyle(
     id: 'box-braids',
@@ -165,7 +165,7 @@ const kHairstyles = <Hairstyle>[
     section: 'Braids',
     block:
         'two dutch braids, tight raised braids running from the hairline back along both sides of the head',
-    shape: HairShape(length: HairLength.keep, bangs: HairBangs.none, updo: false),
+    shape: HairShape(length: HairLength.long, bangs: HairBangs.none, updo: false),
   ),
   Hairstyle(
     id: 'crown-braid',

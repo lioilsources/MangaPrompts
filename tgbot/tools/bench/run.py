@@ -330,6 +330,9 @@ def run_matrix(args) -> None:
                 wf = prepare_workflow(tpl, prompt=prompt, negative=catalog.HAIR_NEGATIVE,
                                       image_name=uploaded[ident["src"]], mask_name=mask_name,
                                       checkpoint=ident["ckpt"])
+                # Same composite edge as the bot (`mask.FEATHER_*` is sweepable).
+                with mask_tunables(ident["sweep"]):
+                    hm.apply_feather(wf, mask_png)
                 # "colour" on a row is the *target* (ident); what was read off the
                 # photo is colour_src — one field for both lost the target once.
                 row.update(prompt=prompt, colour_src=colour, shape=style["shape"], mask=f"masks/{name}",
