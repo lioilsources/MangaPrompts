@@ -55,7 +55,7 @@ class FakeComfy:
         self.uploads.append((data, filename))
         return f"in/{filename}"
 
-    async def queue_prompt(self, session, workflow):
+    async def queue_prompt(self, session, workflow, prompt=None):
         is_analysis = any(n["class_type"] == "FaceSegment" for n in workflow.values())
         if self.fail_submit and not is_analysis:
             raise ComfyError("boom")

@@ -35,7 +35,7 @@ class FakeComfy:
         self.uploads.append((data, filename))
         return f"clipspace/{filename}"
 
-    async def queue_prompt(self, session, workflow):
+    async def queue_prompt(self, session, workflow, prompt=None):
         if self.fail_submit:
             raise ComfyError("boom")
         self.workflows.append(workflow)

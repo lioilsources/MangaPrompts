@@ -245,3 +245,63 @@ def test_pick_outputs_matches_by_prefix_not_order():
     assert found["tsumiki_hair_mask"]["filename"].startswith("tsumiki_hair_mask_")
     assert found["tsumiki_face_mask"]["filename"].startswith("tsumiki_face_mask_")
     assert "tsumiki_hat_mask" not in found
+
+
+def test_sign_outputs_swaps_every_save_and_keeps_its_contract():
+    from comfy import AILINEAGE_NODE, sign_outputs
+    for path in sorted(WORKFLOW_DIR.glob("*.api.json")):
+        wf = json.loads(path.read_text())
+        saves = {k: dict(n["inputs"]) for k, n in wf.items() if n.get("class_type") == "SaveImage"}
+        sign_outputs(wf, "a manga fox")
+        assert not [n for n in wf.values() if n.get("class_type") == "SaveImage"], path.name
+        for k, before in saves.items():
+            node = wf[k]
+            assert node["class_type"] == AILINEAGE_NODE
+            # pick_outputs and the bench tools match on these two
+            assert node["inputs"]["images"] == before["images"]
+            assert node["inputs"]["filename_prefix"] == before["filename_prefix"]
+            assert node["inputs"]["prompt_text"] == "a manga fox"
+            assert node["inputs"]["prompt_storage"] == "none"
+
+
+def test_queue_prompt_signs_only_with_a_prompt():
+    import asyncio
+    from comfy import AILINEAGE_NODE, ComfyClient
+
+    class Resp:
+        status = 200
+
+        def __init__(self, body):
+            self.body = body
+
+        async def json(self):
+            return self.body
+
+        async def text(self):
+            return json.dumps(self.body)
+
+        async def __aenter__(self):
+            return self
+
+        async def __aexit__(self, *a):
+            return False
+
+    class Session:
+        def __init__(self):
+            self.sent = []
+
+        def get(self, url, **kw):
+            return Resp({AILINEAGE_NODE: {}})
+
+        def post(self, url, json=None, **kw):
+            self.sent.append(json["prompt"])
+            return Resp({"prompt_id": "p", "number": 1})
+
+    def graph():
+        return {"9": {"class_type": "SaveImage", "inputs": {"images": ["8", 0], "filename_prefix": "t"}}}
+
+    s, c = Session(), ComfyClient("http://x", "cid")
+    asyncio.run(c.queue_prompt(s, graph(), prompt="fox"))
+    asyncio.run(c.queue_prompt(s, graph()))  # analysis graphs: no prompt, unsigned
+    assert s.sent[0]["9"]["class_type"] == AILINEAGE_NODE
+    assert s.sent[1]["9"]["class_type"] == "SaveImage"
