@@ -13,12 +13,35 @@ import asyncio
 import copy
 import json
 import random
+import time
 
 import aiohttp
 
 
 class ComfyError(Exception):
     pass
+
+
+AILINEAGE_NODE = "AILineageSaveImage"
+AILINEAGE_RECHECK_S = 600
+
+
+def sign_outputs(wf: dict, prompt: str) -> None:
+    """Turn every SaveImage into the AILineage node, in place.
+
+    The node (ComfyUI-AILineage) writes the same PNG under the same
+    `<prefix>_00001_.png` name and returns it the same way, so
+    `pick_outputs` keeps matching by prefix; it also embeds a signed,
+    timestamped manifest that holds the prompt only as a salted hash.
+    Done at queue time, so the templates and every SaveImage lookup in
+    the bench tools stay as they are."""
+    for node in wf.values():
+        if isinstance(node, dict) and node.get("class_type") == "SaveImage":
+            node["class_type"] = AILINEAGE_NODE
+            node["inputs"].update({
+                "format": "png", "quality": 95, "prompt_storage": "none",
+                "prompt_text": prompt, "hash_weights": True, "embed_workflow": False,
+            })
 
 
 def prepare_workflow(
@@ -103,9 +126,33 @@ class ComfyClient:
         self.base_url = base_url.rstrip("/")
         self.client_id = client_id
         self.headers = headers or {}
+        self._ailineage: tuple[bool, float] | None = None
 
-    async def queue_prompt(self, session: aiohttp.ClientSession, workflow: dict) -> tuple[str, int]:
-        """Submits the workflow; returns (prompt_id, queue_number)."""
+    async def ailineage_supported(self, session: aiohttp.ClientSession) -> bool:
+        """Whether the server has the AILineage node (cached for 10 minutes)."""
+        if self._ailineage and time.monotonic() - self._ailineage[1] < AILINEAGE_RECHECK_S:
+            return self._ailineage[0]
+        ok = False
+        try:
+            async with session.get(
+                f"{self.base_url}/object_info/{AILINEAGE_NODE}",
+                headers=self.headers,
+                timeout=aiohttp.ClientTimeout(total=15),
+            ) as resp:
+                ok = resp.status == 200 and AILINEAGE_NODE in await resp.json()
+        except (aiohttp.ClientError, asyncio.TimeoutError, ValueError):
+            ok = False  # offline or old server: save unsigned, as before
+        self._ailineage = (ok, time.monotonic())
+        return ok
+
+    async def queue_prompt(
+        self, session: aiohttp.ClientSession, workflow: dict, prompt: str | None = None
+    ) -> tuple[str, int]:
+        """Submits the workflow; returns (prompt_id, queue_number). With a
+        non-empty `prompt` the outputs are signed by AILineage when the server
+        supports it (analysis graphs pass none and stay unsigned)."""
+        if prompt and prompt.strip() and await self.ailineage_supported(session):
+            sign_outputs(workflow, prompt)
         async with session.post(
             f"{self.base_url}/prompt",
             json={"prompt": workflow, "client_id": self.client_id},

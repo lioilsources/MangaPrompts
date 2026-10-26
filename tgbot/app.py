@@ -442,7 +442,7 @@ async def generate(req: GenerateRequest, user_id: int = Depends(current_user_id)
     job = Job(user_id=user_id, prompt=req.prompt, workflow=req.workflow)
     async with aiohttp.ClientSession() as session:
         try:
-            prompt_id, queue_number = await comfy.queue_prompt(session, wf)
+            prompt_id, queue_number = await comfy.queue_prompt(session, wf, prompt=req.prompt)
         except (ComfyError, aiohttp.ClientError) as e:
             db.undo_usage(usage_id)
             log.error("queue_prompt failed: %s", e)
@@ -496,7 +496,7 @@ async def restyle(req: RestyleRequest, user_id: int = Depends(current_user_id)):
                 checkpoint=checkpoint,
                 latent=latent_for(image),
             )
-            prompt_id, queue_number = await comfy.queue_prompt(session, wf)
+            prompt_id, queue_number = await comfy.queue_prompt(session, wf, prompt=req.prompt)
         except (ComfyError, aiohttp.ClientError, asyncio.TimeoutError) as e:
             db.undo_usage(usage_id)
             log.error("restyle submit failed: %s", e)
@@ -591,7 +591,7 @@ async def hair(req: HairRequest, user_id: int = Depends(current_user_id)):
                 # Kontext composite edge scaled to the photo — the template's
                 # 6/12 px were a hard seam on a phone photo (no-op for SDXL).
                 hairmask.apply_feather(wf, mask_png)
-                prompt_id, queue_number = await comfy.queue_prompt(session, wf)
+                prompt_id, queue_number = await comfy.queue_prompt(session, wf, prompt=prompt)
             except (ComfyError, aiohttp.ClientError, asyncio.TimeoutError) as e:
                 db.undo_usage(usage_id)
                 log.error("hair submit failed: %s", e)

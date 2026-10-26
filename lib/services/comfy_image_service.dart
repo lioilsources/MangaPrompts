@@ -45,6 +45,17 @@ class ComfyImageService implements ImageGenerationService {
   late final http.Client _client;
   final Map<String, Map<String, dynamic>> _templateCache = {};
 
+  /// The prompt each prepared graph was built from — what AILineage commits
+  /// to ([signOutputs]). Keyed by the graph object, so `_prepare` →
+  /// `_queuePrompt` carries it without new parameters.
+  final _userPrompt = Expando<String>();
+
+  /// Whether the server has the AILineage node; re-checked every
+  /// [_aiLineageRecheck] so a node installed later is picked up.
+  bool? _aiLineageAvailable;
+  DateTime _aiLineageCheckedAt = DateTime.fromMillisecondsSinceEpoch(0);
+  static const _aiLineageRecheck = Duration(minutes: 10);
+
   ComfyImageService({
     required this.cfId,
     required this.cfSecret,
@@ -266,6 +277,10 @@ class ComfyImageService implements ImageGenerationService {
   }
 
   Future<String> _queuePrompt(Map<String, dynamic> workflow) async {
+    final prompt = _userPrompt[workflow];
+    if (prompt != null && prompt.trim().isNotEmpty && await _aiLineageSupported()) {
+      signOutputs(workflow, prompt: prompt);
+    }
     final resp = await _client
         .post(
           Uri.parse('$_baseUrl/prompt'),
@@ -283,6 +298,55 @@ class ComfyImageService implements ImageGenerationService {
       throw Exception('ComfyUI workflow error: ${jsonEncode(nodeErrors)}');
     }
     return json['prompt_id'] as String;
+  }
+
+  // ── AILineage provenance ────────────────────────────────────
+  //
+  // With the ComfyUI-AILineage node installed, every SaveImage becomes
+  // AILineageSaveImage: same PNG output and filename scheme, plus an embedded,
+  // signed and timestamped manifest. The prompt goes in only as a salted hash;
+  // the plaintext stays on the server's private openings store. A server
+  // without the node gets the graph unchanged.
+
+  static const kAiLineageNode = 'AILineageSaveImage';
+
+  Future<bool> _aiLineageSupported() async {
+    final known = _aiLineageAvailable;
+    if (known != null &&
+        DateTime.now().difference(_aiLineageCheckedAt) < _aiLineageRecheck) {
+      return known;
+    }
+    var ok = false;
+    try {
+      final resp = await _client
+          .get(Uri.parse('$_baseUrl/object_info/$kAiLineageNode'), headers: _authHeaders)
+          .timeout(_pollTimeout);
+      ok = resp.statusCode == 200 &&
+          (jsonDecode(resp.body) as Map).containsKey(kAiLineageNode);
+    } catch (_) {
+      ok = false; // offline or old server: save unsigned, as before
+    }
+    _aiLineageAvailable = ok;
+    _aiLineageCheckedAt = DateTime.now();
+    return ok;
+  }
+
+  /// Turns every SaveImage of [wf] into the AILineage node, in place.
+  @visibleForTesting
+  static void signOutputs(Map<String, dynamic> wf, {required String prompt}) {
+    for (final e in wf.values) {
+      final node = (e as Map).cast<String, dynamic>();
+      if (node['class_type'] != 'SaveImage') continue;
+      node['class_type'] = kAiLineageNode;
+      (node['inputs'] as Map).cast<String, dynamic>().addAll({
+        'format': 'png',
+        'quality': 95,
+        'prompt_storage': 'none',
+        'prompt_text': prompt,
+        'hash_weights': true,
+        'embed_workflow': false,
+      });
+    }
   }
 
   Future<Map<String, dynamic>?> _history(String promptId) async {
@@ -344,6 +408,7 @@ class ComfyImageService implements ImageGenerationService {
     String? checkpoint,
   }) {
     final wf = jsonDecode(jsonEncode(template)) as Map<String, dynamic>;
+    _userPrompt[wf] = prompt;
     final seed = Random().nextInt(1 << 31);
 
     for (final entry in wf.values) {
