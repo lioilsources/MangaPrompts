@@ -235,5 +235,140 @@
       ],
       "filename_prefix": "tsumiki_features_mask"
     }
+  },
+  "30": {
+    "class_type": "FaceSegment",
+    "_meta": {
+      "title": "Lips"
+    },
+    "inputs": {
+      "images": [
+        "1",
+        0
+      ],
+      "process_res": 512,
+      "mask_blur": 0,
+      "mask_offset": 0,
+      "invert_output": false,
+      "background": "Alpha",
+      "background_color": "#222222",
+      "Upper-lip": true,
+      "Lower-lip": true,
+      "Mouth": true
+    }
+  },
+  "31": {
+    "class_type": "MaskToImage",
+    "_meta": {
+      "title": "Lips mask"
+    },
+    "inputs": {
+      "mask": [
+        "30",
+        1
+      ]
+    }
+  },
+  "32": {
+    "class_type": "SaveImage",
+    "_meta": {
+      "title": "Save lips mask"
+    },
+    "inputs": {
+      "images": [
+        "31",
+        0
+      ],
+      "filename_prefix": "tsumiki_lips_mask"
+    }
+  },
+  "33": {
+    "class_type": "FaceSegment",
+    "_meta": {
+      "title": "Nose"
+    },
+    "inputs": {
+      "images": [
+        "1",
+        0
+      ],
+      "process_res": 512,
+      "mask_blur": 0,
+      "mask_offset": 0,
+      "invert_output": false,
+      "background": "Alpha",
+      "background_color": "#222222",
+      "Nose": true
+    }
+  },
+  "34": {
+    "class_type": "MaskToImage",
+    "_meta": {
+      "title": "Nose mask"
+    },
+    "inputs": {
+      "mask": [
+        "33",
+        1
+      ]
+    }
+  },
+  "35": {
+    "class_type": "SaveImage",
+    "_meta": {
+      "title": "Save nose mask"
+    },
+    "inputs": {
+      "images": [
+        "34",
+        0
+      ],
+      "filename_prefix": "tsumiki_nose_mask"
+    }
+  },
+  "36": {
+    "class_type": "FaceSegment",
+    "_meta": {
+      "title": "Ears"
+    },
+    "inputs": {
+      "images": [
+        "1",
+        0
+      ],
+      "process_res": 512,
+      "mask_blur": 0,
+      "mask_offset": 0,
+      "invert_output": false,
+      "background": "Alpha",
+      "background_color": "#222222",
+      "Left-ear": true,
+      "Right-ear": true
+    }
+  },
+  "37": {
+    "class_type": "MaskToImage",
+    "_meta": {
+      "title": "Ears mask"
+    },
+    "inputs": {
+      "mask": [
+        "36",
+        1
+      ]
+    }
+  },
+  "38": {
+    "class_type": "SaveImage",
+    "_meta": {
+      "title": "Save ears mask"
+    },
+    "inputs": {
+      "images": [
+        "37",
+        0
+      ],
+      "filename_prefix": "tsumiki_ears_mask"
+    }
   }
 }

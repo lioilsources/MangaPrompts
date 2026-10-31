@@ -22,6 +22,8 @@ dependencies:
   shared_preferences: ^2.5.4
   path_provider: ^2.1.5
   gal: ^2.3.0
+  tsumiki_shared:
+    path: packages/tsumiki_shared
 
 dev_dependencies:
   flutter_test:
@@ -52,4 +54,3 @@ flutter:
     - assets/config/
     - assets/comfyui/
     - assets/poses/pose_depth/
-    - assets/hair/

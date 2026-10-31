@@ -125,3 +125,21 @@ def test_optional_input_is_known():
     wf = {"1": {"class_type": "ControlNetApplyAdvanced",
                 "inputs": {"positive": ["9", 0], "strength": 0.55, "vae": ["3", 0]}}}
     assert check_workflow(wf, info) == []
+
+
+def test_vhs_format_widgets_are_known_inputs():
+    info = {
+        "VHS_VideoCombine": {
+            "input": {
+                "required": {
+                    "format": [
+                        ["image/gif", "video/h264-mp4"],
+                        {"formats": {"video/h264-mp4": [["crf", "INT", {"default": 19}]]}},
+                    ]
+                }
+            }
+        }
+    }
+    wf = {"1": {"class_type": "VHS_VideoCombine", "inputs": {"format": "video/h264-mp4", "crf": 19, "bogus": 1}}}
+    problems = check_workflow(wf, info)
+    assert len(problems) == 1 and "bogus" in problems[0]

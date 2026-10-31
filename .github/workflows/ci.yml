@@ -25,7 +25,9 @@ jobs:
 
       - name: Install dependencies
         working-directory: .
-        run: flutter pub get
+        run: |
+          flutter pub get
+          (cd packages/tsumiki_shared && flutter pub get)
 
       - name: Analyze
         working-directory: .
@@ -33,6 +35,10 @@ jobs:
 
       - name: Test
         working-directory: .
+        run: flutter test
+
+      - name: Test shared package
+        working-directory: packages/tsumiki_shared
         run: flutter test
 
   build-web:

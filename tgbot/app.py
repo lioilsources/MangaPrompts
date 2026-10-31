@@ -19,6 +19,7 @@ import binascii
 import json
 import logging
 import random
+import sys
 import time
 import uuid
 from contextlib import asynccontextmanager
@@ -47,7 +48,8 @@ import haircolours
 import hairmask
 import hairprompt
 import payments
-from auth import InvalidInitData, validate_init_data
+import render
+from auth import InvalidInitData, app_token_ok, app_user_id, validate_init_data
 from comfy import ComfyClient, ComfyError, prepare_workflow
 from db import Database
 from imagesize import latent_for
@@ -57,7 +59,7 @@ from video import VideoClient, VideoError, VideoJobGone, strip_data_uri
 log = logging.getLogger("mangabot")
 logging.basicConfig(level=logging.INFO)
 
-bot = Bot(token=config.BOT_TOKEN) if config.BOT_TOKEN else None
+bot = Bot(token=config.BOT_TOKEN) if config.BOT_TOKEN and config.AUTH_MODE == "telegram" else None
 dp = Dispatcher()
 jobs = JobStore()
 db = Database(config.DB_PATH)
@@ -233,8 +235,7 @@ async def on_refund(message: Message) -> None:
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    if bot is None:
-        raise RuntimeError("BOT_TOKEN is not set")
+    config.check_auth_config()
     config.DATA_DIR.joinpath("outputs").mkdir(parents=True, exist_ok=True)
     # Re-attach watchers for video renders that were in flight when the bot
     # last stopped — video-api keeps its own state across our restarts.
@@ -248,13 +249,14 @@ async def lifespan(app: FastAPI):
         jobs.add(job)
         asyncio.create_task(_watch_video_job(job, row["usage_id"]))
         log.info("re-attached video job %s (remote %s)", job.id, job.remote_id)
-    polling = asyncio.create_task(dp.start_polling(bot, handle_signals=False))
+    polling = asyncio.create_task(dp.start_polling(bot, handle_signals=False)) if bot else None
     yield
-    polling.cancel()
-    await bot.session.close()
+    if polling is not None:
+        polling.cancel()
+        await bot.session.close()
 
 
-app = FastAPI(title="Tsumiki bot backend", lifespan=lifespan)
+app = FastAPI(title=config.APP_NAME, lifespan=lifespan)
 
 app.add_middleware(
     CORSMiddleware,
@@ -265,16 +267,22 @@ app.add_middleware(
 
 
 def current_user_id(request: Request) -> int:
-    """Auth: `Authorization: tma <initData>` (validated) or `dev <token>` (opt-in)."""
+    """Auth: `Authorization: tma <initData>` (validated; telegram mode only),
+    `app <APP_TOKEN>` + `X-User` (app mode only) or `dev <token>` (opt-in)."""
     header = request.headers.get("Authorization", "")
     scheme, _, value = header.partition(" ")
-    if scheme == "tma" and value:
+    if scheme == "tma" and value and config.AUTH_MODE == "telegram":
         try:
             user = validate_init_data(value, config.BOT_TOKEN, config.AUTH_MAX_AGE)
         except InvalidInitData as e:
             raise HTTPException(status_code=401, detail=f"invalid initData: {e}") from e
         return int(user["id"])
-    if scheme == "dev" and config.DEV_TOKEN and value == config.DEV_TOKEN:
+    if scheme == "app" and config.AUTH_MODE == "app" and app_token_ok(value, config.APP_TOKEN):
+        user_id = app_user_id(request.headers.get("X-User"))
+        if user_id is None:
+            raise HTTPException(status_code=400, detail="missing or invalid X-User")
+        return user_id
+    if scheme == "dev" and app_token_ok(value, config.DEV_TOKEN):
         return 0  # dev user: no chat delivery
     raise HTTPException(status_code=401, detail="missing or invalid Authorization")
 
@@ -375,7 +383,7 @@ def hair_caption(style: str, colour: str | None = None) -> str:
 
 @app.get("/healthz")
 async def healthz():
-    return {"status": "ok"}
+    return {"status": "ok", "active_jobs": jobs.active_total()}
 
 
 @app.get("/api/me")
@@ -405,6 +413,8 @@ async def me(user_id: int = Depends(current_user_id)):
 
 @app.post("/api/invoice")
 async def create_invoice(req: InvoiceRequest, user_id: int = Depends(current_user_id)):
+    if bot is None:
+        raise HTTPException(status_code=404, detail="payments are not available here")
     package = config.PACKAGES.get(req.package)
     if package is None:
         raise HTTPException(status_code=400, detail="unknown package")
@@ -615,6 +625,8 @@ async def job_status(job_id: str, user_id: int = Depends(current_user_id)):
     job = jobs.get(job_id)
     if job is None or job.user_id != user_id:
         raise HTTPException(status_code=404, detail="job not found")
+    if isinstance(job, render.RenderJob):
+        return render.job_payload(job)
     return {
         "status": job.status, "error": job.error, "kind": job.kind,
         "beat": job.beat, "beats": job.beats, "phase": job.phase,
@@ -881,3 +893,8 @@ async def _watch_video_job(job: Job, usage_id: int) -> None:
             # Transient send failure: keep "done" — the file stays fetchable
             # via GET /api/jobs/{id}/video.
             log.warning("video job %s: send_video failed: %s", job.id, e)
+
+
+# Last, because render reads this module's globals at request time.
+render.bind(sys.modules[__name__])
+app.include_router(render.router)

@@ -1,7 +1,7 @@
 """What the bench renders: styles and hairstyles, and the prompts the app
 would build for them.
 
-Restyle prompts come straight from `lib/config/restyle_styles.dart` (parsed,
+Restyle prompts come straight from `packages/tsumiki_shared/lib/catalogs/restyle_styles.dart` (parsed,
 not copied), so a change to the app's medium sentences is measured the next
 run. Painter candidates and hairstyle candidates are JSON until they pass the
 gate; hair prompts come from the bot's own `hairprompt.py`.
@@ -17,7 +17,7 @@ from pathlib import Path
 HERE = Path(__file__).resolve().parent
 REPO = HERE.parents[2]
 ASSETS = REPO / "assets" / "comfyui"
-RESTYLE_DART = REPO / "lib" / "config" / "restyle_styles.dart"
+RESTYLE_DART = REPO / "packages" / "tsumiki_shared" / "lib" / "catalogs" / "restyle_styles.dart"
 
 BASELINE = "__baseline"
 
@@ -92,6 +92,32 @@ def restyle_prompt(style_id: str, medium: str) -> tuple[str, str]:
     head = cat["heads"][medium]
     block = restyle_style(style_id)["block"]
     return (f"{head}, {block}" if block else head), cat["negatives"][medium]
+
+
+def beards() -> dict:
+    return {b["id"]: b for b in json.loads((HERE / "candidates" / "beards.json").read_text())}
+
+
+def beard_prompt(style: dict, colour: str | None, grey: bool = False) -> str:
+    """The prompt the bot would send for this candidate (tgbot/beardprompt.py)."""
+    import beardprompt
+
+    return beardprompt.prompt(style["block"], style["id"], colour, grey)
+
+
+def motions() -> dict:
+    """Motion presets, the server's own table (assets/drivers/manifest.json)."""
+    return json.loads((ASSETS.parent / "drivers" / "manifest.json").read_text())
+
+
+def restyle_look_prompt(style_id: str, medium: str, parts: list[str], position: str = "middle") -> tuple[str, str]:
+    """`restyle_prompt` with the look in it. `middle` is what the app sends
+    (`restyleLookPrompt`: medium → look → style); `end` is the bench axis
+    `param.lookPosition`."""
+    cat = restyle_catalog()
+    block = restyle_style(style_id)["block"]
+    body = ([*parts, block] if position == "middle" else [block, *parts])
+    return ", ".join(x for x in (cat["heads"][medium], *body) if x), cat["negatives"][medium]
 
 
 def hairstyles() -> dict:

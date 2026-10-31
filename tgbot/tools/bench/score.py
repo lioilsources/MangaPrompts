@@ -202,6 +202,8 @@ def bangs_ok(shape: dict, cover_out: float, cover_src: float) -> bool:
 
 def score(run: Path, url: str, cache: Path) -> dict:
     manifest = json.loads((run / "manifest.json").read_text())
+    if manifest["task"] in TASK_SCORERS:
+        return TASK_SCORERS[manifest["task"]](run, manifest, url, cache)
     cells = manifest["cells"]
     prev = json.loads((run / "metrics.json").read_text()) if (run / "metrics.json").exists() else {"cells": {}}
     c = Comfy(url)
@@ -377,6 +379,9 @@ def summarise(manifest: dict, metrics: dict) -> dict:
 
 
 def write_summary_md(run: Path, manifest: dict, metrics: dict) -> None:
+    if manifest["task"] in TASK_SUMMARIES:
+        TASK_SUMMARIES[manifest["task"]](run, manifest, metrics)
+        return
     lines = [f"# {run.name} — {manifest['task']}", ""]
     if manifest["task"] == "hair":
         # `recognised` je až za `auto`: reportuje se, ale nerozhoduje.
@@ -399,6 +404,16 @@ def write_summary_md(run: Path, manifest: dict, metrics: dict) -> None:
             lines.append(f"| {style} | {engine} | {medium} | {sweep} | {done} | {ident} | "
                          f"{s.get('reaction_mean') if s.get('reaction_mean') is not None else '—'} | {fmt(s['clean'])} | {auto} |")
     (run / "summary.md").write_text("\n".join(lines) + "\n")
+
+
+# Tasks with a module of their own (their scorer imports this module back).
+import beardbench  # noqa: E402
+import livebench  # noqa: E402
+import pipeline  # noqa: E402
+
+TASK_SCORERS = {"beard": beardbench.score_run, "live": livebench.score_run, "pipeline": pipeline.score_run}
+TASK_SUMMARIES = {"beard": beardbench.write_summary_md, "live": livebench.write_summary_md,
+                  "pipeline": pipeline.write_summary_md}
 
 
 def main() -> None:

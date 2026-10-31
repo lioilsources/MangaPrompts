@@ -44,7 +44,7 @@ delivers the mp4 into the chat. Separate video ledger (users.video_credits,
 package `v1` = 10⭐/animation, VIDEO_FREE_DAILY_LIMIT=1/day free).
 The third card, **Restyle a photo** (`restyle_screen.dart`, `POST /api/restyle`),
 keeps the face and pose (depth ControlNet) of an uploaded photo and renders it
-in a picked style (`lib/config/restyle_styles.dart`: popular looks, 42 measured
+in a picked style (`packages/tsumiki_shared/lib/catalogs/restyle_styles.dart`: popular looks, 42 measured
 painters from Ol1nLLM's style matrix, art traditions; medium toggle
 photo/illustration); it is billed as an ordinary image generation. The medium
 picks the **engine** (`RESTYLE_ENGINES` in `tgbot/config.py`): photo runs
@@ -61,10 +61,10 @@ which builds the inpaint mask from the style's shape — a down style never has
 server-side per `HAIR_ENGINE` (`tgbot/hairprompt.py`), optionally with a new
 colour (`tgbot/haircolours.py`; style id `keep-cut` = colour only, mask of the old
 hair without an envelope); billing starts only after
-the analysis accepted the photo. The catalog (`lib/config/hairstyle_catalog.dart`)
+the analysis accepted the photo. The catalog (`packages/tsumiki_shared/lib/catalogs/hairstyle_catalog.dart`)
 is generated from the bench gate (`docs/hair-matrix.md`) and the card stays
 hidden while it is empty. Each style is picked from a card with a **preview**
-(`assets/hair/<id>.jpg`, `Hairstyle.preview`): the bench's own output for that
+(`packages/tsumiki_shared/assets/hair/<id>.jpg`, `Hairstyle.preview`): the bench's own output for that
 style on the group's primary synthetic portrait, so every card shows the same
 face and the eye compares hair only — no stock photos, no personal data. A
 colour chip carries a **swatch** (`HairColour.swatch`): the hair colour the
@@ -129,6 +129,35 @@ Nodes of our own live in `comfyui_nodes/ComfyUI-Tsumiki` (today
 so the hair graph warps the edit back onto the photo before pasting it through
 the mask); `comfyui_nodes/deploy.sh` installs them on SPARK and must run before
 a graph using them ships — Ol1nLLM sends the same graphs.
+
+## Restyler backend and the shared package
+
+`packages/tsumiki_shared` is the Dart core shared with the Restyler app
+(github `lioilsources/Restyler`): catalogs, masks, prompts, render client. No
+Telegram, no `dart:io`, no `dart:js_interop` (a test greps for it). Masks and
+prompts have a Python original (`tgbot/hairmask.py`, `beardmask.py`,
+`glassesmask.py`, `*prompt.py`) and a Dart mirror pinned by **file** fixtures:
+`tgbot/tools/gen_fixtures.py` writes `tgbot/tests/fixtures/`, both test suites
+read them, and the masks must match pixel for pixel. Change the Python, run
+`tools/sync_fixtures.sh --gen <venv python>`, fix the Dart.
+
+`POST /api/render` (`tgbot/render.py`) is a dumb renderer for that app: a
+whitelist of graphs (`RENDER_GRAPHS`), a DAG of steps where one step's output
+is the next one's input, a refund per failed step, dependents marked
+`skipped`. Masks, prompts and step order live in the phone. A second instance
+of this code runs it with `AUTH_MODE=app` (`Authorization: app <APP_TOKEN>` +
+`X-User`, negative user ids, no bot, `docker compose --profile restyler`);
+`docs/restyler-release.md`. `tools/ondevice/` exports the two SegFormer parsers
+to ONNX for the phone; `docs/ondevice-parity.md` holds the measurements. The
+parity depends on the exact Pillow resize: never replace it with
+`copyResize`, never resample a class map instead of the logits.
+
+**Live portrait** (`assets/comfyui/live_portrait.api.json`, `POST /api/live`,
+render graphs `live_portrait` / `wan_motion`): LivePortrait moves the face from
+a synthetic driver clip in seconds, Wan moves hair in ~20 minutes. Presets come
+from `assets/drivers/manifest.json`; a preset without its mp4 answers 422. VHS
+reports video under `gifs` in the ComfyUI history, not `images`. Setup and the
+unverified parts: `docs/live-portrait-setup.md`.
 
 ## Bench (`tgbot/tools/bench/`)
 

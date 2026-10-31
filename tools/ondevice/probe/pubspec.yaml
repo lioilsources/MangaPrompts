@@ -1,0 +1,18 @@
+# Copy into a `flutter create --platforms=macos,ios` project; see ../README.md.
+name: ort_probe
+publish_to: none
+environment:
+  sdk: ^3.7.0
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_onnxruntime: 1.9.0
+  image: ^4.8.0
+flutter:
+  uses-material-design: true
+  config:
+    enable-swift-package-manager: false
+  assets:
+    - assets/src.png
+    - assets/models/
+    - assets/golden/

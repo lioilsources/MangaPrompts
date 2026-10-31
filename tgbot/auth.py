@@ -9,12 +9,30 @@ is the sorted `key=value` pairs (minus `hash`) joined with newlines.
 import hashlib
 import hmac
 import json
+import re
 import time
 from urllib.parse import parse_qsl
 
 
+APP_USER_RE = re.compile(r"[a-z0-9_-]{2,32}")
+
+
 class InvalidInitData(ValueError):
     pass
+
+
+def app_token_ok(value: str, token: str) -> bool:
+    """Constant-time. On bytes: compare_digest refuses a non-ASCII str, and a
+    header is whatever the caller sent."""
+    return bool(token) and hmac.compare_digest(value.encode(), token.encode())
+
+
+def app_user_id(user: str | None) -> int | None:
+    """`X-User` → a stable negative user id, None when the name is invalid.
+    Negative ids never collide with Telegram's and switch chat delivery off."""
+    if user is None or APP_USER_RE.fullmatch(user) is None:
+        return None
+    return -(int.from_bytes(hashlib.sha256(user.encode()).digest()[:6], "big") + 1)
 
 
 def validate_init_data(init_data: str, bot_token: str, max_age: int = 3600) -> dict:

@@ -10,6 +10,8 @@
 include: package:flutter_lints/flutter.yaml
 
 analyzer:
+  exclude:
+    - tools/ondevice/**   # standalone spike projects with their own pubspec
   errors:
     # Freezed puts @JsonKey on constructor parameters by design; the analyzer
     # flags it as invalid_annotation_target but json_serializable reads it fine.

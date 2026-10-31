@@ -1,0 +1,32 @@
+[
+  {
+    "id": "m-beard-full",
+    "seed": 214,
+    "prompt": "head and shoulders photo portrait of a man in his thirties with a thick full dark beard and moustache, short dark hair, facing the camera, neutral expression, plain light grey studio backdrop, soft even light, sharp focus, photorealistic"
+  },
+  {
+    "id": "m-stubble",
+    "seed": 215,
+    "prompt": "head and shoulders photo portrait of a man in his thirties with heavy dark stubble, short brown hair, facing the camera, neutral expression, plain light grey studio backdrop, soft even light, sharp focus, photorealistic"
+  },
+  {
+    "id": "m-goatee",
+    "seed": 216,
+    "prompt": "head and shoulders photo portrait of a man in his thirties with a neat goatee on the chin and clean-shaven cheeks, short black hair, facing the camera, neutral expression, plain light grey studio backdrop, soft even light, sharp focus, photorealistic"
+  },
+  {
+    "id": "m-glasses",
+    "seed": 211,
+    "prompt": "head and shoulders photo of a man in his forties wearing black rectangular eyeglasses, short brown hair, looking at the camera, wearing a navy sweater, plain warm grey backdrop, soft light, sharp focus, photorealistic"
+  },
+  {
+    "id": "w-selfie-close",
+    "seed": 212,
+    "prompt": "extreme close-up smartphone selfie of a young woman, the face fills most of the frame, looking at the camera, natural daylight, sharp focus, photorealistic"
+  },
+  {
+    "id": "w-sunglasses",
+    "seed": 213,
+    "prompt": "head and shoulders photo of a woman in her thirties wearing dark sunglasses, shoulder length blonde hair, facing the camera, wearing a white blouse, plain warm grey backdrop, soft light, sharp focus, photorealistic"
+  }
+]

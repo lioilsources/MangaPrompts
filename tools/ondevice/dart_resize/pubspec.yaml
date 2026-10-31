@@ -1,0 +1,7 @@
+name: ondevice_dart_resize
+description: Dart side of the on-device parser preprocessing (PIL-exact resize, logit upsampling).
+publish_to: none
+environment:
+  sdk: ^3.7.0
+dependencies:
+  image: ^4.8.0

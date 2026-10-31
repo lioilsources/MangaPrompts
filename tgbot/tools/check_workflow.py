@@ -56,6 +56,17 @@ def _enum_options(definition) -> list | None:
     return None
 
 
+def _format_widgets(known: dict) -> set[str]:
+    """VHS_VideoCombine's `format` widget grows inputs per format (crf,
+    pix_fmt, …); they are declared in its `formats` meta, not as inputs."""
+    definition = known.get("format")
+    meta = definition[1] if isinstance(definition, list) and len(definition) > 1 else {}
+    formats = meta.get("formats") if isinstance(meta, dict) else None
+    if not isinstance(formats, dict):
+        return set()
+    return {w[0] for widgets in formats.values() if isinstance(widgets, list) for w in widgets if w}
+
+
 def check_workflow(wf: dict, object_info: dict) -> list[str]:
     """Human-readable problems, empty when the server can run this graph."""
     problems: list[str] = []
@@ -69,11 +80,12 @@ def check_workflow(wf: dict, object_info: dict) -> list[str]:
 
         required, optional = _spec_inputs(spec)
         known = {**required, **optional}
+        widgets = _format_widgets(known)
         inputs = node.get("inputs") or {}
 
         for key, value in sorted(inputs.items()):
             if key not in known:
-                if key not in FRONTEND_ONLY_INPUTS:
+                if key not in FRONTEND_ONLY_INPUTS and key not in widgets:
                     problems.append(
                         f"{title}: unknown input '{key}' (node version drift?)"
                     )

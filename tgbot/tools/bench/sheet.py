@@ -55,11 +55,34 @@ def col_label(key: tuple, show_ckpt: bool = False) -> str:
     return " · ".join(p for p in parts if p)
 
 
+# Tasks with a module of their own: their badges and, for `live`, what goes
+# under the image.
+TASK_MODULES = {"beard": "beardbench", "live": "livebench", "pipeline": "pipeline"}
+
+
+def task_module(task: str):
+    import importlib
+
+    return importlib.import_module(TASK_MODULES[task])
+
+
+def task_badge(m: dict, task: str) -> str:
+    ident = m.get("identity")
+    limit = task_module(task).THRESHOLDS.get("identity_min", task_module(task).THRESHOLDS.get("identity_p10_min"))
+    bits = [("ok" if ident is not None and ident >= limit else "bad", f"id {ident if ident is not None else '—'}"),
+            *task_module(task).badge_bits(m)]
+    if m.get("faces", 1) != 1:
+        bits.append(("bad", f"{m.get('faces')} faces"))
+    return '<div class="b">' + " ".join(f'<span class="{c}">{html.escape(t)}</span>' for c, t in bits) + "</div>"
+
+
 def badge(m: dict, task: str) -> str:
     if not m:
         return ""
     if m.get("status") != "done":
         return f'<div class="b bad">{html.escape(str(m.get("status")))}: {html.escape(str(m.get("error") or ""))[:60]}</div>'
+    if task in TASK_MODULES:
+        return task_badge(m, task)
     bits = []
     ident = m.get("identity")
     bits.append(f'<span class="{"ok" if ident is not None and ident >= 0.6 else "bad"}">id {ident if ident is not None else "—"}</span>')
@@ -163,6 +186,8 @@ label's CLIP rank on the output (and on the source). Auto verdicts only sort —
                 cell += f'<img loading="lazy" src="{data_uri(run / row["file"])}" alt="">'
                 if show_mask and row.get("mask") and (run / row["mask"]).exists():
                     cell += f'<img loading="lazy" src="{data_uri(run / row["mask"], 110)}" style="width:110px;margin-top:4px" alt="mask">'
+                if task == "live":
+                    cell += task_module(task).cell_extra(run, row, data_uri)
             cell += badge(m or {"status": row["status"], "error": row.get("error")}, task)
             out.append(f"<td>{cell}</td>")
         out.append("</tr>")

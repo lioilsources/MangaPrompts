@@ -1,0 +1,5881 @@
+{
+ "cases": [
+  {
+   "case": "man-short",
+   "width": 512,
+   "height": 640,
+   "clothes": false,
+   "photo": true,
+   "colour": "brown",
+   "has_beard": false,
+   "expected": [
+    {
+     "kind": "hair",
+     "style": "hair-keep-none-down",
+     "shape": {
+      "length": "keep",
+      "bangs": "none",
+      "updo": false
+     },
+     "mode": null,
+     "file": "expected-hair-keep-none-down.png",
+     "error": null,
+     "area": 0.072674560546875,
+     "face_box": [
+      191,
+      217,
+      321,
+      385
+     ]
+    },
+    {
+     "kind": "hair",
+     "style": "hair-short-none-down",
+     "shape": {
+      "length": "short",
+      "bangs": "none",
+      "updo": false
+     },
+     "mode": null,
+     "file": "expected-hair-short-none-down.png",
+     "error": null,
+     "area": 0.098931884765625,
+     "face_box": [
+      191,
+      217,
+      321,
+      385
+     ]
+    },
+    {
+     "kind": "hair",
+     "style": "hair-medium-none-down",
+     "shape": {
+      "length": "medium",
+      "bangs": "none",
+      "updo": false
+     },
+     "mode": null,
+     "file": "expected-hair-medium-none-down.png",
+     "error": null,
+     "area": 0.2222686767578125,
+     "face_box": [
+      191,
+      217,
+      321,
+      385
+     ]
+    },
+    {
+     "kind": "hair",
+     "style": "hair-long-none-down",
+     "shape": {
+      "length": "long",
+      "bangs": "none",
+      "updo": false
+     },
+     "mode": null,
+     "file": "expected-hair-long-none-down.png",
+     "error": null,
+     "area": 0.3720062255859375,
+     "face_box": [
+      191,
+      217,
+      321,
+      385
+     ]
+    },
+    {
+     "kind": "hair",
+     "style": "hair-short-full-down",
+     "shape": {
+      "length": "short",
+      "bangs": "full",
+      "updo": false
+     },
+     "mode": null,
+     "file": "expected-hair-short-full-down.png",
+     "error": null,
+     "area": 0.1077239990234375,
+     "face_box": [
+      191,
+      217,
+      321,
+      385
+     ]
+    },
+    {
+     "kind": "hair",
+     "style": "hair-medium-side-down",
+     "shape": {
+      "length": "medium",
+      "bangs": "side",
+      "updo": false
+     },
+     "mode": null,
+     "file": "expected-hair-medium-side-down.png",
+     "error": null,
+     "area": 0.231060791015625,
+     "face_box": [
+      191,
+      217,
+      321,
+      385
+     ]
+    },
+    {
+     "kind": "hair",
+     "style": "hair-keep-curtain-updo",
+     "shape": {
+      "length": "keep",
+      "bangs": "curtain",
+      "updo": true
+     },
+     "mode": null,
+     "file": "expected-hair-keep-curtain-updo.png",
+     "error": null,
+     "area": 0.124560546875,
+     "face_box": [
+      191,
+      217,
+      321,
+      385
+     ]
+    },
+    {
+     "kind": "hair",
+     "style": "hair-keep-none-updo",
+     "shape": {
+      "length": "keep",
+      "bangs": "none",
+      "updo": true
+     },
+     "mode": null,
+     "file": "expected-hair-keep-none-updo.png",
+     "error": null,
+     "area": 0.1157684326171875,
+     "face_box": [
+      191,
+      217,
+      321,
+      385
+     ]
+    },
+    {
+     "kind": "hair",
+     "style": "hair-long-none-down-hair",
+     "shape": {
+      "length": "long",
+      "bangs": "none",
+      "updo": false
+     },
+     "mode": "hair",
+     "file": "expected-hair-long-none-down-hair.png",
+     "error": null,
+     "area": 0.3629913330078125,
+     "face_box": [
+      191,
+      217,
+      321,
+      385
+     ]
+    },
+    {
+     "kind": "beard",
+     "style": "beard-clean-shaven",
+     "region": {
+      "kind": "full",
+      "below_chin": 0.1
+     },
+     "mode": "shave",
+     "file": null,
+     "error": "no_beard_to_shave"
+    },
+    {
+     "kind": "beard",
+     "style": "beard-light-stubble",
+     "region": {
+      "kind": "full",
+      "below_chin": 0.0
+     },
+     "mode": null,
+     "file": "expected-beard-light-stubble.png",
+     "error": null,
+     "area": 0.0220611572265625,
+     "face_box": [
+      191,
+      217,
+      321,
+      385
+     ]
+    },
+    {
+     "kind": "beard",
+     "style": "beard-short-boxed",
+     "region": {
+      "kind": "full",
+      "below_chin": 0.1
+     },
+     "mode": null,
+     "file": "expected-beard-short-boxed.png",
+     "error": null,
+     "area": 0.02989501953125,
+     "face_box": [
+      191,
+      217,
+      321,
+      385
+     ]
+    },
+    {
+     "kind": "beard",
+     "style": "beard-full-beard",
+     "region": {
+      "kind": "full",
+      "below_chin": 0.25
+     },
+     "mode": null,
+     "file": "expected-beard-full-beard.png",
+     "error": null,
+     "area": 0.041851806640625,
+     "face_box": [
+      191,
+      217,
+      321,
+      385
+     ]
+    },
+    {
+     "kind": "beard",
+     "style": "beard-long-beard",
+     "region": {
+      "kind": "full",
+      "below_chin": 0.5
+     },
+     "mode": null,
+     "file": "expected-beard-long-beard.png",
+     "error": null,
+     "area": 0.061224365234375,
+     "face_box": [
+      191,
+      217,
+      321,
+      385
+     ]
+    },
+    {
+     "kind": "beard",
+     "style": "beard-goatee",
+     "region": {
+      "kind": "chin",
+      "below_chin": 0.1
+     },
+     "mode": null,
+     "file": "expected-beard-goatee.png",
+     "error": null,
+     "area": 0.0054046630859375,
+     "face_box": [
+      191,
+      217,
+      321,
+      385
+     ]
+    },
+    {
+     "kind": "beard",
+     "style": "beard-circle-beard",
+     "region": {
+      "kind": "chin",
+      "below_chin": 0.1,
+      "moustache": true
+     },
+     "mode": null,
+     "file": "expected-beard-circle-beard.png",
+     "error": null,
+     "area": 0.0080322265625,
+     "face_box": [
+      191,
+      217,
+      321,
+      385
+     ]
+    },
+    {
+     "kind": "beard",
+     "style": "beard-anchor",
+     "region": {
+      "kind": "jaw",
+      "below_chin": 0.1,
+      "moustache": true
+     },
+     "mode": null,
+     "file": "expected-beard-anchor.png",
+     "error": null,
+     "area": 0.022247314453125,
+     "face_box": [
+      191,
+      217,
+      321,
+      385
+     ]
+    },
+    {
+     "kind": "beard",
+     "style": "beard-chin-strap",
+     "region": {
+      "kind": "jaw",
+      "below_chin": 0.05
+     },
+     "mode": null,
+     "file": "expected-beard-chin-strap.png",
+     "error": null,
+     "area": 0.0160736083984375,
+     "face_box": [
+      191,
+      217,
+      321,
+      385
+     ]
+    },
+    {
+     "kind": "beard",
+     "style": "beard-soul-patch",
+     "region": {
+      "kind": "chin",
+      "below_chin": 0.0
+     },
+     "mode": null,
+     "file": "expected-beard-soul-patch.png",
+     "error": null,
+     "area": 0.003173828125,
+     "face_box": [
+      191,
+      217,
+      321,
+      385
+     ]
+    },
+    {
+     "kind": "beard",
+     "style": "beard-mutton-chops",
+     "region": {
+      "kind": "jaw",
+      "below_chin": 0.0
+     },
+     "mode": null,
+     "file": "expected-beard-mutton-chops.png",
+     "error": null,
+     "area": 0.012103271484375,
+     "face_box": [
+      191,
+      217,
+      321,
+      385
+     ]
+    },
+    {
+     "kind": "beard",
+     "style": "beard-chevron",
+     "region": {
+      "kind": "moustache",
+      "below_chin": 0.0
+     },
+     "mode": null,
+     "file": "expected-beard-chevron.png",
+     "error": null,
+     "area": 0.0026275634765625,
+     "face_box": [
+      191,
+      217,
+      321,
+      385
+     ]
+    },
+    {
+     "kind": "beard",
+     "style": "beard-horseshoe",
+     "region": {
+      "kind": "moustache",
+      "below_chin": 0.0,
+      "chin_sides": true
+     },
+     "mode": null,
+     "file": "expected-beard-horseshoe.png",
+     "error": null,
+     "area": 0.0073760986328125,
+     "face_box": [
+      191,
+      217,
+      321,
+      385
+     ]
+    }
+   ]
+  },
+  {
+   "case": "man-bearded",
+   "width": 512,
+   "height": 640,
+   "clothes": false,
+   "photo": true,
+   "colour": "brown",
+   "has_beard": true,
+   "expected": [
+    {
+     "kind": "hair",
+     "style": "hair-keep-none-down",
+     "shape": {
+      "length": "keep",
+      "bangs": "none",
+      "updo": false
+     },
+     "mode": null,
+     "file": "expected-hair-keep-none-down.png",
+     "error": null,
+     "area": 0.072674560546875,
+     "face_box": [
+      191,
+      217,
+      321,
+      385
+     ]
+    },
+    {
+     "kind": "hair",
+     "style": "hair-short-none-down",
+     "shape": {
+      "length": "short",
+      "bangs": "none",
+      "updo": false
+     },
+     "mode": null,
+     "file": "expected-hair-short-none-down.png",
+     "error": null,
+     "area": 0.098931884765625,
+     "face_box": [
+      191,
+      217,
+      321,
+      385
+     ]
+    },
+    {
+     "kind": "hair",
+     "style": "hair-medium-none-down",
+     "shape": {
+      "length": "medium",
+      "bangs": "none",
+      "updo": false
+     },
+     "mode": null,
+     "file": "expected-hair-medium-none-down.png",
+     "error": null,
+     "area": 0.2222686767578125,
+     "face_box": [
+      191,
+      217,
+      321,
+      385
+     ]
+    },
+    {
+     "kind": "hair",
+     "style": "hair-long-none-down",
+     "shape": {
+      "length": "long",
+      "bangs": "none",
+      "updo": false
+     },
+     "mode": null,
+     "file": "expected-hair-long-none-down.png",
+     "error": null,
+     "area": 0.3720062255859375,
+     "face_box": [
+      191,
+      217,
+      321,
+      385
+     ]
+    },
+    {
+     "kind": "hair",
+     "style": "hair-short-full-down",
+     "shape": {
+      "length": "short",
+      "bangs": "full",
+      "updo": false
+     },
+     "mode": null,
+     "file": "expected-hair-short-full-down.png",
+     "error": null,
+     "area": 0.1077239990234375,
+     "face_box": [
+      191,
+      217,
+      321,
+      385
+     ]
+    },
+    {
+     "kind": "hair",
+     "style": "hair-medium-side-down",
+     "shape": {
+      "length": "medium",
+      "bangs": "side",
+      "updo": false
+     },
+     "mode": null,
+     "file": "expected-hair-medium-side-down.png",
+     "error": null,
+     "area": 0.231060791015625,
+     "face_box": [
+      191,
+      217,
+      321,
+      385
+     ]
+    },
+    {
+     "kind": "hair",
+     "style": "hair-keep-curtain-updo",
+     "shape": {
+      "length": "keep",
+      "bangs": "curtain",
+      "updo": true
+     },
+     "mode": null,
+     "file": "expected-hair-keep-curtain-updo.png",
+     "error": null,
+     "area": 0.124560546875,
+     "face_box": [
+      191,
+      217,
+      321,
+      385
+     ]
+    },
+    {
+     "kind": "hair",
+     "style": "hair-keep-none-updo",
+     "shape": {
+      "length": "keep",
+      "bangs": "none",
+      "updo": true
+     },
+     "mode": null,
+     "file": "expected-hair-keep-none-updo.png",
+     "error": null,
+     "area": 0.1157684326171875,
+     "face_box": [
+      191,
+      217,
+      321,
+      385
+     ]
+    },
+    {
+     "kind": "hair",
+     "style": "hair-long-none-down-hair",
+     "shape": {
+      "length": "long",
+      "bangs": "none",
+      "updo": false
+     },
+     "mode": "hair",
+     "file": "expected-hair-long-none-down-hair.png",
+     "error": null,
+     "area": 0.3629913330078125,
+     "face_box": [
+      191,
+      217,
+      321,
+      385
+     ]
+    },
+    {
+     "kind": "beard",
+     "style": "beard-clean-shaven",
+     "region": {
+      "kind": "full",
+      "below_chin": 0.1
+     },
+     "mode": "shave",
+     "file": "expected-beard-clean-shaven.png",
+     "error": null,
+     "area": 0.02989501953125,
+     "face_box": [
+      191,
+      217,
+      321,
+      385
+     ]
+    },
+    {
+     "kind": "beard",
+     "style": "beard-light-stubble",
+     "region": {
+      "kind": "full",
+      "below_chin": 0.0
+     },
+     "mode": null,
+     "file": "expected-beard-light-stubble.png",
+     "error": null,
+     "area": 0.0220611572265625,
+     "face_box": [
+      191,
+      217,
+      321,
+      385
+     ]
+    },
+    {
+     "kind": "beard",
+     "style": "beard-short-boxed",
+     "region": {
+      "kind": "full",
+      "below_chin": 0.1
+     },
+     "mode": null,
+     "file": "expected-beard-short-boxed.png",
+     "error": null,
+     "area": 0.02989501953125,
+     "face_box": [
+      191,
+      217,
+      321,
+      385
+     ]
+    },
+    {
+     "kind": "beard",
+     "style": "beard-full-beard",
+     "region": {
+      "kind": "full",
+      "below_chin": 0.25
+     },
+     "mode": null,
+     "file": "expected-beard-full-beard.png",
+     "error": null,
+     "area": 0.041851806640625,
+     "face_box": [
+      191,
+      217,
+      321,
+      385
+     ]
+    },
+    {
+     "kind": "beard",
+     "style": "beard-long-beard",
+     "region": {
+      "kind": "full",
+      "below_chin": 0.5
+     },
+     "mode": null,
+     "file": "expected-beard-long-beard.png",
+     "error": null,
+     "area": 0.061224365234375,
+     "face_box": [
+      191,
+      217,
+      321,
+      385
+     ]
+    },
+    {
+     "kind": "beard",
+     "style": "beard-goatee",
+     "region": {
+      "kind": "chin",
+      "below_chin": 0.1
+     },
+     "mode": null,
+     "file": "expected-beard-goatee.png",
+     "error": null,
+     "area": 0.02989501953125,
+     "face_box": [
+      191,
+      217,
+      321,
+      385
+     ]
+    },
+    {
+     "kind": "beard",
+     "style": "beard-circle-beard",
+     "region": {
+      "kind": "chin",
+      "below_chin": 0.1,
+      "moustache": true
+     },
+     "mode": null,
+     "file": "expected-beard-circle-beard.png",
+     "error": null,
+     "area": 0.02989501953125,
+     "face_box": [
+      191,
+      217,
+      321,
+      385
+     ]
+    },
+    {
+     "kind": "beard",
+     "style": "beard-anchor",
+     "region": {
+      "kind": "jaw",
+      "below_chin": 0.1,
+      "moustache": true
+     },
+     "mode": null,
+     "file": "expected-beard-anchor.png",
+     "error": null,
+     "area": 0.02989501953125,
+     "face_box": [
+      191,
+      217,
+      321,
+      385
+     ]
+    },
+    {
+     "kind": "beard",
+     "style": "beard-chin-strap",
+     "region": {
+      "kind": "jaw",
+      "below_chin": 0.05
+     },
+     "mode": null,
+     "file": "expected-beard-chin-strap.png",
+     "error": null,
+     "area": 0.02989501953125,
+     "face_box": [
+      191,
+      217,
+      321,
+      385
+     ]
+    },
+    {
+     "kind": "beard",
+     "style": "beard-soul-patch",
+     "region": {
+      "kind": "chin",
+      "below_chin": 0.0
+     },
+     "mode": null,
+     "file": "expected-beard-soul-patch.png",
+     "error": null,
+     "area": 0.02989501953125,
+     "face_box": [
+      191,
+      217,
+      321,
+      385
+     ]
+    },
+    {
+     "kind": "beard",
+     "style": "beard-mutton-chops",
+     "region": {
+      "kind": "jaw",
+      "below_chin": 0.0
+     },
+     "mode": null,
+     "file": "expected-beard-mutton-chops.png",
+     "error": null,
+     "area": 0.02989501953125,
+     "face_box": [
+      191,
+      217,
+      321,
+      385
+     ]
+    },
+    {
+     "kind": "beard",
+     "style": "beard-chevron",
+     "region": {
+      "kind": "moustache",
+      "below_chin": 0.0
+     },
+     "mode": null,
+     "file": "expected-beard-chevron.png",
+     "error": null,
+     "area": 0.02989501953125,
+     "face_box": [
+      191,
+      217,
+      321,
+      385
+     ]
+    },
+    {
+     "kind": "beard",
+     "style": "beard-horseshoe",
+     "region": {
+      "kind": "moustache",
+      "below_chin": 0.0,
+      "chin_sides": true
+     },
+     "mode": null,
+     "file": "expected-beard-horseshoe.png",
+     "error": null,
+     "area": 0.02989501953125,
+     "face_box": [
+      191,
+      217,
+      321,
+      385
+     ]
+    }
+   ]
+  },
+  {
+   "case": "man-glasses",
+   "width": 512,
+   "height": 640,
+   "clothes": false,
+   "photo": true,
+   "colour": "brown",
+   "has_beard": false,
+   "expected": [
+    {
+     "kind": "hair",
+     "style": "hair-keep-none-down",
+     "shape": {
+      "length": "keep",
+      "bangs": "none",
+      "updo": false
+     },
+     "mode": null,
+     "file": "expected-hair-keep-none-down.png",
+     "error": null,
+     "area": 0.072674560546875,
+     "face_box": [
+      191,
+      217,
+      321,
+      385
+     ]
+    },
+    {
+     "kind": "hair",
+     "style": "hair-short-none-down",
+     "shape": {
+      "length": "short",
+      "bangs": "none",
+      "updo": false
+     },
+     "mode": null,
+     "file": "expected-hair-short-none-down.png",
+     "error": null,
+     "area": 0.098931884765625,
+     "face_box": [
+      191,
+      217,
+      321,
+      385
+     ]
+    },
+    {
+     "kind": "hair",
+     "style": "hair-medium-none-down",
+     "shape": {
+      "length": "medium",
+      "bangs": "none",
+      "updo": false
+     },
+     "mode": null,
+     "file": "expected-hair-medium-none-down.png",
+     "error": null,
+     "area": 0.2222686767578125,
+     "face_box": [
+      191,
+      217,
+      321,
+      385
+     ]
+    },
+    {
+     "kind": "hair",
+     "style": "hair-long-none-down",
+     "shape": {
+      "length": "long",
+      "bangs": "none",
+      "updo": false
+     },
+     "mode": null,
+     "file": "expected-hair-long-none-down.png",
+     "error": null,
+     "area": 0.3720062255859375,
+     "face_box": [
+      191,
+      217,
+      321,
+      385
+     ]
+    },
+    {
+     "kind": "hair",
+     "style": "hair-short-full-down",
+     "shape": {
+      "length": "short",
+      "bangs": "full",
+      "updo": false
+     },
+     "mode": null,
+     "file": "expected-hair-short-full-down.png",
+     "error": null,
+     "area": 0.1073211669921875,
+     "face_box": [
+      191,
+      217,
+      321,
+      385
+     ]
+    },
+    {
+     "kind": "hair",
+     "style": "hair-medium-side-down",
+     "shape": {
+      "length": "medium",
+      "bangs": "side",
+      "updo": false
+     },
+     "mode": null,
+     "file": "expected-hair-medium-side-down.png",
+     "error": null,
+     "area": 0.230657958984375,
+     "face_box": [
+      191,
+      217,
+      321,
+      385
+     ]
+    },
+    {
+     "kind": "hair",
+     "style": "hair-keep-curtain-updo",
+     "shape": {
+      "length": "keep",
+      "bangs": "curtain",
+      "updo": true
+     },
+     "mode": null,
+     "file": "expected-hair-keep-curtain-updo.png",
+     "error": null,
+     "area": 0.12415771484375,
+     "face_box": [
+      191,
+      217,
+      321,
+      385
+     ]
+    },
+    {
+     "kind": "hair",
+     "style": "hair-keep-none-updo",
+     "shape": {
+      "length": "keep",
+      "bangs": "none",
+      "updo": true
+     },
+     "mode": null,
+     "file": "expected-hair-keep-none-updo.png",
+     "error": null,
+     "area": 0.1157684326171875,
+     "face_box": [
+      191,
+      217,
+      321,
+      385
+     ]
+    },
+    {
+     "kind": "hair",
+     "style": "hair-long-none-down-hair",
+     "shape": {
+      "length": "long",
+      "bangs": "none",
+      "updo": false
+     },
+     "mode": "hair",
+     "file": "expected-hair-long-none-down-hair.png",
+     "error": null,
+     "area": 0.3629913330078125,
+     "face_box": [
+      191,
+      217,
+      321,
+      385
+     ]
+    },
+    {
+     "kind": "beard",
+     "style": "beard-clean-shaven",
+     "region": {
+      "kind": "full",
+      "below_chin": 0.1
+     },
+     "mode": "shave",
+     "file": null,
+     "error": "no_beard_to_shave"
+    },
+    {
+     "kind": "beard",
+     "style": "beard-light-stubble",
+     "region": {
+      "kind": "full",
+      "below_chin": 0.0
+     },
+     "mode": null,
+     "file": "expected-beard-light-stubble.png",
+     "error": null,
+     "area": 0.0220611572265625,
+     "face_box": [
+      191,
+      217,
+      321,
+      385
+     ]
+    },
+    {
+     "kind": "beard",
+     "style": "beard-short-boxed",
+     "region": {
+      "kind": "full",
+      "below_chin": 0.1
+     },
+     "mode": null,
+     "file": "expected-beard-short-boxed.png",
+     "error": null,
+     "area": 0.02989501953125,
+     "face_box": [
+      191,
+      217,
+      321,
+      385
+     ]
+    },
+    {
+     "kind": "beard",
+     "style": "beard-full-beard",
+     "region": {
+      "kind": "full",
+      "below_chin": 0.25
+     },
+     "mode": null,
+     "file": "expected-beard-full-beard.png",
+     "error": null,
+     "area": 0.041851806640625,
+     "face_box": [
+      191,
+      217,
+      321,
+      385
+     ]
+    },
+    {
+     "kind": "beard",
+     "style": "beard-long-beard",
+     "region": {
+      "kind": "full",
+      "below_chin": 0.5
+     },
+     "mode": null,
+     "file": "expected-beard-long-beard.png",
+     "error": null,
+     "area": 0.061224365234375,
+     "face_box": [
+      191,
+      217,
+      321,
+      385
+     ]
+    },
+    {
+     "kind": "beard",
+     "style": "beard-goatee",
+     "region": {
+      "kind": "chin",
+      "below_chin": 0.1
+     },
+     "mode": null,
+     "file": "expected-beard-goatee.png",
+     "error": null,
+     "area": 0.0054046630859375,
+     "face_box": [
+      191,
+      217,
+      321,
+      385
+     ]
+    },
+    {
+     "kind": "beard",
+     "style": "beard-circle-beard",
+     "region": {
+      "kind": "chin",
+      "below_chin": 0.1,
+      "moustache": true
+     },
+     "mode": null,
+     "file": "expected-beard-circle-beard.png",
+     "error": null,
+     "area": 0.0080322265625,
+     "face_box": [
+      191,
+      217,
+      321,
+      385
+     ]
+    },
+    {
+     "kind": "beard",
+     "style": "beard-anchor",
+     "region": {
+      "kind": "jaw",
+      "below_chin": 0.1,
+      "moustache": true
+     },
+     "mode": null,
+     "file": "expected-beard-anchor.png",
+     "error": null,
+     "area": 0.022247314453125,
+     "face_box": [
+      191,
+      217,
+      321,
+      385
+     ]
+    },
+    {
+     "kind": "beard",
+     "style": "beard-chin-strap",
+     "region": {
+      "kind": "jaw",
+      "below_chin": 0.05
+     },
+     "mode": null,
+     "file": "expected-beard-chin-strap.png",
+     "error": null,
+     "area": 0.0160736083984375,
+     "face_box": [
+      191,
+      217,
+      321,
+      385
+     ]
+    },
+    {
+     "kind": "beard",
+     "style": "beard-soul-patch",
+     "region": {
+      "kind": "chin",
+      "below_chin": 0.0
+     },
+     "mode": null,
+     "file": "expected-beard-soul-patch.png",
+     "error": null,
+     "area": 0.003173828125,
+     "face_box": [
+      191,
+      217,
+      321,
+      385
+     ]
+    },
+    {
+     "kind": "beard",
+     "style": "beard-mutton-chops",
+     "region": {
+      "kind": "jaw",
+      "below_chin": 0.0
+     },
+     "mode": null,
+     "file": "expected-beard-mutton-chops.png",
+     "error": null,
+     "area": 0.012103271484375,
+     "face_box": [
+      191,
+      217,
+      321,
+      385
+     ]
+    },
+    {
+     "kind": "beard",
+     "style": "beard-chevron",
+     "region": {
+      "kind": "moustache",
+      "below_chin": 0.0
+     },
+     "mode": null,
+     "file": "expected-beard-chevron.png",
+     "error": null,
+     "area": 0.0026275634765625,
+     "face_box": [
+      191,
+      217,
+      321,
+      385
+     ]
+    },
+    {
+     "kind": "beard",
+     "style": "beard-horseshoe",
+     "region": {
+      "kind": "moustache",
+      "below_chin": 0.0,
+      "chin_sides": true
+     },
+     "mode": null,
+     "file": "expected-beard-horseshoe.png",
+     "error": null,
+     "area": 0.0073760986328125,
+     "face_box": [
+      191,
+      217,
+      321,
+      385
+     ]
+    }
+   ]
+  },
+  {
+   "case": "woman-long",
+   "width": 512,
+   "height": 640,
+   "clothes": true,
+   "photo": true,
+   "colour": "blonde",
+   "has_beard": false,
+   "expected": [
+    {
+     "kind": "hair",
+     "style": "hair-keep-none-down",
+     "shape": {
+      "length": "keep",
+      "bangs": "none",
+      "updo": false
+     },
+     "mode": null,
+     "file": "expected-hair-keep-none-down.png",
+     "error": null,
+     "area": 0.2002197265625,
+     "face_box": [
+      204,
+      173,
+      308,
+      307
+     ]
+    },
+    {
+     "kind": "hair",
+     "style": "hair-short-none-down",
+     "shape": {
+      "length": "short",
+      "bangs": "none",
+      "updo": false
+     },
+     "mode": null,
+     "file": "expected-hair-short-none-down.png",
+     "error": null,
+     "area": 0.2002197265625,
+     "face_box": [
+      204,
+      173,
+      308,
+      307
+     ]
+    },
+    {
+     "kind": "hair",
+     "style": "hair-medium-none-down",
+     "shape": {
+      "length": "medium",
+      "bangs": "none",
+      "updo": false
+     },
+     "mode": null,
+     "file": "expected-hair-medium-none-down.png",
+     "error": null,
+     "area": 0.2002197265625,
+     "face_box": [
+      204,
+      173,
+      308,
+      307
+     ]
+    },
+    {
+     "kind": "hair",
+     "style": "hair-long-none-down",
+     "shape": {
+      "length": "long",
+      "bangs": "none",
+      "updo": false
+     },
+     "mode": null,
+     "file": "expected-hair-long-none-down.png",
+     "error": null,
+     "area": 0.2677734375,
+     "face_box": [
+      204,
+      173,
+      308,
+      307
+     ]
+    },
+    {
+     "kind": "hair",
+     "style": "hair-short-full-down",
+     "shape": {
+      "length": "short",
+      "bangs": "full",
+      "updo": false
+     },
+     "mode": null,
+     "file": "expected-hair-short-full-down.png",
+     "error": null,
+     "area": 0.20621337890625,
+     "face_box": [
+      204,
+      173,
+      308,
+      307
+     ]
+    },
+    {
+     "kind": "hair",
+     "style": "hair-medium-side-down",
+     "shape": {
+      "length": "medium",
+      "bangs": "side",
+      "updo": false
+     },
+     "mode": null,
+     "file": "expected-hair-medium-side-down.png",
+     "error": null,
+     "area": 0.20621337890625,
+     "face_box": [
+      204,
+      173,
+      308,
+      307
+     ]
+    },
+    {
+     "kind": "hair",
+     "style": "hair-keep-curtain-updo",
+     "shape": {
+      "length": "keep",
+      "bangs": "curtain",
+      "updo": true
+     },
+     "mode": null,
+     "file": "expected-hair-keep-curtain-updo.png",
+     "error": null,
+     "area": 0.2361907958984375,
+     "face_box": [
+      204,
+      173,
+      308,
+      307
+     ]
+    },
+    {
+     "kind": "hair",
+     "style": "hair-keep-none-updo",
+     "shape": {
+      "length": "keep",
+      "bangs": "none",
+      "updo": true
+     },
+     "mode": null,
+     "file": "expected-hair-keep-none-updo.png",
+     "error": null,
+     "area": 0.2301971435546875,
+     "face_box": [
+      204,
+      173,
+      308,
+      307
+     ]
+    },
+    {
+     "kind": "hair",
+     "style": "hair-long-none-down-hair",
+     "shape": {
+      "length": "long",
+      "bangs": "none",
+      "updo": false
+     },
+     "mode": "hair",
+     "file": "expected-hair-long-none-down-hair.png",
+     "error": null,
+     "area": 0.260687255859375,
+     "face_box": [
+      204,
+      173,
+      308,
+      307
+     ]
+    },
+    {
+     "kind": "beard",
+     "style": "beard-clean-shaven",
+     "region": {
+      "kind": "full",
+      "below_chin": 0.1
+     },
+     "mode": "shave",
+     "file": null,
+     "error": "no_beard_to_shave"
+    },
+    {
+     "kind": "beard",
+     "style": "beard-light-stubble",
+     "region": {
+      "kind": "full",
+      "below_chin": 0.0
+     },
+     "mode": null,
+     "file": "expected-beard-light-stubble.png",
+     "error": null,
+     "area": 0.013507080078125,
+     "face_box": [
+      204,
+      173,
+      308,
+      307
+     ]
+    },
+    {
+     "kind": "beard",
+     "style": "beard-short-boxed",
+     "region": {
+      "kind": "full",
+      "below_chin": 0.1
+     },
+     "mode": null,
+     "file": "expected-beard-short-boxed.png",
+     "error": null,
+     "area": 0.0179107666015625,
+     "face_box": [
+      204,
+      173,
+      308,
+      307
+     ]
+    },
+    {
+     "kind": "beard",
+     "style": "beard-full-beard",
+     "region": {
+      "kind": "full",
+      "below_chin": 0.25
+     },
+     "mode": null,
+     "file": "expected-beard-full-beard.png",
+     "error": null,
+     "area": 0.0246856689453125,
+     "face_box": [
+      204,
+      173,
+      308,
+      307
+     ]
+    },
+    {
+     "kind": "beard",
+     "style": "beard-long-beard",
+     "region": {
+      "kind": "full",
+      "below_chin": 0.5
+     },
+     "mode": null,
+     "file": "expected-beard-long-beard.png",
+     "error": null,
+     "area": 0.0362030029296875,
+     "face_box": [
+      204,
+      173,
+      308,
+      307
+     ]
+    },
+    {
+     "kind": "beard",
+     "style": "beard-goatee",
+     "region": {
+      "kind": "chin",
+      "below_chin": 0.1
+     },
+     "mode": null,
+     "file": "expected-beard-goatee.png",
+     "error": null,
+     "area": 0.003424072265625,
+     "face_box": [
+      204,
+      173,
+      308,
+      307
+     ]
+    },
+    {
+     "kind": "beard",
+     "style": "beard-circle-beard",
+     "region": {
+      "kind": "chin",
+      "below_chin": 0.1,
+      "moustache": true
+     },
+     "mode": null,
+     "file": "expected-beard-circle-beard.png",
+     "error": null,
+     "area": 0.0052703857421875,
+     "face_box": [
+      204,
+      173,
+      308,
+      307
+     ]
+    },
+    {
+     "kind": "beard",
+     "style": "beard-anchor",
+     "region": {
+      "kind": "jaw",
+      "below_chin": 0.1,
+      "moustache": true
+     },
+     "mode": null,
+     "file": "expected-beard-anchor.png",
+     "error": null,
+     "area": 0.0138214111328125,
+     "face_box": [
+      204,
+      173,
+      308,
+      307
+     ]
+    },
+    {
+     "kind": "beard",
+     "style": "beard-chin-strap",
+     "region": {
+      "kind": "jaw",
+      "below_chin": 0.05
+     },
+     "mode": null,
+     "file": "expected-beard-chin-strap.png",
+     "error": null,
+     "area": 0.0096038818359375,
+     "face_box": [
+      204,
+      173,
+      308,
+      307
+     ]
+    },
+    {
+     "kind": "beard",
+     "style": "beard-soul-patch",
+     "region": {
+      "kind": "chin",
+      "below_chin": 0.0
+     },
+     "mode": null,
+     "file": "expected-beard-soul-patch.png",
+     "error": null,
+     "area": 0.0020172119140625,
+     "face_box": [
+      204,
+      173,
+      308,
+      307
+     ]
+    },
+    {
+     "kind": "beard",
+     "style": "beard-mutton-chops",
+     "region": {
+      "kind": "jaw",
+      "below_chin": 0.0
+     },
+     "mode": null,
+     "file": "expected-beard-mutton-chops.png",
+     "error": null,
+     "area": 0.0075592041015625,
+     "face_box": [
+      204,
+      173,
+      308,
+      307
+     ]
+    },
+    {
+     "kind": "beard",
+     "style": "beard-chevron",
+     "region": {
+      "kind": "moustache",
+      "below_chin": 0.0
+     },
+     "mode": null,
+     "file": "expected-beard-chevron.png",
+     "error": null,
+     "area": 0.0018463134765625,
+     "face_box": [
+      204,
+      173,
+      308,
+      307
+     ]
+    },
+    {
+     "kind": "beard",
+     "style": "beard-horseshoe",
+     "region": {
+      "kind": "moustache",
+      "below_chin": 0.0,
+      "chin_sides": true
+     },
+     "mode": null,
+     "file": "expected-beard-horseshoe.png",
+     "error": null,
+     "area": 0.0048309326171875,
+     "face_box": [
+      204,
+      173,
+      308,
+      307
+     ]
+    }
+   ]
+  },
+  {
+   "case": "hat-and-decoys",
+   "width": 512,
+   "height": 640,
+   "clothes": true,
+   "photo": false,
+   "colour": null,
+   "has_beard": null,
+   "expected": [
+    {
+     "kind": "hair",
+     "style": "hair-keep-none-down",
+     "shape": {
+      "length": "keep",
+      "bangs": "none",
+      "updo": false
+     },
+     "mode": null,
+     "file": "expected-hair-keep-none-down.png",
+     "error": null,
+     "area": 0.062371826171875,
+     "face_box": [
+      197,
+      224,
+      315,
+      376
+     ]
+    },
+    {
+     "kind": "hair",
+     "style": "hair-short-none-down",
+     "shape": {
+      "length": "short",
+      "bangs": "none",
+      "updo": false
+     },
+     "mode": null,
+     "file": "expected-hair-short-none-down.png",
+     "error": null,
+     "area": 0.081591796875,
+     "face_box": [
+      197,
+      224,
+      315,
+      376
+     ]
+    },
+    {
+     "kind": "hair",
+     "style": "hair-medium-none-down",
+     "shape": {
+      "length": "medium",
+      "bangs": "none",
+      "updo": false
+     },
+     "mode": null,
+     "file": "expected-hair-medium-none-down.png",
+     "error": null,
+     "area": 0.182562255859375,
+     "face_box": [
+      197,
+      224,
+      315,
+      376
+     ]
+    },
+    {
+     "kind": "hair",
+     "style": "hair-long-none-down",
+     "shape": {
+      "length": "long",
+      "bangs": "none",
+      "updo": false
+     },
+     "mode": null,
+     "file": "expected-hair-long-none-down.png",
+     "error": null,
+     "area": 0.331951904296875,
+     "face_box": [
+      197,
+      224,
+      315,
+      376
+     ]
+    },
+    {
+     "kind": "hair",
+     "style": "hair-short-full-down",
+     "shape": {
+      "length": "short",
+      "bangs": "full",
+      "updo": false
+     },
+     "mode": null,
+     "file": "expected-hair-short-full-down.png",
+     "error": null,
+     "area": 0.0889312744140625,
+     "face_box": [
+      197,
+      224,
+      315,
+      376
+     ]
+    },
+    {
+     "kind": "hair",
+     "style": "hair-medium-side-down",
+     "shape": {
+      "length": "medium",
+      "bangs": "side",
+      "updo": false
+     },
+     "mode": null,
+     "file": "expected-hair-medium-side-down.png",
+     "error": null,
+     "area": 0.1899017333984375,
+     "face_box": [
+      197,
+      224,
+      315,
+      376
+     ]
+    },
+    {
+     "kind": "hair",
+     "style": "hair-keep-curtain-updo",
+     "shape": {
+      "length": "keep",
+      "bangs": "curtain",
+      "updo": true
+     },
+     "mode": null,
+     "file": "expected-hair-keep-curtain-updo.png",
+     "error": null,
+     "area": 0.102862548828125,
+     "face_box": [
+      197,
+      224,
+      315,
+      376
+     ]
+    },
+    {
+     "kind": "hair",
+     "style": "hair-keep-none-updo",
+     "shape": {
+      "length": "keep",
+      "bangs": "none",
+      "updo": true
+     },
+     "mode": null,
+     "file": "expected-hair-keep-none-updo.png",
+     "error": null,
+     "area": 0.0955230712890625,
+     "face_box": [
+      197,
+      224,
+      315,
+      376
+     ]
+    },
+    {
+     "kind": "hair",
+     "style": "hair-long-none-down-hair",
+     "shape": {
+      "length": "long",
+      "bangs": "none",
+      "updo": false
+     },
+     "mode": "hair",
+     "file": "expected-hair-long-none-down-hair.png",
+     "error": null,
+     "area": 0.326019287109375,
+     "face_box": [
+      197,
+      224,
+      315,
+      376
+     ]
+    },
+    {
+     "kind": "beard",
+     "style": "beard-clean-shaven",
+     "region": {
+      "kind": "full",
+      "below_chin": 0.1
+     },
+     "mode": "shave",
+     "file": "expected-beard-clean-shaven.png",
+     "error": null,
+     "area": 0.0248443603515625,
+     "face_box": [
+      197,
+      224,
+      315,
+      376
+     ]
+    },
+    {
+     "kind": "beard",
+     "style": "beard-light-stubble",
+     "region": {
+      "kind": "full",
+      "below_chin": 0.0
+     },
+     "mode": null,
+     "file": "expected-beard-light-stubble.png",
+     "error": null,
+     "area": 0.0185546875,
+     "face_box": [
+      197,
+      224,
+      315,
+      376
+     ]
+    },
+    {
+     "kind": "beard",
+     "style": "beard-short-boxed",
+     "region": {
+      "kind": "full",
+      "below_chin": 0.1
+     },
+     "mode": null,
+     "file": "expected-beard-short-boxed.png",
+     "error": null,
+     "area": 0.0248443603515625,
+     "face_box": [
+      197,
+      224,
+      315,
+      376
+     ]
+    },
+    {
+     "kind": "beard",
+     "style": "beard-full-beard",
+     "region": {
+      "kind": "full",
+      "below_chin": 0.25
+     },
+     "mode": null,
+     "file": "expected-beard-full-beard.png",
+     "error": null,
+     "area": 0.03446044921875,
+     "face_box": [
+      197,
+      224,
+      315,
+      376
+     ]
+    },
+    {
+     "kind": "beard",
+     "style": "beard-long-beard",
+     "region": {
+      "kind": "full",
+      "below_chin": 0.5
+     },
+     "mode": null,
+     "file": "expected-beard-long-beard.png",
+     "error": null,
+     "area": 0.050347900390625,
+     "face_box": [
+      197,
+      224,
+      315,
+      376
+     ]
+    },
+    {
+     "kind": "beard",
+     "style": "beard-goatee",
+     "region": {
+      "kind": "chin",
+      "below_chin": 0.1
+     },
+     "mode": null,
+     "file": "expected-beard-goatee.png",
+     "error": null,
+     "area": 0.0044464111328125,
+     "face_box": [
+      197,
+      224,
+      315,
+      376
+     ]
+    },
+    {
+     "kind": "beard",
+     "style": "beard-circle-beard",
+     "region": {
+      "kind": "chin",
+      "below_chin": 0.1,
+      "moustache": true
+     },
+     "mode": null,
+     "file": "expected-beard-circle-beard.png",
+     "error": null,
+     "area": 0.0066558837890625,
+     "face_box": [
+      197,
+      224,
+      315,
+      376
+     ]
+    },
+    {
+     "kind": "beard",
+     "style": "beard-anchor",
+     "region": {
+      "kind": "jaw",
+      "below_chin": 0.1,
+      "moustache": true
+     },
+     "mode": null,
+     "file": "expected-beard-anchor.png",
+     "error": null,
+     "area": 0.0185760498046875,
+     "face_box": [
+      197,
+      224,
+      315,
+      376
+     ]
+    },
+    {
+     "kind": "beard",
+     "style": "beard-chin-strap",
+     "region": {
+      "kind": "jaw",
+      "below_chin": 0.05
+     },
+     "mode": null,
+     "file": "expected-beard-chin-strap.png",
+     "error": null,
+     "area": 0.0131317138671875,
+     "face_box": [
+      197,
+      224,
+      315,
+      376
+     ]
+    },
+    {
+     "kind": "beard",
+     "style": "beard-soul-patch",
+     "region": {
+      "kind": "chin",
+      "below_chin": 0.0
+     },
+     "mode": null,
+     "file": "expected-beard-soul-patch.png",
+     "error": null,
+     "area": 0.002642822265625,
+     "face_box": [
+      197,
+      224,
+      315,
+      376
+     ]
+    },
+    {
+     "kind": "beard",
+     "style": "beard-mutton-chops",
+     "region": {
+      "kind": "jaw",
+      "below_chin": 0.0
+     },
+     "mode": null,
+     "file": "expected-beard-mutton-chops.png",
+     "error": null,
+     "area": 0.01026611328125,
+     "face_box": [
+      197,
+      224,
+      315,
+      376
+     ]
+    },
+    {
+     "kind": "beard",
+     "style": "beard-chevron",
+     "region": {
+      "kind": "moustache",
+      "below_chin": 0.0
+     },
+     "mode": null,
+     "file": "expected-beard-chevron.png",
+     "error": null,
+     "area": 0.00220947265625,
+     "face_box": [
+      197,
+      224,
+      315,
+      376
+     ]
+    },
+    {
+     "kind": "beard",
+     "style": "beard-horseshoe",
+     "region": {
+      "kind": "moustache",
+      "below_chin": 0.0,
+      "chin_sides": true
+     },
+     "mode": null,
+     "file": "expected-beard-horseshoe.png",
+     "error": null,
+     "area": 0.006390380859375,
+     "face_box": [
+      197,
+      224,
+      315,
+      376
+     ]
+    }
+   ]
+  },
+  {
+   "case": "no-ears-no-nose",
+   "width": 512,
+   "height": 640,
+   "clothes": false,
+   "photo": false,
+   "colour": null,
+   "has_beard": null,
+   "expected": [
+    {
+     "kind": "hair",
+     "style": "hair-keep-none-down",
+     "shape": {
+      "length": "keep",
+      "bangs": "none",
+      "updo": false
+     },
+     "mode": null,
+     "file": "expected-hair-keep-none-down.png",
+     "error": null,
+     "area": 0.072674560546875,
+     "face_box": [
+      191,
+      217,
+      321,
+      385
+     ]
+    },
+    {
+     "kind": "hair",
+     "style": "hair-short-none-down",
+     "shape": {
+      "length": "short",
+      "bangs": "none",
+      "updo": false
+     },
+     "mode": null,
+     "file": "expected-hair-short-none-down.png",
+     "error": null,
+     "area": 0.098931884765625,
+     "face_box": [
+      191,
+      217,
+      321,
+      385
+     ]
+    },
+    {
+     "kind": "hair",
+     "style": "hair-medium-none-down",
+     "shape": {
+      "length": "medium",
+      "bangs": "none",
+      "updo": false
+     },
+     "mode": null,
+     "file": "expected-hair-medium-none-down.png",
+     "error": null,
+     "area": 0.2222686767578125,
+     "face_box": [
+      191,
+      217,
+      321,
+      385
+     ]
+    },
+    {
+     "kind": "hair",
+     "style": "hair-long-none-down",
+     "shape": {
+      "length": "long",
+      "bangs": "none",
+      "updo": false
+     },
+     "mode": null,
+     "file": "expected-hair-long-none-down.png",
+     "error": null,
+     "area": 0.3720062255859375,
+     "face_box": [
+      191,
+      217,
+      321,
+      385
+     ]
+    },
+    {
+     "kind": "hair",
+     "style": "hair-short-full-down",
+     "shape": {
+      "length": "short",
+      "bangs": "full",
+      "updo": false
+     },
+     "mode": null,
+     "file": "expected-hair-short-full-down.png",
+     "error": null,
+     "area": 0.1077239990234375,
+     "face_box": [
+      191,
+      217,
+      321,
+      385
+     ]
+    },
+    {
+     "kind": "hair",
+     "style": "hair-medium-side-down",
+     "shape": {
+      "length": "medium",
+      "bangs": "side",
+      "updo": false
+     },
+     "mode": null,
+     "file": "expected-hair-medium-side-down.png",
+     "error": null,
+     "area": 0.231060791015625,
+     "face_box": [
+      191,
+      217,
+      321,
+      385
+     ]
+    },
+    {
+     "kind": "hair",
+     "style": "hair-keep-curtain-updo",
+     "shape": {
+      "length": "keep",
+      "bangs": "curtain",
+      "updo": true
+     },
+     "mode": null,
+     "file": "expected-hair-keep-curtain-updo.png",
+     "error": null,
+     "area": 0.124560546875,
+     "face_box": [
+      191,
+      217,
+      321,
+      385
+     ]
+    },
+    {
+     "kind": "hair",
+     "style": "hair-keep-none-updo",
+     "shape": {
+      "length": "keep",
+      "bangs": "none",
+      "updo": true
+     },
+     "mode": null,
+     "file": "expected-hair-keep-none-updo.png",
+     "error": null,
+     "area": 0.1157684326171875,
+     "face_box": [
+      191,
+      217,
+      321,
+      385
+     ]
+    },
+    {
+     "kind": "hair",
+     "style": "hair-long-none-down-hair",
+     "shape": {
+      "length": "long",
+      "bangs": "none",
+      "updo": false
+     },
+     "mode": "hair",
+     "file": "expected-hair-long-none-down-hair.png",
+     "error": null,
+     "area": 0.3629913330078125,
+     "face_box": [
+      191,
+      217,
+      321,
+      385
+     ]
+    },
+    {
+     "kind": "beard",
+     "style": "beard-clean-shaven",
+     "region": {
+      "kind": "full",
+      "below_chin": 0.1
+     },
+     "mode": "shave",
+     "file": "expected-beard-clean-shaven.png",
+     "error": null,
+     "area": 0.033135986328125,
+     "face_box": [
+      191,
+      217,
+      321,
+      385
+     ]
+    },
+    {
+     "kind": "beard",
+     "style": "beard-light-stubble",
+     "region": {
+      "kind": "full",
+      "below_chin": 0.0
+     },
+     "mode": null,
+     "file": "expected-beard-light-stubble.png",
+     "error": null,
+     "area": 0.0253021240234375,
+     "face_box": [
+      191,
+      217,
+      321,
+      385
+     ]
+    },
+    {
+     "kind": "beard",
+     "style": "beard-short-boxed",
+     "region": {
+      "kind": "full",
+      "below_chin": 0.1
+     },
+     "mode": null,
+     "file": "expected-beard-short-boxed.png",
+     "error": null,
+     "area": 0.033135986328125,
+     "face_box": [
+      191,
+      217,
+      321,
+      385
+     ]
+    },
+    {
+     "kind": "beard",
+     "style": "beard-full-beard",
+     "region": {
+      "kind": "full",
+      "below_chin": 0.25
+     },
+     "mode": null,
+     "file": "expected-beard-full-beard.png",
+     "error": null,
+     "area": 0.0450927734375,
+     "face_box": [
+      191,
+      217,
+      321,
+      385
+     ]
+    },
+    {
+     "kind": "beard",
+     "style": "beard-long-beard",
+     "region": {
+      "kind": "full",
+      "below_chin": 0.5
+     },
+     "mode": null,
+     "file": "expected-beard-long-beard.png",
+     "error": null,
+     "area": 0.06446533203125,
+     "face_box": [
+      191,
+      217,
+      321,
+      385
+     ]
+    },
+    {
+     "kind": "beard",
+     "style": "beard-goatee",
+     "region": {
+      "kind": "chin",
+      "below_chin": 0.1
+     },
+     "mode": null,
+     "file": "expected-beard-goatee.png",
+     "error": null,
+     "area": 0.0054046630859375,
+     "face_box": [
+      191,
+      217,
+      321,
+      385
+     ]
+    },
+    {
+     "kind": "beard",
+     "style": "beard-circle-beard",
+     "region": {
+      "kind": "chin",
+      "below_chin": 0.1,
+      "moustache": true
+     },
+     "mode": null,
+     "file": "expected-beard-circle-beard.png",
+     "error": null,
+     "area": 0.009991455078125,
+     "face_box": [
+      191,
+      217,
+      321,
+      385
+     ]
+    },
+    {
+     "kind": "beard",
+     "style": "beard-anchor",
+     "region": {
+      "kind": "jaw",
+      "below_chin": 0.1,
+      "moustache": true
+     },
+     "mode": null,
+     "file": "expected-beard-anchor.png",
+     "error": null,
+     "area": 0.025030517578125,
+     "face_box": [
+      191,
+      217,
+      321,
+      385
+     ]
+    },
+    {
+     "kind": "beard",
+     "style": "beard-chin-strap",
+     "region": {
+      "kind": "jaw",
+      "below_chin": 0.05
+     },
+     "mode": null,
+     "file": "expected-beard-chin-strap.png",
+     "error": null,
+     "area": 0.0168975830078125,
+     "face_box": [
+      191,
+      217,
+      321,
+      385
+     ]
+    },
+    {
+     "kind": "beard",
+     "style": "beard-soul-patch",
+     "region": {
+      "kind": "chin",
+      "below_chin": 0.0
+     },
+     "mode": null,
+     "file": "expected-beard-soul-patch.png",
+     "error": null,
+     "area": 0.003173828125,
+     "face_box": [
+      191,
+      217,
+      321,
+      385
+     ]
+    },
+    {
+     "kind": "beard",
+     "style": "beard-mutton-chops",
+     "region": {
+      "kind": "jaw",
+      "below_chin": 0.0
+     },
+     "mode": null,
+     "file": "expected-beard-mutton-chops.png",
+     "error": null,
+     "area": 0.01292724609375,
+     "face_box": [
+      191,
+      217,
+      321,
+      385
+     ]
+    },
+    {
+     "kind": "beard",
+     "style": "beard-chevron",
+     "region": {
+      "kind": "moustache",
+      "below_chin": 0.0
+     },
+     "mode": null,
+     "file": "expected-beard-chevron.png",
+     "error": null,
+     "area": 0.0045867919921875,
+     "face_box": [
+      191,
+      217,
+      321,
+      385
+     ]
+    },
+    {
+     "kind": "beard",
+     "style": "beard-horseshoe",
+     "region": {
+      "kind": "moustache",
+      "below_chin": 0.0,
+      "chin_sides": true
+     },
+     "mode": null,
+     "file": "expected-beard-horseshoe.png",
+     "error": null,
+     "area": 0.0093353271484375,
+     "face_box": [
+      191,
+      217,
+      321,
+      385
+     ]
+    }
+   ]
+  },
+  {
+   "case": "bald",
+   "width": 512,
+   "height": 640,
+   "clothes": false,
+   "photo": true,
+   "colour": null,
+   "has_beard": false,
+   "expected": [
+    {
+     "kind": "hair",
+     "style": "hair-keep-none-down",
+     "shape": {
+      "length": "keep",
+      "bangs": "none",
+      "updo": false
+     },
+     "mode": null,
+     "file": null,
+     "error": "mask_too_small"
+    },
+    {
+     "kind": "hair",
+     "style": "hair-short-none-down",
+     "shape": {
+      "length": "short",
+      "bangs": "none",
+      "updo": false
+     },
+     "mode": null,
+     "file": "expected-hair-short-none-down.png",
+     "error": null,
+     "area": 0.0894805908203125,
+     "face_box": [
+      191,
+      217,
+      321,
+      385
+     ]
+    },
+    {
+     "kind": "hair",
+     "style": "hair-medium-none-down",
+     "shape": {
+      "length": "medium",
+      "bangs": "none",
+      "updo": false
+     },
+     "mode": null,
+     "file": "expected-hair-medium-none-down.png",
+     "error": null,
+     "area": 0.211065673828125,
+     "face_box": [
+      191,
+      217,
+      321,
+      385
+     ]
+    },
+    {
+     "kind": "hair",
+     "style": "hair-long-none-down",
+     "shape": {
+      "length": "long",
+      "bangs": "none",
+      "updo": false
+     },
+     "mode": null,
+     "file": "expected-hair-long-none-down.png",
+     "error": null,
+     "area": 0.35970458984375,
+     "face_box": [
+      191,
+      217,
+      321,
+      385
+     ]
+    },
+    {
+     "kind": "hair",
+     "style": "hair-short-full-down",
+     "shape": {
+      "length": "short",
+      "bangs": "full",
+      "updo": false
+     },
+     "mode": null,
+     "file": "expected-hair-short-full-down.png",
+     "error": null,
+     "area": 0.098272705078125,
+     "face_box": [
+      191,
+      217,
+      321,
+      385
+     ]
+    },
+    {
+     "kind": "hair",
+     "style": "hair-medium-side-down",
+     "shape": {
+      "length": "medium",
+      "bangs": "side",
+      "updo": false
+     },
+     "mode": null,
+     "file": "expected-hair-medium-side-down.png",
+     "error": null,
+     "area": 0.2198577880859375,
+     "face_box": [
+      191,
+      217,
+      321,
+      385
+     ]
+    },
+    {
+     "kind": "hair",
+     "style": "hair-keep-curtain-updo",
+     "shape": {
+      "length": "keep",
+      "bangs": "curtain",
+      "updo": true
+     },
+     "mode": null,
+     "file": "expected-hair-keep-curtain-updo.png",
+     "error": null,
+     "area": 0.10565185546875,
+     "face_box": [
+      191,
+      217,
+      321,
+      385
+     ]
+    },
+    {
+     "kind": "hair",
+     "style": "hair-keep-none-updo",
+     "shape": {
+      "length": "keep",
+      "bangs": "none",
+      "updo": true
+     },
+     "mode": null,
+     "file": "expected-hair-keep-none-updo.png",
+     "error": null,
+     "area": 0.0937530517578125,
+     "face_box": [
+      191,
+      217,
+      321,
+      385
+     ]
+    },
+    {
+     "kind": "hair",
+     "style": "hair-long-none-down-hair",
+     "shape": {
+      "length": "long",
+      "bangs": "none",
+      "updo": false
+     },
+     "mode": "hair",
+     "file": "expected-hair-long-none-down-hair.png",
+     "error": null,
+     "area": 0.35970458984375,
+     "face_box": [
+      191,
+      217,
+      321,
+      385
+     ]
+    },
+    {
+     "kind": "beard",
+     "style": "beard-clean-shaven",
+     "region": {
+      "kind": "full",
+      "below_chin": 0.1
+     },
+     "mode": "shave",
+     "file": null,
+     "error": "no_beard_to_shave"
+    },
+    {
+     "kind": "beard",
+     "style": "beard-light-stubble",
+     "region": {
+      "kind": "full",
+      "below_chin": 0.0
+     },
+     "mode": null,
+     "file": "expected-beard-light-stubble.png",
+     "error": null,
+     "area": 0.0220611572265625,
+     "face_box": [
+      191,
+      217,
+      321,
+      385
+     ]
+    },
+    {
+     "kind": "beard",
+     "style": "beard-short-boxed",
+     "region": {
+      "kind": "full",
+      "below_chin": 0.1
+     },
+     "mode": null,
+     "file": "expected-beard-short-boxed.png",
+     "error": null,
+     "area": 0.02989501953125,
+     "face_box": [
+      191,
+      217,
+      321,
+      385
+     ]
+    },
+    {
+     "kind": "beard",
+     "style": "beard-full-beard",
+     "region": {
+      "kind": "full",
+      "below_chin": 0.25
+     },
+     "mode": null,
+     "file": "expected-beard-full-beard.png",
+     "error": null,
+     "area": 0.041851806640625,
+     "face_box": [
+      191,
+      217,
+      321,
+      385
+     ]
+    },
+    {
+     "kind": "beard",
+     "style": "beard-long-beard",
+     "region": {
+      "kind": "full",
+      "below_chin": 0.5
+     },
+     "mode": null,
+     "file": "expected-beard-long-beard.png",
+     "error": null,
+     "area": 0.061224365234375,
+     "face_box": [
+      191,
+      217,
+      321,
+      385
+     ]
+    },
+    {
+     "kind": "beard",
+     "style": "beard-goatee",
+     "region": {
+      "kind": "chin",
+      "below_chin": 0.1
+     },
+     "mode": null,
+     "file": "expected-beard-goatee.png",
+     "error": null,
+     "area": 0.0054046630859375,
+     "face_box": [
+      191,
+      217,
+      321,
+      385
+     ]
+    },
+    {
+     "kind": "beard",
+     "style": "beard-circle-beard",
+     "region": {
+      "kind": "chin",
+      "below_chin": 0.1,
+      "moustache": true
+     },
+     "mode": null,
+     "file": "expected-beard-circle-beard.png",
+     "error": null,
+     "area": 0.0080322265625,
+     "face_box": [
+      191,
+      217,
+      321,
+      385
+     ]
+    },
+    {
+     "kind": "beard",
+     "style": "beard-anchor",
+     "region": {
+      "kind": "jaw",
+      "below_chin": 0.1,
+      "moustache": true
+     },
+     "mode": null,
+     "file": "expected-beard-anchor.png",
+     "error": null,
+     "area": 0.022247314453125,
+     "face_box": [
+      191,
+      217,
+      321,
+      385
+     ]
+    },
+    {
+     "kind": "beard",
+     "style": "beard-chin-strap",
+     "region": {
+      "kind": "jaw",
+      "below_chin": 0.05
+     },
+     "mode": null,
+     "file": "expected-beard-chin-strap.png",
+     "error": null,
+     "area": 0.0160736083984375,
+     "face_box": [
+      191,
+      217,
+      321,
+      385
+     ]
+    },
+    {
+     "kind": "beard",
+     "style": "beard-soul-patch",
+     "region": {
+      "kind": "chin",
+      "below_chin": 0.0
+     },
+     "mode": null,
+     "file": "expected-beard-soul-patch.png",
+     "error": null,
+     "area": 0.003173828125,
+     "face_box": [
+      191,
+      217,
+      321,
+      385
+     ]
+    },
+    {
+     "kind": "beard",
+     "style": "beard-mutton-chops",
+     "region": {
+      "kind": "jaw",
+      "below_chin": 0.0
+     },
+     "mode": null,
+     "file": "expected-beard-mutton-chops.png",
+     "error": null,
+     "area": 0.012103271484375,
+     "face_box": [
+      191,
+      217,
+      321,
+      385
+     ]
+    },
+    {
+     "kind": "beard",
+     "style": "beard-chevron",
+     "region": {
+      "kind": "moustache",
+      "below_chin": 0.0
+     },
+     "mode": null,
+     "file": "expected-beard-chevron.png",
+     "error": null,
+     "area": 0.0026275634765625,
+     "face_box": [
+      191,
+      217,
+      321,
+      385
+     ]
+    },
+    {
+     "kind": "beard",
+     "style": "beard-horseshoe",
+     "region": {
+      "kind": "moustache",
+      "below_chin": 0.0,
+      "chin_sides": true
+     },
+     "mode": null,
+     "file": "expected-beard-horseshoe.png",
+     "error": null,
+     "area": 0.0073760986328125,
+     "face_box": [
+      191,
+      217,
+      321,
+      385
+     ]
+    }
+   ]
+  },
+  {
+   "case": "noisy-face",
+   "width": 320,
+   "height": 400,
+   "clothes": false,
+   "photo": true,
+   "colour": "brown",
+   "has_beard": null,
+   "expected": [
+    {
+     "kind": "hair",
+     "style": "hair-keep-none-down",
+     "shape": {
+      "length": "keep",
+      "bangs": "none",
+      "updo": false
+     },
+     "mode": null,
+     "file": "expected-hair-keep-none-down.png",
+     "error": null,
+     "area": 0.07046875,
+     "face_box": [
+      119,
+      136,
+      201,
+      240
+     ]
+    },
+    {
+     "kind": "hair",
+     "style": "hair-short-none-down",
+     "shape": {
+      "length": "short",
+      "bangs": "none",
+      "updo": false
+     },
+     "mode": null,
+     "file": "expected-hair-short-none-down.png",
+     "error": null,
+     "area": 0.100203125,
+     "face_box": [
+      119,
+      136,
+      201,
+      240
+     ]
+    },
+    {
+     "kind": "hair",
+     "style": "hair-medium-none-down",
+     "shape": {
+      "length": "medium",
+      "bangs": "none",
+      "updo": false
+     },
+     "mode": null,
+     "file": "expected-hair-medium-none-down.png",
+     "error": null,
+     "area": 0.2226875,
+     "face_box": [
+      119,
+      136,
+      201,
+      240
+     ]
+    },
+    {
+     "kind": "hair",
+     "style": "hair-long-none-down",
+     "shape": {
+      "length": "long",
+      "bangs": "none",
+      "updo": false
+     },
+     "mode": null,
+     "file": "expected-hair-long-none-down.png",
+     "error": null,
+     "area": 0.374125,
+     "face_box": [
+      119,
+      136,
+      201,
+      240
+     ]
+    },
+    {
+     "kind": "hair",
+     "style": "hair-short-full-down",
+     "shape": {
+      "length": "short",
+      "bangs": "full",
+      "updo": false
+     },
+     "mode": null,
+     "file": "expected-hair-short-full-down.png",
+     "error": null,
+     "area": 0.1092890625,
+     "face_box": [
+      119,
+      136,
+      201,
+      240
+     ]
+    },
+    {
+     "kind": "hair",
+     "style": "hair-medium-side-down",
+     "shape": {
+      "length": "medium",
+      "bangs": "side",
+      "updo": false
+     },
+     "mode": null,
+     "file": "expected-hair-medium-side-down.png",
+     "error": null,
+     "area": 0.2317734375,
+     "face_box": [
+      119,
+      136,
+      201,
+      240
+     ]
+    },
+    {
+     "kind": "hair",
+     "style": "hair-keep-curtain-updo",
+     "shape": {
+      "length": "keep",
+      "bangs": "curtain",
+      "updo": true
+     },
+     "mode": null,
+     "file": "expected-hair-keep-curtain-updo.png",
+     "error": null,
+     "area": 0.1236640625,
+     "face_box": [
+      119,
+      136,
+      201,
+      240
+     ]
+    },
+    {
+     "kind": "hair",
+     "style": "hair-keep-none-updo",
+     "shape": {
+      "length": "keep",
+      "bangs": "none",
+      "updo": true
+     },
+     "mode": null,
+     "file": "expected-hair-keep-none-updo.png",
+     "error": null,
+     "area": 0.114578125,
+     "face_box": [
+      119,
+      136,
+      201,
+      240
+     ]
+    },
+    {
+     "kind": "hair",
+     "style": "hair-long-none-down-hair",
+     "shape": {
+      "length": "long",
+      "bangs": "none",
+      "updo": false
+     },
+     "mode": "hair",
+     "file": "expected-hair-long-none-down-hair.png",
+     "error": null,
+     "area": 0.366140625,
+     "face_box": [
+      119,
+      136,
+      201,
+      240
+     ]
+    },
+    {
+     "kind": "beard",
+     "style": "beard-clean-shaven",
+     "region": {
+      "kind": "full",
+      "below_chin": 0.1
+     },
+     "mode": "shave",
+     "file": "expected-beard-clean-shaven.png",
+     "error": null,
+     "area": 0.0293125,
+     "face_box": [
+      119,
+      136,
+      201,
+      240
+     ]
+    },
+    {
+     "kind": "beard",
+     "style": "beard-light-stubble",
+     "region": {
+      "kind": "full",
+      "below_chin": 0.0
+     },
+     "mode": null,
+     "file": "expected-beard-light-stubble.png",
+     "error": null,
+     "area": 0.0211796875,
+     "face_box": [
+      119,
+      136,
+      201,
+      240
+     ]
+    },
+    {
+     "kind": "beard",
+     "style": "beard-short-boxed",
+     "region": {
+      "kind": "full",
+      "below_chin": 0.1
+     },
+     "mode": null,
+     "file": "expected-beard-short-boxed.png",
+     "error": null,
+     "area": 0.0293125,
+     "face_box": [
+      119,
+      136,
+      201,
+      240
+     ]
+    },
+    {
+     "kind": "beard",
+     "style": "beard-full-beard",
+     "region": {
+      "kind": "full",
+      "below_chin": 0.25
+     },
+     "mode": null,
+     "file": "expected-beard-full-beard.png",
+     "error": null,
+     "area": 0.041171875,
+     "face_box": [
+      119,
+      136,
+      201,
+      240
+     ]
+    },
+    {
+     "kind": "beard",
+     "style": "beard-long-beard",
+     "region": {
+      "kind": "full",
+      "below_chin": 0.5
+     },
+     "mode": null,
+     "file": "expected-beard-long-beard.png",
+     "error": null,
+     "area": 0.060484375,
+     "face_box": [
+      119,
+      136,
+      201,
+      240
+     ]
+    },
+    {
+     "kind": "beard",
+     "style": "beard-goatee",
+     "region": {
+      "kind": "chin",
+      "below_chin": 0.1
+     },
+     "mode": null,
+     "file": "expected-beard-goatee.png",
+     "error": null,
+     "area": 0.0053203125,
+     "face_box": [
+      119,
+      136,
+      201,
+      240
+     ]
+    },
+    {
+     "kind": "beard",
+     "style": "beard-circle-beard",
+     "region": {
+      "kind": "chin",
+      "below_chin": 0.1,
+      "moustache": true
+     },
+     "mode": null,
+     "file": "expected-beard-circle-beard.png",
+     "error": null,
+     "area": 0.0076875,
+     "face_box": [
+      119,
+      136,
+      201,
+      240
+     ]
+    },
+    {
+     "kind": "beard",
+     "style": "beard-anchor",
+     "region": {
+      "kind": "jaw",
+      "below_chin": 0.1,
+      "moustache": true
+     },
+     "mode": null,
+     "file": "expected-beard-anchor.png",
+     "error": null,
+     "area": 0.02165625,
+     "face_box": [
+      119,
+      136,
+      201,
+      240
+     ]
+    },
+    {
+     "kind": "beard",
+     "style": "beard-chin-strap",
+     "region": {
+      "kind": "jaw",
+      "below_chin": 0.05
+     },
+     "mode": null,
+     "file": "expected-beard-chin-strap.png",
+     "error": null,
+     "area": 0.01571875,
+     "face_box": [
+      119,
+      136,
+      201,
+      240
+     ]
+    },
+    {
+     "kind": "beard",
+     "style": "beard-soul-patch",
+     "region": {
+      "kind": "chin",
+      "below_chin": 0.0
+     },
+     "mode": null,
+     "file": "expected-beard-soul-patch.png",
+     "error": null,
+     "area": 0.00303125,
+     "face_box": [
+      119,
+      136,
+      201,
+      240
+     ]
+    },
+    {
+     "kind": "beard",
+     "style": "beard-mutton-chops",
+     "region": {
+      "kind": "jaw",
+      "below_chin": 0.0
+     },
+     "mode": null,
+     "file": "expected-beard-mutton-chops.png",
+     "error": null,
+     "area": 0.011484375,
+     "face_box": [
+      119,
+      136,
+      201,
+      240
+     ]
+    },
+    {
+     "kind": "beard",
+     "style": "beard-chevron",
+     "region": {
+      "kind": "moustache",
+      "below_chin": 0.0
+     },
+     "mode": null,
+     "file": "expected-beard-chevron.png",
+     "error": null,
+     "area": 0.0023671875,
+     "face_box": [
+      119,
+      136,
+      201,
+      240
+     ]
+    },
+    {
+     "kind": "beard",
+     "style": "beard-horseshoe",
+     "region": {
+      "kind": "moustache",
+      "below_chin": 0.0,
+      "chin_sides": true
+     },
+     "mode": null,
+     "file": "expected-beard-horseshoe.png",
+     "error": null,
+     "area": 0.0069296875,
+     "face_box": [
+      119,
+      136,
+      201,
+      240
+     ]
+    }
+   ]
+  },
+  {
+   "case": "mouth-covered",
+   "width": 512,
+   "height": 640,
+   "clothes": false,
+   "photo": false,
+   "colour": null,
+   "has_beard": null,
+   "expected": [
+    {
+     "kind": "hair",
+     "style": "hair-keep-none-down",
+     "shape": {
+      "length": "keep",
+      "bangs": "none",
+      "updo": false
+     },
+     "mode": null,
+     "file": "expected-hair-keep-none-down.png",
+     "error": null,
+     "area": 0.072674560546875,
+     "face_box": [
+      191,
+      217,
+      321,
+      385
+     ]
+    },
+    {
+     "kind": "hair",
+     "style": "hair-short-none-down",
+     "shape": {
+      "length": "short",
+      "bangs": "none",
+      "updo": false
+     },
+     "mode": null,
+     "file": "expected-hair-short-none-down.png",
+     "error": null,
+     "area": 0.098931884765625,
+     "face_box": [
+      191,
+      217,
+      321,
+      385
+     ]
+    },
+    {
+     "kind": "hair",
+     "style": "hair-medium-none-down",
+     "shape": {
+      "length": "medium",
+      "bangs": "none",
+      "updo": false
+     },
+     "mode": null,
+     "file": "expected-hair-medium-none-down.png",
+     "error": null,
+     "area": 0.2222686767578125,
+     "face_box": [
+      191,
+      217,
+      321,
+      385
+     ]
+    },
+    {
+     "kind": "hair",
+     "style": "hair-long-none-down",
+     "shape": {
+      "length": "long",
+      "bangs": "none",
+      "updo": false
+     },
+     "mode": null,
+     "file": "expected-hair-long-none-down.png",
+     "error": null,
+     "area": 0.3720062255859375,
+     "face_box": [
+      191,
+      217,
+      321,
+      385
+     ]
+    },
+    {
+     "kind": "hair",
+     "style": "hair-short-full-down",
+     "shape": {
+      "length": "short",
+      "bangs": "full",
+      "updo": false
+     },
+     "mode": null,
+     "file": "expected-hair-short-full-down.png",
+     "error": null,
+     "area": 0.1077239990234375,
+     "face_box": [
+      191,
+      217,
+      321,
+      385
+     ]
+    },
+    {
+     "kind": "hair",
+     "style": "hair-medium-side-down",
+     "shape": {
+      "length": "medium",
+      "bangs": "side",
+      "updo": false
+     },
+     "mode": null,
+     "file": "expected-hair-medium-side-down.png",
+     "error": null,
+     "area": 0.231060791015625,
+     "face_box": [
+      191,
+      217,
+      321,
+      385
+     ]
+    },
+    {
+     "kind": "hair",
+     "style": "hair-keep-curtain-updo",
+     "shape": {
+      "length": "keep",
+      "bangs": "curtain",
+      "updo": true
+     },
+     "mode": null,
+     "file": "expected-hair-keep-curtain-updo.png",
+     "error": null,
+     "area": 0.124560546875,
+     "face_box": [
+      191,
+      217,
+      321,
+      385
+     ]
+    },
+    {
+     "kind": "hair",
+     "style": "hair-keep-none-updo",
+     "shape": {
+      "length": "keep",
+      "bangs": "none",
+      "updo": true
+     },
+     "mode": null,
+     "file": "expected-hair-keep-none-updo.png",
+     "error": null,
+     "area": 0.1157684326171875,
+     "face_box": [
+      191,
+      217,
+      321,
+      385
+     ]
+    },
+    {
+     "kind": "hair",
+     "style": "hair-long-none-down-hair",
+     "shape": {
+      "length": "long",
+      "bangs": "none",
+      "updo": false
+     },
+     "mode": "hair",
+     "file": "expected-hair-long-none-down-hair.png",
+     "error": null,
+     "area": 0.3629913330078125,
+     "face_box": [
+      191,
+      217,
+      321,
+      385
+     ]
+    },
+    {
+     "kind": "beard",
+     "style": "beard-clean-shaven",
+     "region": {
+      "kind": "full",
+      "below_chin": 0.1
+     },
+     "mode": "shave",
+     "file": null,
+     "error": "mouth_not_visible"
+    },
+    {
+     "kind": "beard",
+     "style": "beard-light-stubble",
+     "region": {
+      "kind": "full",
+      "below_chin": 0.0
+     },
+     "mode": null,
+     "file": null,
+     "error": "mouth_not_visible"
+    },
+    {
+     "kind": "beard",
+     "style": "beard-short-boxed",
+     "region": {
+      "kind": "full",
+      "below_chin": 0.1
+     },
+     "mode": null,
+     "file": null,
+     "error": "mouth_not_visible"
+    },
+    {
+     "kind": "beard",
+     "style": "beard-full-beard",
+     "region": {
+      "kind": "full",
+      "below_chin": 0.25
+     },
+     "mode": null,
+     "file": null,
+     "error": "mouth_not_visible"
+    },
+    {
+     "kind": "beard",
+     "style": "beard-long-beard",
+     "region": {
+      "kind": "full",
+      "below_chin": 0.5
+     },
+     "mode": null,
+     "file": null,
+     "error": "mouth_not_visible"
+    },
+    {
+     "kind": "beard",
+     "style": "beard-goatee",
+     "region": {
+      "kind": "chin",
+      "below_chin": 0.1
+     },
+     "mode": null,
+     "file": null,
+     "error": "mouth_not_visible"
+    },
+    {
+     "kind": "beard",
+     "style": "beard-circle-beard",
+     "region": {
+      "kind": "chin",
+      "below_chin": 0.1,
+      "moustache": true
+     },
+     "mode": null,
+     "file": null,
+     "error": "mouth_not_visible"
+    },
+    {
+     "kind": "beard",
+     "style": "beard-anchor",
+     "region": {
+      "kind": "jaw",
+      "below_chin": 0.1,
+      "moustache": true
+     },
+     "mode": null,
+     "file": null,
+     "error": "mouth_not_visible"
+    },
+    {
+     "kind": "beard",
+     "style": "beard-chin-strap",
+     "region": {
+      "kind": "jaw",
+      "below_chin": 0.05
+     },
+     "mode": null,
+     "file": null,
+     "error": "mouth_not_visible"
+    },
+    {
+     "kind": "beard",
+     "style": "beard-soul-patch",
+     "region": {
+      "kind": "chin",
+      "below_chin": 0.0
+     },
+     "mode": null,
+     "file": null,
+     "error": "mouth_not_visible"
+    },
+    {
+     "kind": "beard",
+     "style": "beard-mutton-chops",
+     "region": {
+      "kind": "jaw",
+      "below_chin": 0.0
+     },
+     "mode": null,
+     "file": null,
+     "error": "mouth_not_visible"
+    },
+    {
+     "kind": "beard",
+     "style": "beard-chevron",
+     "region": {
+      "kind": "moustache",
+      "below_chin": 0.0
+     },
+     "mode": null,
+     "file": null,
+     "error": "mouth_not_visible"
+    },
+    {
+     "kind": "beard",
+     "style": "beard-horseshoe",
+     "region": {
+      "kind": "moustache",
+      "below_chin": 0.0,
+      "chin_sides": true
+     },
+     "mode": null,
+     "file": null,
+     "error": "mouth_not_visible"
+    }
+   ]
+  },
+  {
+   "case": "eyes-covered",
+   "width": 512,
+   "height": 640,
+   "clothes": false,
+   "photo": false,
+   "colour": null,
+   "has_beard": null,
+   "expected": [
+    {
+     "kind": "hair",
+     "style": "hair-keep-none-down",
+     "shape": {
+      "length": "keep",
+      "bangs": "none",
+      "updo": false
+     },
+     "mode": null,
+     "file": "expected-hair-keep-none-down.png",
+     "error": null,
+     "area": 0.072674560546875,
+     "face_box": [
+      191,
+      217,
+      321,
+      385
+     ]
+    },
+    {
+     "kind": "hair",
+     "style": "hair-short-none-down",
+     "shape": {
+      "length": "short",
+      "bangs": "none",
+      "updo": false
+     },
+     "mode": null,
+     "file": "expected-hair-short-none-down.png",
+     "error": null,
+     "area": 0.098931884765625,
+     "face_box": [
+      191,
+      217,
+      321,
+      385
+     ]
+    },
+    {
+     "kind": "hair",
+     "style": "hair-medium-none-down",
+     "shape": {
+      "length": "medium",
+      "bangs": "none",
+      "updo": false
+     },
+     "mode": null,
+     "file": "expected-hair-medium-none-down.png",
+     "error": null,
+     "area": 0.2222686767578125,
+     "face_box": [
+      191,
+      217,
+      321,
+      385
+     ]
+    },
+    {
+     "kind": "hair",
+     "style": "hair-long-none-down",
+     "shape": {
+      "length": "long",
+      "bangs": "none",
+      "updo": false
+     },
+     "mode": null,
+     "file": "expected-hair-long-none-down.png",
+     "error": null,
+     "area": 0.3720062255859375,
+     "face_box": [
+      191,
+      217,
+      321,
+      385
+     ]
+    },
+    {
+     "kind": "hair",
+     "style": "hair-short-full-down",
+     "shape": {
+      "length": "short",
+      "bangs": "full",
+      "updo": false
+     },
+     "mode": null,
+     "file": "expected-hair-short-full-down.png",
+     "error": null,
+     "area": 0.1130950927734375,
+     "face_box": [
+      191,
+      217,
+      321,
+      385
+     ]
+    },
+    {
+     "kind": "hair",
+     "style": "hair-medium-side-down",
+     "shape": {
+      "length": "medium",
+      "bangs": "side",
+      "updo": false
+     },
+     "mode": null,
+     "file": "expected-hair-medium-side-down.png",
+     "error": null,
+     "area": 0.236431884765625,
+     "face_box": [
+      191,
+      217,
+      321,
+      385
+     ]
+    },
+    {
+     "kind": "hair",
+     "style": "hair-keep-curtain-updo",
+     "shape": {
+      "length": "keep",
+      "bangs": "curtain",
+      "updo": true
+     },
+     "mode": null,
+     "file": "expected-hair-keep-curtain-updo.png",
+     "error": null,
+     "area": 0.129931640625,
+     "face_box": [
+      191,
+      217,
+      321,
+      385
+     ]
+    },
+    {
+     "kind": "hair",
+     "style": "hair-keep-none-updo",
+     "shape": {
+      "length": "keep",
+      "bangs": "none",
+      "updo": true
+     },
+     "mode": null,
+     "file": "expected-hair-keep-none-updo.png",
+     "error": null,
+     "area": 0.1157684326171875,
+     "face_box": [
+      191,
+      217,
+      321,
+      385
+     ]
+    },
+    {
+     "kind": "hair",
+     "style": "hair-long-none-down-hair",
+     "shape": {
+      "length": "long",
+      "bangs": "none",
+      "updo": false
+     },
+     "mode": "hair",
+     "file": "expected-hair-long-none-down-hair.png",
+     "error": null,
+     "area": 0.3629913330078125,
+     "face_box": [
+      191,
+      217,
+      321,
+      385
+     ]
+    },
+    {
+     "kind": "beard",
+     "style": "beard-clean-shaven",
+     "region": {
+      "kind": "full",
+      "below_chin": 0.1
+     },
+     "mode": "shave",
+     "file": "expected-beard-clean-shaven.png",
+     "error": null,
+     "area": 0.02989501953125,
+     "face_box": [
+      191,
+      217,
+      321,
+      385
+     ]
+    },
+    {
+     "kind": "beard",
+     "style": "beard-light-stubble",
+     "region": {
+      "kind": "full",
+      "below_chin": 0.0
+     },
+     "mode": null,
+     "file": "expected-beard-light-stubble.png",
+     "error": null,
+     "area": 0.0220611572265625,
+     "face_box": [
+      191,
+      217,
+      321,
+      385
+     ]
+    },
+    {
+     "kind": "beard",
+     "style": "beard-short-boxed",
+     "region": {
+      "kind": "full",
+      "below_chin": 0.1
+     },
+     "mode": null,
+     "file": "expected-beard-short-boxed.png",
+     "error": null,
+     "area": 0.02989501953125,
+     "face_box": [
+      191,
+      217,
+      321,
+      385
+     ]
+    },
+    {
+     "kind": "beard",
+     "style": "beard-full-beard",
+     "region": {
+      "kind": "full",
+      "below_chin": 0.25
+     },
+     "mode": null,
+     "file": "expected-beard-full-beard.png",
+     "error": null,
+     "area": 0.041851806640625,
+     "face_box": [
+      191,
+      217,
+      321,
+      385
+     ]
+    },
+    {
+     "kind": "beard",
+     "style": "beard-long-beard",
+     "region": {
+      "kind": "full",
+      "below_chin": 0.5
+     },
+     "mode": null,
+     "file": "expected-beard-long-beard.png",
+     "error": null,
+     "area": 0.061224365234375,
+     "face_box": [
+      191,
+      217,
+      321,
+      385
+     ]
+    },
+    {
+     "kind": "beard",
+     "style": "beard-goatee",
+     "region": {
+      "kind": "chin",
+      "below_chin": 0.1
+     },
+     "mode": null,
+     "file": "expected-beard-goatee.png",
+     "error": null,
+     "area": 0.0054046630859375,
+     "face_box": [
+      191,
+      217,
+      321,
+      385
+     ]
+    },
+    {
+     "kind": "beard",
+     "style": "beard-circle-beard",
+     "region": {
+      "kind": "chin",
+      "below_chin": 0.1,
+      "moustache": true
+     },
+     "mode": null,
+     "file": "expected-beard-circle-beard.png",
+     "error": null,
+     "area": 0.0080322265625,
+     "face_box": [
+      191,
+      217,
+      321,
+      385
+     ]
+    },
+    {
+     "kind": "beard",
+     "style": "beard-anchor",
+     "region": {
+      "kind": "jaw",
+      "below_chin": 0.1,
+      "moustache": true
+     },
+     "mode": null,
+     "file": "expected-beard-anchor.png",
+     "error": null,
+     "area": 0.022247314453125,
+     "face_box": [
+      191,
+      217,
+      321,
+      385
+     ]
+    },
+    {
+     "kind": "beard",
+     "style": "beard-chin-strap",
+     "region": {
+      "kind": "jaw",
+      "below_chin": 0.05
+     },
+     "mode": null,
+     "file": "expected-beard-chin-strap.png",
+     "error": null,
+     "area": 0.0160736083984375,
+     "face_box": [
+      191,
+      217,
+      321,
+      385
+     ]
+    },
+    {
+     "kind": "beard",
+     "style": "beard-soul-patch",
+     "region": {
+      "kind": "chin",
+      "below_chin": 0.0
+     },
+     "mode": null,
+     "file": "expected-beard-soul-patch.png",
+     "error": null,
+     "area": 0.003173828125,
+     "face_box": [
+      191,
+      217,
+      321,
+      385
+     ]
+    },
+    {
+     "kind": "beard",
+     "style": "beard-mutton-chops",
+     "region": {
+      "kind": "jaw",
+      "below_chin": 0.0
+     },
+     "mode": null,
+     "file": "expected-beard-mutton-chops.png",
+     "error": null,
+     "area": 0.012103271484375,
+     "face_box": [
+      191,
+      217,
+      321,
+      385
+     ]
+    },
+    {
+     "kind": "beard",
+     "style": "beard-chevron",
+     "region": {
+      "kind": "moustache",
+      "below_chin": 0.0
+     },
+     "mode": null,
+     "file": "expected-beard-chevron.png",
+     "error": null,
+     "area": 0.0026275634765625,
+     "face_box": [
+      191,
+      217,
+      321,
+      385
+     ]
+    },
+    {
+     "kind": "beard",
+     "style": "beard-horseshoe",
+     "region": {
+      "kind": "moustache",
+      "below_chin": 0.0,
+      "chin_sides": true
+     },
+     "mode": null,
+     "file": "expected-beard-horseshoe.png",
+     "error": null,
+     "area": 0.0073760986328125,
+     "face_box": [
+      191,
+      217,
+      321,
+      385
+     ]
+    }
+   ]
+  },
+  {
+   "case": "no-face",
+   "width": 512,
+   "height": 640,
+   "clothes": false,
+   "photo": false,
+   "colour": null,
+   "has_beard": null,
+   "expected": [
+    {
+     "kind": "hair",
+     "style": "hair-keep-none-down",
+     "shape": {
+      "length": "keep",
+      "bangs": "none",
+      "updo": false
+     },
+     "mode": null,
+     "file": null,
+     "error": "no_face"
+    },
+    {
+     "kind": "hair",
+     "style": "hair-short-none-down",
+     "shape": {
+      "length": "short",
+      "bangs": "none",
+      "updo": false
+     },
+     "mode": null,
+     "file": null,
+     "error": "no_face"
+    },
+    {
+     "kind": "hair",
+     "style": "hair-medium-none-down",
+     "shape": {
+      "length": "medium",
+      "bangs": "none",
+      "updo": false
+     },
+     "mode": null,
+     "file": null,
+     "error": "no_face"
+    },
+    {
+     "kind": "hair",
+     "style": "hair-long-none-down",
+     "shape": {
+      "length": "long",
+      "bangs": "none",
+      "updo": false
+     },
+     "mode": null,
+     "file": null,
+     "error": "no_face"
+    },
+    {
+     "kind": "hair",
+     "style": "hair-short-full-down",
+     "shape": {
+      "length": "short",
+      "bangs": "full",
+      "updo": false
+     },
+     "mode": null,
+     "file": null,
+     "error": "no_face"
+    },
+    {
+     "kind": "hair",
+     "style": "hair-medium-side-down",
+     "shape": {
+      "length": "medium",
+      "bangs": "side",
+      "updo": false
+     },
+     "mode": null,
+     "file": null,
+     "error": "no_face"
+    },
+    {
+     "kind": "hair",
+     "style": "hair-keep-curtain-updo",
+     "shape": {
+      "length": "keep",
+      "bangs": "curtain",
+      "updo": true
+     },
+     "mode": null,
+     "file": null,
+     "error": "no_face"
+    },
+    {
+     "kind": "hair",
+     "style": "hair-keep-none-updo",
+     "shape": {
+      "length": "keep",
+      "bangs": "none",
+      "updo": true
+     },
+     "mode": null,
+     "file": null,
+     "error": "no_face"
+    },
+    {
+     "kind": "hair",
+     "style": "hair-long-none-down-hair",
+     "shape": {
+      "length": "long",
+      "bangs": "none",
+      "updo": false
+     },
+     "mode": "hair",
+     "file": null,
+     "error": "no_face"
+    },
+    {
+     "kind": "beard",
+     "style": "beard-clean-shaven",
+     "region": {
+      "kind": "full",
+      "below_chin": 0.1
+     },
+     "mode": "shave",
+     "file": null,
+     "error": "no_face"
+    },
+    {
+     "kind": "beard",
+     "style": "beard-light-stubble",
+     "region": {
+      "kind": "full",
+      "below_chin": 0.0
+     },
+     "mode": null,
+     "file": null,
+     "error": "no_face"
+    },
+    {
+     "kind": "beard",
+     "style": "beard-short-boxed",
+     "region": {
+      "kind": "full",
+      "below_chin": 0.1
+     },
+     "mode": null,
+     "file": null,
+     "error": "no_face"
+    },
+    {
+     "kind": "beard",
+     "style": "beard-full-beard",
+     "region": {
+      "kind": "full",
+      "below_chin": 0.25
+     },
+     "mode": null,
+     "file": null,
+     "error": "no_face"
+    },
+    {
+     "kind": "beard",
+     "style": "beard-long-beard",
+     "region": {
+      "kind": "full",
+      "below_chin": 0.5
+     },
+     "mode": null,
+     "file": null,
+     "error": "no_face"
+    },
+    {
+     "kind": "beard",
+     "style": "beard-goatee",
+     "region": {
+      "kind": "chin",
+      "below_chin": 0.1
+     },
+     "mode": null,
+     "file": null,
+     "error": "no_face"
+    },
+    {
+     "kind": "beard",
+     "style": "beard-circle-beard",
+     "region": {
+      "kind": "chin",
+      "below_chin": 0.1,
+      "moustache": true
+     },
+     "mode": null,
+     "file": null,
+     "error": "no_face"
+    },
+    {
+     "kind": "beard",
+     "style": "beard-anchor",
+     "region": {
+      "kind": "jaw",
+      "below_chin": 0.1,
+      "moustache": true
+     },
+     "mode": null,
+     "file": null,
+     "error": "no_face"
+    },
+    {
+     "kind": "beard",
+     "style": "beard-chin-strap",
+     "region": {
+      "kind": "jaw",
+      "below_chin": 0.05
+     },
+     "mode": null,
+     "file": null,
+     "error": "no_face"
+    },
+    {
+     "kind": "beard",
+     "style": "beard-soul-patch",
+     "region": {
+      "kind": "chin",
+      "below_chin": 0.0
+     },
+     "mode": null,
+     "file": null,
+     "error": "no_face"
+    },
+    {
+     "kind": "beard",
+     "style": "beard-mutton-chops",
+     "region": {
+      "kind": "jaw",
+      "below_chin": 0.0
+     },
+     "mode": null,
+     "file": null,
+     "error": "no_face"
+    },
+    {
+     "kind": "beard",
+     "style": "beard-chevron",
+     "region": {
+      "kind": "moustache",
+      "below_chin": 0.0
+     },
+     "mode": null,
+     "file": null,
+     "error": "no_face"
+    },
+    {
+     "kind": "beard",
+     "style": "beard-horseshoe",
+     "region": {
+      "kind": "moustache",
+      "below_chin": 0.0,
+      "chin_sides": true
+     },
+     "mode": null,
+     "file": null,
+     "error": "no_face"
+    }
+   ]
+  },
+  {
+   "case": "tiny-face",
+   "width": 1024,
+   "height": 1024,
+   "clothes": false,
+   "photo": false,
+   "colour": null,
+   "has_beard": null,
+   "expected": [
+    {
+     "kind": "hair",
+     "style": "hair-keep-none-down",
+     "shape": {
+      "length": "keep",
+      "bangs": "none",
+      "updo": false
+     },
+     "mode": null,
+     "file": null,
+     "error": "face_too_small"
+    },
+    {
+     "kind": "hair",
+     "style": "hair-short-none-down",
+     "shape": {
+      "length": "short",
+      "bangs": "none",
+      "updo": false
+     },
+     "mode": null,
+     "file": null,
+     "error": "face_too_small"
+    },
+    {
+     "kind": "hair",
+     "style": "hair-medium-none-down",
+     "shape": {
+      "length": "medium",
+      "bangs": "none",
+      "updo": false
+     },
+     "mode": null,
+     "file": null,
+     "error": "face_too_small"
+    },
+    {
+     "kind": "hair",
+     "style": "hair-long-none-down",
+     "shape": {
+      "length": "long",
+      "bangs": "none",
+      "updo": false
+     },
+     "mode": null,
+     "file": null,
+     "error": "face_too_small"
+    },
+    {
+     "kind": "hair",
+     "style": "hair-short-full-down",
+     "shape": {
+      "length": "short",
+      "bangs": "full",
+      "updo": false
+     },
+     "mode": null,
+     "file": null,
+     "error": "face_too_small"
+    },
+    {
+     "kind": "hair",
+     "style": "hair-medium-side-down",
+     "shape": {
+      "length": "medium",
+      "bangs": "side",
+      "updo": false
+     },
+     "mode": null,
+     "file": null,
+     "error": "face_too_small"
+    },
+    {
+     "kind": "hair",
+     "style": "hair-keep-curtain-updo",
+     "shape": {
+      "length": "keep",
+      "bangs": "curtain",
+      "updo": true
+     },
+     "mode": null,
+     "file": null,
+     "error": "face_too_small"
+    },
+    {
+     "kind": "hair",
+     "style": "hair-keep-none-updo",
+     "shape": {
+      "length": "keep",
+      "bangs": "none",
+      "updo": true
+     },
+     "mode": null,
+     "file": null,
+     "error": "face_too_small"
+    },
+    {
+     "kind": "hair",
+     "style": "hair-long-none-down-hair",
+     "shape": {
+      "length": "long",
+      "bangs": "none",
+      "updo": false
+     },
+     "mode": "hair",
+     "file": null,
+     "error": "face_too_small"
+    },
+    {
+     "kind": "beard",
+     "style": "beard-clean-shaven",
+     "region": {
+      "kind": "full",
+      "below_chin": 0.1
+     },
+     "mode": "shave",
+     "file": null,
+     "error": "face_too_small"
+    },
+    {
+     "kind": "beard",
+     "style": "beard-light-stubble",
+     "region": {
+      "kind": "full",
+      "below_chin": 0.0
+     },
+     "mode": null,
+     "file": null,
+     "error": "face_too_small"
+    },
+    {
+     "kind": "beard",
+     "style": "beard-short-boxed",
+     "region": {
+      "kind": "full",
+      "below_chin": 0.1
+     },
+     "mode": null,
+     "file": null,
+     "error": "face_too_small"
+    },
+    {
+     "kind": "beard",
+     "style": "beard-full-beard",
+     "region": {
+      "kind": "full",
+      "below_chin": 0.25
+     },
+     "mode": null,
+     "file": null,
+     "error": "face_too_small"
+    },
+    {
+     "kind": "beard",
+     "style": "beard-long-beard",
+     "region": {
+      "kind": "full",
+      "below_chin": 0.5
+     },
+     "mode": null,
+     "file": null,
+     "error": "face_too_small"
+    },
+    {
+     "kind": "beard",
+     "style": "beard-goatee",
+     "region": {
+      "kind": "chin",
+      "below_chin": 0.1
+     },
+     "mode": null,
+     "file": null,
+     "error": "face_too_small"
+    },
+    {
+     "kind": "beard",
+     "style": "beard-circle-beard",
+     "region": {
+      "kind": "chin",
+      "below_chin": 0.1,
+      "moustache": true
+     },
+     "mode": null,
+     "file": null,
+     "error": "face_too_small"
+    },
+    {
+     "kind": "beard",
+     "style": "beard-anchor",
+     "region": {
+      "kind": "jaw",
+      "below_chin": 0.1,
+      "moustache": true
+     },
+     "mode": null,
+     "file": null,
+     "error": "face_too_small"
+    },
+    {
+     "kind": "beard",
+     "style": "beard-chin-strap",
+     "region": {
+      "kind": "jaw",
+      "below_chin": 0.05
+     },
+     "mode": null,
+     "file": null,
+     "error": "face_too_small"
+    },
+    {
+     "kind": "beard",
+     "style": "beard-soul-patch",
+     "region": {
+      "kind": "chin",
+      "below_chin": 0.0
+     },
+     "mode": null,
+     "file": null,
+     "error": "face_too_small"
+    },
+    {
+     "kind": "beard",
+     "style": "beard-mutton-chops",
+     "region": {
+      "kind": "jaw",
+      "below_chin": 0.0
+     },
+     "mode": null,
+     "file": null,
+     "error": "face_too_small"
+    },
+    {
+     "kind": "beard",
+     "style": "beard-chevron",
+     "region": {
+      "kind": "moustache",
+      "below_chin": 0.0
+     },
+     "mode": null,
+     "file": null,
+     "error": "face_too_small"
+    },
+    {
+     "kind": "beard",
+     "style": "beard-horseshoe",
+     "region": {
+      "kind": "moustache",
+      "below_chin": 0.0,
+      "chin_sides": true
+     },
+     "mode": null,
+     "file": null,
+     "error": "face_too_small"
+    }
+   ]
+  },
+  {
+   "case": "large-landscape",
+   "width": 1601,
+   "height": 1283,
+   "clothes": true,
+   "photo": false,
+   "colour": null,
+   "has_beard": null,
+   "expected": [
+    {
+     "kind": "hair",
+     "style": "hair-keep-none-down",
+     "shape": {
+      "length": "keep",
+      "bangs": "none",
+      "updo": false
+     },
+     "mode": null,
+     "file": "expected-hair-keep-none-down.png",
+     "error": null,
+     "area": 0.2514015921409214,
+     "face_box": [
+      648,
+      408,
+      950,
+      794
+     ]
+    },
+    {
+     "kind": "hair",
+     "style": "hair-short-none-down",
+     "shape": {
+      "length": "short",
+      "bangs": "none",
+      "updo": false
+     },
+     "mode": null,
+     "file": "expected-hair-short-none-down.png",
+     "error": null,
+     "area": 0.2514015921409214,
+     "face_box": [
+      648,
+      408,
+      950,
+      794
+     ]
+    },
+    {
+     "kind": "hair",
+     "style": "hair-medium-none-down",
+     "shape": {
+      "length": "medium",
+      "bangs": "none",
+      "updo": false
+     },
+     "mode": null,
+     "file": "expected-hair-medium-none-down.png",
+     "error": null,
+     "area": 0.2542386517615176,
+     "face_box": [
+      648,
+      408,
+      950,
+      794
+     ]
+    },
+    {
+     "kind": "hair",
+     "style": "hair-long-none-down",
+     "shape": {
+      "length": "long",
+      "bangs": "none",
+      "updo": false
+     },
+     "mode": null,
+     "file": "expected-hair-long-none-down.png",
+     "error": null,
+     "area": 0.28671028116531166,
+     "face_box": [
+      648,
+      408,
+      950,
+      794
+     ]
+    },
+    {
+     "kind": "hair",
+     "style": "hair-short-full-down",
+     "shape": {
+      "length": "short",
+      "bangs": "full",
+      "updo": false
+     },
+     "mode": null,
+     "file": "expected-hair-short-full-down.png",
+     "error": null,
+     "area": 0.2590658875338753,
+     "face_box": [
+      648,
+      408,
+      950,
+      794
+     ]
+    },
+    {
+     "kind": "hair",
+     "style": "hair-medium-side-down",
+     "shape": {
+      "length": "medium",
+      "bangs": "side",
+      "updo": false
+     },
+     "mode": null,
+     "file": "expected-hair-medium-side-down.png",
+     "error": null,
+     "area": 0.26190294715447154,
+     "face_box": [
+      648,
+      408,
+      950,
+      794
+     ]
+    },
+    {
+     "kind": "hair",
+     "style": "hair-keep-curtain-updo",
+     "shape": {
+      "length": "keep",
+      "bangs": "curtain",
+      "updo": true
+     },
+     "mode": null,
+     "file": "expected-hair-keep-curtain-updo.png",
+     "error": null,
+     "area": 0.2986471036585366,
+     "face_box": [
+      648,
+      408,
+      950,
+      794
+     ]
+    },
+    {
+     "kind": "hair",
+     "style": "hair-keep-none-updo",
+     "shape": {
+      "length": "keep",
+      "bangs": "none",
+      "updo": true
+     },
+     "mode": null,
+     "file": "expected-hair-keep-none-updo.png",
+     "error": null,
+     "area": 0.29098280826558265,
+     "face_box": [
+      648,
+      408,
+      950,
+      794
+     ]
+    },
+    {
+     "kind": "hair",
+     "style": "hair-long-none-down-hair",
+     "shape": {
+      "length": "long",
+      "bangs": "none",
+      "updo": false
+     },
+     "mode": "hair",
+     "file": "expected-hair-long-none-down-hair.png",
+     "error": null,
+     "area": 0.2785082147696477,
+     "face_box": [
+      648,
+      408,
+      950,
+      794
+     ]
+    },
+    {
+     "kind": "beard",
+     "style": "beard-clean-shaven",
+     "region": {
+      "kind": "full",
+      "below_chin": 0.1
+     },
+     "mode": "shave",
+     "file": "expected-beard-clean-shaven.png",
+     "error": null,
+     "area": 0.023079691734417346,
+     "face_box": [
+      648,
+      408,
+      950,
+      794
+     ]
+    },
+    {
+     "kind": "beard",
+     "style": "beard-light-stubble",
+     "region": {
+      "kind": "full",
+      "below_chin": 0.0
+     },
+     "mode": null,
+     "file": "expected-beard-light-stubble.png",
+     "error": null,
+     "area": 0.0168847391598916,
+     "face_box": [
+      648,
+      408,
+      950,
+      794
+     ]
+    },
+    {
+     "kind": "beard",
+     "style": "beard-short-boxed",
+     "region": {
+      "kind": "full",
+      "below_chin": 0.1
+     },
+     "mode": null,
+     "file": "expected-beard-short-boxed.png",
+     "error": null,
+     "area": 0.023079691734417346,
+     "face_box": [
+      648,
+      408,
+      950,
+      794
+     ]
+    },
+    {
+     "kind": "beard",
+     "style": "beard-full-beard",
+     "region": {
+      "kind": "full",
+      "below_chin": 0.25
+     },
+     "mode": null,
+     "file": "expected-beard-full-beard.png",
+     "error": null,
+     "area": 0.03220909552845529,
+     "face_box": [
+      648,
+      408,
+      950,
+      794
+     ]
+    },
+    {
+     "kind": "beard",
+     "style": "beard-long-beard",
+     "region": {
+      "kind": "full",
+      "below_chin": 0.5
+     },
+     "mode": null,
+     "file": "expected-beard-long-beard.png",
+     "error": null,
+     "area": 0.047207401761517616,
+     "face_box": [
+      648,
+      408,
+      950,
+      794
+     ]
+    },
+    {
+     "kind": "beard",
+     "style": "beard-goatee",
+     "region": {
+      "kind": "chin",
+      "below_chin": 0.1
+     },
+     "mode": null,
+     "file": "expected-beard-goatee.png",
+     "error": null,
+     "area": 0.004492716802168022,
+     "face_box": [
+      648,
+      408,
+      950,
+      794
+     ]
+    },
+    {
+     "kind": "beard",
+     "style": "beard-circle-beard",
+     "region": {
+      "kind": "chin",
+      "below_chin": 0.1,
+      "moustache": true
+     },
+     "mode": null,
+     "file": "expected-beard-circle-beard.png",
+     "error": null,
+     "area": 0.006546409214092141,
+     "face_box": [
+      648,
+      408,
+      950,
+      794
+     ]
+    },
+    {
+     "kind": "beard",
+     "style": "beard-anchor",
+     "region": {
+      "kind": "jaw",
+      "below_chin": 0.1,
+      "moustache": true
+     },
+     "mode": null,
+     "file": "expected-beard-anchor.png",
+     "error": null,
+     "area": 0.017742208672086722,
+     "face_box": [
+      648,
+      408,
+      950,
+      794
+     ]
+    },
+    {
+     "kind": "beard",
+     "style": "beard-chin-strap",
+     "region": {
+      "kind": "jaw",
+      "below_chin": 0.05
+     },
+     "mode": null,
+     "file": "expected-beard-chin-strap.png",
+     "error": null,
+     "area": 0.012749830623306233,
+     "face_box": [
+      648,
+      408,
+      950,
+      794
+     ]
+    },
+    {
+     "kind": "beard",
+     "style": "beard-soul-patch",
+     "region": {
+      "kind": "chin",
+      "below_chin": 0.0
+     },
+     "mode": null,
+     "file": "expected-beard-soul-patch.png",
+     "error": null,
+     "area": 0.002574525745257453,
+     "face_box": [
+      648,
+      408,
+      950,
+      794
+     ]
+    },
+    {
+     "kind": "beard",
+     "style": "beard-mutton-chops",
+     "region": {
+      "kind": "jaw",
+      "below_chin": 0.0
+     },
+     "mode": null,
+     "file": "expected-beard-mutton-chops.png",
+     "error": null,
+     "area": 0.009493563685636856,
+     "face_box": [
+      648,
+      408,
+      950,
+      794
+     ]
+    },
+    {
+     "kind": "beard",
+     "style": "beard-chevron",
+     "region": {
+      "kind": "moustache",
+      "below_chin": 0.0
+     },
+     "mode": null,
+     "file": "expected-beard-chevron.png",
+     "error": null,
+     "area": 0.002053692411924119,
+     "face_box": [
+      648,
+      408,
+      950,
+      794
+     ]
+    },
+    {
+     "kind": "beard",
+     "style": "beard-horseshoe",
+     "region": {
+      "kind": "moustache",
+      "below_chin": 0.0,
+      "chin_sides": true
+     },
+     "mode": null,
+     "file": "expected-beard-horseshoe.png",
+     "error": null,
+     "area": 0.006080623306233063,
+     "face_box": [
+      648,
+      408,
+      950,
+      794
+     ]
+    }
+   ]
+  },
+  {
+   "case": "large-portrait",
+   "width": 1000,
+   "height": 1537,
+   "clothes": false,
+   "photo": false,
+   "colour": null,
+   "has_beard": null,
+   "expected": [
+    {
+     "kind": "hair",
+     "style": "hair-keep-none-down",
+     "shape": {
+      "length": "keep",
+      "bangs": "none",
+      "updo": false
+     },
+     "mode": null,
+     "file": "expected-hair-keep-none-down.png",
+     "error": null,
+     "area": 0.07017708333333333,
+     "face_box": [
+      362,
+      544,
+      636,
+      898
+     ]
+    },
+    {
+     "kind": "hair",
+     "style": "hair-short-none-down",
+     "shape": {
+      "length": "short",
+      "bangs": "none",
+      "updo": false
+     },
+     "mode": null,
+     "file": "expected-hair-short-none-down.png",
+     "error": null,
+     "area": 0.094546875,
+     "face_box": [
+      362,
+      544,
+      636,
+      898
+     ]
+    },
+    {
+     "kind": "hair",
+     "style": "hair-medium-none-down",
+     "shape": {
+      "length": "medium",
+      "bangs": "none",
+      "updo": false
+     },
+     "mode": null,
+     "file": "expected-hair-medium-none-down.png",
+     "error": null,
+     "area": 0.2101484375,
+     "face_box": [
+      362,
+      544,
+      636,
+      898
+     ]
+    },
+    {
+     "kind": "hair",
+     "style": "hair-long-none-down",
+     "shape": {
+      "length": "long",
+      "bangs": "none",
+      "updo": false
+     },
+     "mode": null,
+     "file": "expected-hair-long-none-down.png",
+     "error": null,
+     "area": 0.3896640625,
+     "face_box": [
+      362,
+      544,
+      636,
+      898
+     ]
+    },
+    {
+     "kind": "hair",
+     "style": "hair-short-full-down",
+     "shape": {
+      "length": "short",
+      "bangs": "full",
+      "updo": false
+     },
+     "mode": null,
+     "file": "expected-hair-short-full-down.png",
+     "error": null,
+     "area": 0.10313541666666666,
+     "face_box": [
+      362,
+      544,
+      636,
+      898
+     ]
+    },
+    {
+     "kind": "hair",
+     "style": "hair-medium-side-down",
+     "shape": {
+      "length": "medium",
+      "bangs": "side",
+      "updo": false
+     },
+     "mode": null,
+     "file": "expected-hair-medium-side-down.png",
+     "error": null,
+     "area": 0.21873697916666668,
+     "face_box": [
+      362,
+      544,
+      636,
+      898
+     ]
+    },
+    {
+     "kind": "hair",
+     "style": "hair-keep-curtain-updo",
+     "shape": {
+      "length": "keep",
+      "bangs": "curtain",
+      "updo": true
+     },
+     "mode": null,
+     "file": "expected-hair-keep-curtain-updo.png",
+     "error": null,
+     "area": 0.1187265625,
+     "face_box": [
+      362,
+      544,
+      636,
+      898
+     ]
+    },
+    {
+     "kind": "hair",
+     "style": "hair-keep-none-updo",
+     "shape": {
+      "length": "keep",
+      "bangs": "none",
+      "updo": true
+     },
+     "mode": null,
+     "file": "expected-hair-keep-none-updo.png",
+     "error": null,
+     "area": 0.11013802083333334,
+     "face_box": [
+      362,
+      544,
+      636,
+      898
+     ]
+    },
+    {
+     "kind": "hair",
+     "style": "hair-long-none-down-hair",
+     "shape": {
+      "length": "long",
+      "bangs": "none",
+      "updo": false
+     },
+     "mode": "hair",
+     "file": "expected-hair-long-none-down-hair.png",
+     "error": null,
+     "area": 0.38158854166666667,
+     "face_box": [
+      362,
+      544,
+      636,
+      898
+     ]
+    },
+    {
+     "kind": "beard",
+     "style": "beard-clean-shaven",
+     "region": {
+      "kind": "full",
+      "below_chin": 0.1
+     },
+     "mode": "shave",
+     "file": "expected-beard-clean-shaven.png",
+     "error": null,
+     "area": 0.028385416666666666,
+     "face_box": [
+      362,
+      544,
+      636,
+      898
+     ]
+    },
+    {
+     "kind": "beard",
+     "style": "beard-light-stubble",
+     "region": {
+      "kind": "full",
+      "below_chin": 0.0
+     },
+     "mode": null,
+     "file": "expected-beard-light-stubble.png",
+     "error": null,
+     "area": 0.021265625,
+     "face_box": [
+      362,
+      544,
+      636,
+      898
+     ]
+    },
+    {
+     "kind": "beard",
+     "style": "beard-short-boxed",
+     "region": {
+      "kind": "full",
+      "below_chin": 0.1
+     },
+     "mode": null,
+     "file": "expected-beard-short-boxed.png",
+     "error": null,
+     "area": 0.028385416666666666,
+     "face_box": [
+      362,
+      544,
+      636,
+      898
+     ]
+    },
+    {
+     "kind": "beard",
+     "style": "beard-full-beard",
+     "region": {
+      "kind": "full",
+      "below_chin": 0.25
+     },
+     "mode": null,
+     "file": "expected-beard-full-beard.png",
+     "error": null,
+     "area": 0.03963020833333333,
+     "face_box": [
+      362,
+      544,
+      636,
+      898
+     ]
+    },
+    {
+     "kind": "beard",
+     "style": "beard-long-beard",
+     "region": {
+      "kind": "full",
+      "below_chin": 0.5
+     },
+     "mode": null,
+     "file": "expected-beard-long-beard.png",
+     "error": null,
+     "area": 0.05834895833333333,
+     "face_box": [
+      362,
+      544,
+      636,
+      898
+     ]
+    },
+    {
+     "kind": "beard",
+     "style": "beard-goatee",
+     "region": {
+      "kind": "chin",
+      "below_chin": 0.1
+     },
+     "mode": null,
+     "file": "expected-beard-goatee.png",
+     "error": null,
+     "area": 0.005052083333333333,
+     "face_box": [
+      362,
+      544,
+      636,
+      898
+     ]
+    },
+    {
+     "kind": "beard",
+     "style": "beard-circle-beard",
+     "region": {
+      "kind": "chin",
+      "below_chin": 0.1,
+      "moustache": true
+     },
+     "mode": null,
+     "file": "expected-beard-circle-beard.png",
+     "error": null,
+     "area": 0.007604166666666667,
+     "face_box": [
+      362,
+      544,
+      636,
+      898
+     ]
+    },
+    {
+     "kind": "beard",
+     "style": "beard-anchor",
+     "region": {
+      "kind": "jaw",
+      "below_chin": 0.1,
+      "moustache": true
+     },
+     "mode": null,
+     "file": "expected-beard-anchor.png",
+     "error": null,
+     "area": 0.021182291666666665,
+     "face_box": [
+      362,
+      544,
+      636,
+      898
+     ]
+    },
+    {
+     "kind": "beard",
+     "style": "beard-chin-strap",
+     "region": {
+      "kind": "jaw",
+      "below_chin": 0.05
+     },
+     "mode": null,
+     "file": "expected-beard-chin-strap.png",
+     "error": null,
+     "area": 0.015026041666666667,
+     "face_box": [
+      362,
+      544,
+      636,
+      898
+     ]
+    },
+    {
+     "kind": "beard",
+     "style": "beard-soul-patch",
+     "region": {
+      "kind": "chin",
+      "below_chin": 0.0
+     },
+     "mode": null,
+     "file": "expected-beard-soul-patch.png",
+     "error": null,
+     "area": 0.0029895833333333332,
+     "face_box": [
+      362,
+      544,
+      636,
+      898
+     ]
+    },
+    {
+     "kind": "beard",
+     "style": "beard-mutton-chops",
+     "region": {
+      "kind": "jaw",
+      "below_chin": 0.0
+     },
+     "mode": null,
+     "file": "expected-beard-mutton-chops.png",
+     "error": null,
+     "area": 0.011786458333333333,
+     "face_box": [
+      362,
+      544,
+      636,
+      898
+     ]
+    },
+    {
+     "kind": "beard",
+     "style": "beard-chevron",
+     "region": {
+      "kind": "moustache",
+      "below_chin": 0.0
+     },
+     "mode": null,
+     "file": "expected-beard-chevron.png",
+     "error": null,
+     "area": 0.0025520833333333333,
+     "face_box": [
+      362,
+      544,
+      636,
+      898
+     ]
+    },
+    {
+     "kind": "beard",
+     "style": "beard-horseshoe",
+     "region": {
+      "kind": "moustache",
+      "below_chin": 0.0,
+      "chin_sides": true
+     },
+     "mode": null,
+     "file": "expected-beard-horseshoe.png",
+     "error": null,
+     "area": 0.007158854166666667,
+     "face_box": [
+      362,
+      544,
+      636,
+      898
+     ]
+    }
+   ]
+  },
+  {
+   "case": "large-ratio",
+   "width": 1237,
+   "height": 1711,
+   "clothes": true,
+   "photo": false,
+   "colour": null,
+   "has_beard": null,
+   "expected": [
+    {
+     "kind": "hair",
+     "style": "hair-keep-none-down",
+     "shape": {
+      "length": "keep",
+      "bangs": "none",
+      "updo": false
+     },
+     "mode": null,
+     "file": "expected-hair-keep-none-down.png",
+     "error": null,
+     "area": 0.06892830330330331,
+     "face_box": [
+      441,
+      577,
+      795,
+      1031
+     ]
+    },
+    {
+     "kind": "hair",
+     "style": "hair-short-none-down",
+     "shape": {
+      "length": "short",
+      "bangs": "none",
+      "updo": false
+     },
+     "mode": null,
+     "file": "expected-hair-short-none-down.png",
+     "error": null,
+     "area": 0.10351914414414415,
+     "face_box": [
+      441,
+      577,
+      795,
+      1031
+     ]
+    },
+    {
+     "kind": "hair",
+     "style": "hair-medium-none-down",
+     "shape": {
+      "length": "medium",
+      "bangs": "none",
+      "updo": false
+     },
+     "mode": null,
+     "file": "expected-hair-medium-none-down.png",
+     "error": null,
+     "area": 0.24153763138138137,
+     "face_box": [
+      441,
+      577,
+      795,
+      1031
+     ]
+    },
+    {
+     "kind": "hair",
+     "style": "hair-long-none-down",
+     "shape": {
+      "length": "long",
+      "bangs": "none",
+      "updo": false
+     },
+     "mode": null,
+     "file": "expected-hair-long-none-down.png",
+     "error": null,
+     "area": 0.40838729354354353,
+     "face_box": [
+      441,
+      577,
+      795,
+      1031
+     ]
+    },
+    {
+     "kind": "hair",
+     "style": "hair-short-full-down",
+     "shape": {
+      "length": "short",
+      "bangs": "full",
+      "updo": false
+     },
+     "mode": null,
+     "file": "expected-hair-short-full-down.png",
+     "error": null,
+     "area": 0.11318271396396397,
+     "face_box": [
+      441,
+      577,
+      795,
+      1031
+     ]
+    },
+    {
+     "kind": "hair",
+     "style": "hair-medium-side-down",
+     "shape": {
+      "length": "medium",
+      "bangs": "side",
+      "updo": false
+     },
+     "mode": null,
+     "file": "expected-hair-medium-side-down.png",
+     "error": null,
+     "area": 0.2512012012012012,
+     "face_box": [
+      441,
+      577,
+      795,
+      1031
+     ]
+    },
+    {
+     "kind": "hair",
+     "style": "hair-keep-curtain-updo",
+     "shape": {
+      "length": "keep",
+      "bangs": "curtain",
+      "updo": true
+     },
+     "mode": null,
+     "file": "expected-hair-keep-curtain-updo.png",
+     "error": null,
+     "area": 0.1433910472972973,
+     "face_box": [
+      441,
+      577,
+      795,
+      1031
+     ]
+    },
+    {
+     "kind": "hair",
+     "style": "hair-keep-none-updo",
+     "shape": {
+      "length": "keep",
+      "bangs": "none",
+      "updo": true
+     },
+     "mode": null,
+     "file": "expected-hair-keep-none-updo.png",
+     "error": null,
+     "area": 0.13372747747747749,
+     "face_box": [
+      441,
+      577,
+      795,
+      1031
+     ]
+    },
+    {
+     "kind": "hair",
+     "style": "hair-long-none-down-hair",
+     "shape": {
+      "length": "long",
+      "bangs": "none",
+      "updo": false
+     },
+     "mode": "hair",
+     "file": "expected-hair-long-none-down-hair.png",
+     "error": null,
+     "area": 0.40838729354354353,
+     "face_box": [
+      441,
+      577,
+      795,
+      1031
+     ]
+    },
+    {
+     "kind": "beard",
+     "style": "beard-clean-shaven",
+     "region": {
+      "kind": "full",
+      "below_chin": 0.1
+     },
+     "mode": "shave",
+     "file": "expected-beard-clean-shaven.png",
+     "error": null,
+     "area": 0.03414039039039039,
+     "face_box": [
+      441,
+      577,
+      795,
+      1031
+     ]
+    },
+    {
+     "kind": "beard",
+     "style": "beard-light-stubble",
+     "region": {
+      "kind": "full",
+      "below_chin": 0.0
+     },
+     "mode": null,
+     "file": "expected-beard-light-stubble.png",
+     "error": null,
+     "area": 0.025487987987987987,
+     "face_box": [
+      441,
+      577,
+      795,
+      1031
+     ]
+    },
+    {
+     "kind": "beard",
+     "style": "beard-short-boxed",
+     "region": {
+      "kind": "full",
+      "below_chin": 0.1
+     },
+     "mode": null,
+     "file": "expected-beard-short-boxed.png",
+     "error": null,
+     "area": 0.03414039039039039,
+     "face_box": [
+      441,
+      577,
+      795,
+      1031
+     ]
+    },
+    {
+     "kind": "beard",
+     "style": "beard-full-beard",
+     "region": {
+      "kind": "full",
+      "below_chin": 0.25
+     },
+     "mode": null,
+     "file": "expected-beard-full-beard.png",
+     "error": null,
+     "area": 0.04751783033033033,
+     "face_box": [
+      441,
+      577,
+      795,
+      1031
+     ]
+    },
+    {
+     "kind": "beard",
+     "style": "beard-long-beard",
+     "region": {
+      "kind": "full",
+      "below_chin": 0.5
+     },
+     "mode": null,
+     "file": "expected-beard-long-beard.png",
+     "error": null,
+     "area": 0.06953828828828829,
+     "face_box": [
+      441,
+      577,
+      795,
+      1031
+     ]
+    },
+    {
+     "kind": "beard",
+     "style": "beard-goatee",
+     "region": {
+      "kind": "chin",
+      "below_chin": 0.1
+     },
+     "mode": null,
+     "file": "expected-beard-goatee.png",
+     "error": null,
+     "area": 0.0063109984984984985,
+     "face_box": [
+      441,
+      577,
+      795,
+      1031
+     ]
+    },
+    {
+     "kind": "beard",
+     "style": "beard-circle-beard",
+     "region": {
+      "kind": "chin",
+      "below_chin": 0.1,
+      "moustache": true
+     },
+     "mode": null,
+     "file": "expected-beard-circle-beard.png",
+     "error": null,
+     "area": 0.00932103978978979,
+     "face_box": [
+      441,
+      577,
+      795,
+      1031
+     ]
+    },
+    {
+     "kind": "beard",
+     "style": "beard-anchor",
+     "region": {
+      "kind": "jaw",
+      "below_chin": 0.1,
+      "moustache": true
+     },
+     "mode": null,
+     "file": "expected-beard-anchor.png",
+     "error": null,
+     "area": 0.025525525525525526,
+     "face_box": [
+      441,
+      577,
+      795,
+      1031
+     ]
+    },
+    {
+     "kind": "beard",
+     "style": "beard-chin-strap",
+     "region": {
+      "kind": "jaw",
+      "below_chin": 0.05
+     },
+     "mode": null,
+     "file": "expected-beard-chin-strap.png",
+     "error": null,
+     "area": 0.0183300487987988,
+     "face_box": [
+      441,
+      577,
+      795,
+      1031
+     ]
+    },
+    {
+     "kind": "beard",
+     "style": "beard-soul-patch",
+     "region": {
+      "kind": "chin",
+      "below_chin": 0.0
+     },
+     "mode": null,
+     "file": "expected-beard-soul-patch.png",
+     "error": null,
+     "area": 0.003758445945945946,
+     "face_box": [
+      441,
+      577,
+      795,
+      1031
+     ]
+    },
+    {
+     "kind": "beard",
+     "style": "beard-mutton-chops",
+     "region": {
+      "kind": "jaw",
+      "below_chin": 0.0
+     },
+     "mode": null,
+     "file": "expected-beard-mutton-chops.png",
+     "error": null,
+     "area": 0.01413522897897898,
+     "face_box": [
+      441,
+      577,
+      795,
+      1031
+     ]
+    },
+    {
+     "kind": "beard",
+     "style": "beard-chevron",
+     "region": {
+      "kind": "moustache",
+      "below_chin": 0.0
+     },
+     "mode": null,
+     "file": "expected-beard-chevron.png",
+     "error": null,
+     "area": 0.003010041291291291,
+     "face_box": [
+      441,
+      577,
+      795,
+      1031
+     ]
+    },
+    {
+     "kind": "beard",
+     "style": "beard-horseshoe",
+     "region": {
+      "kind": "moustache",
+      "below_chin": 0.0,
+      "chin_sides": true
+     },
+     "mode": null,
+     "file": "expected-beard-horseshoe.png",
+     "error": null,
+     "area": 0.008739207957957958,
+     "face_box": [
+      441,
+      577,
+      795,
+      1031
+     ]
+    }
+   ]
+  }
+ ],
+ "resizes": [
+  {
+   "width": 1000,
+   "height": 1537,
+   "small_width": 500,
+   "small_height": 768,
+   "down": "resize-1000x1537-500x768-down.png",
+   "up": "resize-1000x1537-500x768-up.png"
+  },
+  {
+   "width": 1601,
+   "height": 1283,
+   "small_width": 768,
+   "small_height": 615,
+   "down": "resize-1601x1283-768x615-down.png",
+   "up": "resize-1601x1283-768x615-up.png"
+  },
+  {
+   "width": 1237,
+   "height": 1711,
+   "small_width": 555,
+   "small_height": 768,
+   "down": "resize-1237x1711-555x768-down.png",
+   "up": "resize-1237x1711-555x768-up.png"
+  }
+ ]
+}

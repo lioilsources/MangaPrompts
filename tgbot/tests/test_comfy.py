@@ -1,9 +1,19 @@
+import asyncio
 import json
 from pathlib import Path
 
 import pytest
 
-from comfy import execution_error_message, prepare_workflow
+import hairmask
+from comfy import (
+    ComfyClient,
+    ComfyError,
+    execution_error_message,
+    output_refs,
+    pick_outputs,
+    prepare_workflow,
+    sign_outputs,
+)
 
 WORKFLOW_DIR = Path(__file__).resolve().parent.parent.parent / "assets" / "comfyui"
 TXT2IMG_FILES = [
@@ -15,9 +25,13 @@ TXT2IMG_FILES = [
 ALL_FILES = sorted(p.name for p in WORKFLOW_DIR.glob("*.api.json"))
 
 
+def _load(filename: str) -> dict:
+    return json.loads((WORKFLOW_DIR / filename).read_text())
+
+
 def _placeholders_left(wf: dict) -> list[str]:
     dump = json.dumps(wf)
-    return [p for p in ("__PROMPT__", "__NEGATIVE__") if p in dump]
+    return [p for p in ("__PROMPT__", "__NEGATIVE__", "__DRIVER__") if p in dump]
 
 
 @pytest.mark.parametrize("filename", TXT2IMG_FILES)
@@ -207,12 +221,10 @@ def test_hair_inpaint_templates_take_image_and_mask(filename):
     assert save == [by_cls["InpaintStitchImproved"], 0]
 
 
-def test_hair_analyse_saves_four_named_masks():
+def test_hair_analyse_saves_every_mask_the_bot_waits_for():
     wf = json.loads((WORKFLOW_DIR / "hair_analyse.api.json").read_text())
     prefixes = sorted(n["inputs"]["filename_prefix"] for n in wf.values() if n["class_type"] == "SaveImage")
-    assert prefixes == sorted(
-        ["tsumiki_hair_mask", "tsumiki_face_mask", "tsumiki_hat_mask", "tsumiki_features_mask"]
-    )
+    assert prefixes == sorted(hairmask.ANALYSE_OUTPUTS)
     assert not [n for n in wf.values() if n["class_type"] == "KSampler"]
     # The hair mask is FaceSegment ∪ ClothesSegment: the face parser stops at
     # the chest on a phone selfie and whatever it misses survives the repaint.
@@ -305,3 +317,105 @@ def test_queue_prompt_signs_only_with_a_prompt():
     asyncio.run(c.queue_prompt(s, graph()))  # analysis graphs: no prompt, unsigned
     assert s.sent[0]["9"]["class_type"] == AILINEAGE_NODE
     assert s.sent[1]["9"]["class_type"] == "SaveImage"
+
+
+# Reconstructed from VideoHelperSuite's combine_video (`{"ui": {"gifs": [preview]}}`,
+# videohelpersuite/nodes.py), not captured from SPARK: the shape of a history
+# entry for a saved h264-mp4, next to a SaveImage from the same graph.
+VHS_HISTORY = {
+    "status": {"status_str": "success", "completed": True, "messages": []},
+    "outputs": {
+        "8": {
+            "gifs": [
+                {
+                    "filename": "tsumiki_live_00001.mp4",
+                    "subfolder": "",
+                    "type": "output",
+                    "format": "video/h264-mp4",
+                    "frame_rate": 25.0,
+                    "workflow": "tsumiki_live_00001.png",
+                    "fullpath": "/home/ol1n/Code/ComfyUI/output/tsumiki_live_00001.mp4",
+                }
+            ]
+        },
+        "9": {"images": [{"filename": "still_00001_.png", "subfolder": "", "type": "output"}]},
+    },
+}
+
+
+def test_output_refs_reads_vhs_gifs():
+    assert [r["filename"] for r in output_refs(VHS_HISTORY, "video")] == ["tsumiki_live_00001.mp4"]
+    assert [r["filename"] for r in output_refs(VHS_HISTORY, "image")] == ["still_00001_.png"]
+    assert len(output_refs(VHS_HISTORY)) == 2
+
+
+def test_output_refs_drops_a_temp_preview_and_non_mp4():
+    hist = {"outputs": {"8": {"gifs": [
+        {"filename": "a_00001.mp4", "type": "temp"},
+        {"filename": "b_00001.gif", "type": "output"},
+    ]}}}
+    assert output_refs(hist, "video") == []
+
+
+def test_pick_outputs_matches_vhs_by_prefix():
+    found = pick_outputs(output_refs(VHS_HISTORY), ("tsumiki_live",))
+    assert found["tsumiki_live"]["filename"].endswith(".mp4")
+
+
+def _client_with_history(hist):
+    client = ComfyClient("http://x", "id")
+
+    async def history(session, prompt_id):
+        return hist
+
+    async def view(session, filename, subfolder, type_):
+        return filename.encode()
+
+    client.get_history = history
+    client.view = view
+    return client
+
+
+def test_wait_for_output_downloads_the_requested_kind():
+    client = _client_with_history(VHS_HISTORY)
+    video = asyncio.run(client.wait_for_output(None, "p", "video", poll_interval=0))
+    image = asyncio.run(client.wait_for_image(None, "p", poll_interval=0))
+    assert video == b"tsumiki_live_00001.mp4"
+    assert image == b"still_00001_.png"
+
+
+def test_wait_for_output_refuses_the_wrong_kind():
+    hist = {"outputs": {"9": {"images": [{"filename": "a.png", "type": "output"}]}}}
+    with pytest.raises(ComfyError, match="no output videos"):
+        asyncio.run(_client_with_history(hist).wait_for_output(None, "p", "video", poll_interval=0))
+
+
+def test_sign_outputs_leaves_vhs_alone():
+    wf = _load("live_portrait.api.json")
+    before = json.dumps(wf, sort_keys=True)
+    sign_outputs(wf, "a prompt")
+    assert json.dumps(wf, sort_keys=True) == before
+
+
+def test_live_portrait_graph_substitution_and_wiring():
+    wf = prepare_workflow(
+        _load("live_portrait.api.json"), prompt="", image_name="in.png", driver_name="d.mp4"
+    )
+    assert not _placeholders_left(wf)
+    by_class = {n["class_type"]: n for n in wf.values()}
+    assert by_class["LoadImage"]["inputs"]["image"] == "in.png"
+    assert by_class["VHS_LoadVideo"]["inputs"]["video"] == "d.mp4"
+    assert by_class["VHS_LoadVideo"]["inputs"]["force_rate"] == 25
+    out = by_class["VHS_VideoCombine"]["inputs"]
+    # save_output false would land in `temp`, which output_refs drops.
+    assert out["save_output"] is True and out["format"] == "video/h264-mp4"
+    # every link points at a node of the graph
+    for node in wf.values():
+        for value in node["inputs"].values():
+            if isinstance(value, list):
+                assert value[0] in wf
+
+
+def test_driver_placeholder_left_alone_without_a_driver():
+    wf = prepare_workflow(_load("live_portrait.api.json"), prompt="", image_name="in.png")
+    assert "__DRIVER__" in _placeholders_left(wf)

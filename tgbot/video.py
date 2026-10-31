@@ -61,6 +61,23 @@ class VideoClient:
                 raise VideoError(f"/jobs HTTP {resp.status}: {body[:200]}")
             return json.loads(body)
 
+    async def submit_prompt(
+        self, session: aiohttp.ClientSession, prompt: str, image_b64: str, seed: int, beats: int = 1
+    ) -> dict:
+        """A custom motion instead of a scene (`{prompt, beats, image, seed}`);
+        same 202 body. video-api rewrites the prompt with an LLM, hence the
+        longer timeout (Ol1nLLM's client does the same)."""
+        async with session.post(
+            f"{self.base_url}/jobs",
+            json={"prompt": prompt, "beats": beats, "image": image_b64, "seed": seed},
+            headers=self.headers,
+            timeout=aiohttp.ClientTimeout(total=180),
+        ) as resp:
+            body = await resp.text()
+            if resp.status != 202:
+                raise VideoError(f"/jobs HTTP {resp.status}: {body[:200]}")
+            return json.loads(body)
+
     async def status(self, session: aiohttp.ClientSession, job_id: str) -> dict:
         async with session.get(
             f"{self.base_url}/jobs/{job_id}",

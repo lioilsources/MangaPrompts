@@ -5,8 +5,8 @@ lib/services/comfy_image_service.dart — keep the two in sync: placeholder
 substitution (__PROMPT__/__NEGATIVE__/__IMAGE__/__POSE__/__CKPT__), forced
 batch size, randomized seed/noise_seed. Server-only additions: the `latent`
 override (the restyle workflows render into the SDXL bucket that fits the
-uploaded photo) and __MASK__ (the hairdresser inpaint; same placeholder name
-as Ol1nLLM's inpaint assets).
+uploaded photo), __MASK__ (the hairdresser inpaint; same placeholder name
+as Ol1nLLM's inpaint assets) and __DRIVER__ (the LivePortrait driver clip).
 """
 
 import asyncio
@@ -54,6 +54,7 @@ def prepare_workflow(
     checkpoint: str | None = None,
     latent: tuple[int, int] | None = None,
     mask_name: str | None = None,
+    driver_name: str | None = None,
 ) -> dict:
     """`latent` = (width, height) forced onto the empty latent *and* onto the
     reference-fitting resize node, so a depth/face hint is letterboxed onto
@@ -81,6 +82,8 @@ def prepare_workflow(
                 inputs[key] = checkpoint
             elif value == "__MASK__" and mask_name is not None:
                 inputs[key] = mask_name
+            elif value == "__DRIVER__" and driver_name is not None:
+                inputs[key] = driver_name
 
         cls = node.get("class_type")
         if cls in ("EmptySD3LatentImage", "EmptyLatentImage"):
@@ -172,7 +175,9 @@ class ComfyClient:
         self, session: aiohttp.ClientSession, data: bytes, filename: str
     ) -> str:
         """Uploads a reference image to ComfyUI's input folder; returns the
-        name a LoadImage node takes (`subfolder/name` when nested)."""
+        name a LoadImage node takes (`subfolder/name` when nested). Driver
+        clips go the same way: /upload/image writes any file into /input, the
+        VHS upload button does too, and VHS_LoadVideo picks by the extension."""
         form = aiohttp.FormData()
         form.add_field("image", data, filename=filename, content_type="application/octet-stream")
         form.add_field("overwrite", "true")
@@ -245,11 +250,23 @@ class ComfyClient:
         timeout: int = 300,
         poll_interval: float = 2.0,
     ) -> bytes:
-        """Polls /history until the job finishes, then downloads the first output."""
+        """Polls /history until the job finishes, then downloads the first image."""
+        return await self.wait_for_output(session, prompt_id, "image", timeout, poll_interval)
+
+    async def wait_for_output(
+        self,
+        session: aiohttp.ClientSession,
+        prompt_id: str,
+        kind: str = "image",
+        timeout: int = 300,
+        poll_interval: float = 2.0,
+    ) -> bytes:
+        """The first output of `kind` ("image" | "video"); a graph that saved
+        only the other kind is a failure, never a PNG served as an mp4."""
         hist = await self.wait_for_history(session, prompt_id, timeout, poll_interval)
-        refs = output_refs(hist)
+        refs = output_refs(hist, kind)
         if not refs:
-            raise ComfyError("no output images in workflow result")
+            raise ComfyError(f"no output {kind}s in workflow result")
         ref = refs[0]
         return await self.view(
             session, ref["filename"], ref.get("subfolder", ""), ref.get("type", "output")
@@ -279,15 +296,21 @@ class ComfyClient:
         }
 
 
-def output_refs(hist: dict) -> list[dict]:
-    """Saved (non-temp) image refs of a finished history entry."""
+def output_refs(hist: dict, kind: str | None = None) -> list[dict]:
+    """Saved (non-temp) output refs of a finished history entry. `kind` narrows
+    them to "image" (SaveImage: `images`) or "video" (VHS_VideoCombine: `gifs`,
+    which also holds gif/webp — only an mp4 counts as video here); None = all."""
     outputs = hist.get("outputs") or {}
-    return [
-        img
-        for node in outputs.values()
-        for img in (node.get("images") or [])
-        if img.get("type") != "temp"
-    ]
+    refs = []
+    for node in outputs.values():
+        if kind != "video":
+            refs += node.get("images") or []
+        if kind != "image":
+            refs += [
+                ref for ref in node.get("gifs") or []
+                if kind is None or ref.get("filename", "").endswith(".mp4")
+            ]
+    return [ref for ref in refs if ref.get("type") != "temp"]
 
 
 def pick_outputs(refs: list[dict], prefixes: tuple[str, ...]) -> dict[str, dict]:

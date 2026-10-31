@@ -59,3 +59,8 @@ class JobStore:
             and j.status in ("queued", "running")
             and (kind is None or j.kind == kind)
         )
+
+    def active_total(self) -> int:
+        """Everything in flight, for /healthz: jobs live in memory, so a
+        deploy waits for this to reach zero."""
+        return sum(1 for j in self._jobs.values() if j.status in ("queued", "running"))

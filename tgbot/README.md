@@ -260,3 +260,18 @@ maska jen starých vlasů bez obálky, prompt „change the hair colour…“; b
 (`_hair_analysing`). Inpaint grafy mají `mask_fill_holes: false` — obličej je
 v masce díra a vyplnění ho přemalovalo. Čísla v `hairmask.py` a volba enginu
 jsou naměřené benchem (`tools/bench`, `docs/hair-matrix.md`).
+
+## Restyler — `POST /api/render`
+
+Druhá instance téhož kódu s `AUTH_MODE=app`, bez bota (`restyler.env.example`,
+compose profil `restyler`, `docs/restyler-release.md`). Appka pošle zdrojovou
+fotku a řetězec kroků z whitelistu grafů, server je vyrenderuje a výstupy vrací
+přes `GET /api/jobs/{id}/step/{step}`. Vadný krok se refunduje, kroky závislé
+na něm dostanou `skipped`. Joby jsou v paměti: restart běžící render ztratí bez
+refundu, deployovat při `active_jobs: 0` z `/healthz`.
+
+## Živý portrét — `POST /api/live`
+
+`{motion, image}` → mp4 přes `GET /api/jobs/{id}/video`, stojí 1 obrázkovou
+generaci, do chatu `send_animation`. Preset bez driveru v `assets/drivers/`
+vrací 422. Instalace: `docs/live-portrait-setup.md`.

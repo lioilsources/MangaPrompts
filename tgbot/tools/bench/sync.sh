@@ -16,10 +16,14 @@ if [[ "${1:-}" == "pull" ]]; then
   exit 0
 fi
 
-ssh "$HOST" "mkdir -p $DEST/tgbot/tools $DEST/assets $DEST/lib/config"
+ssh "$HOST" "mkdir -p $DEST/tgbot/tools $DEST/assets $DEST/packages/tsumiki_shared/lib/catalogs"
 rsync -az "$ROOT"/tgbot/{comfy,haircolours,hairmask,hairprompt,imagesize}.py "$HOST:$DEST/tgbot/"
 rsync -az --delete --exclude out/ --exclude cache/ --exclude __pycache__/ --exclude "queue_*.sh" \
   "$ROOT/tgbot/tools/bench/" "$HOST:$DEST/tgbot/tools/bench/"
 rsync -az --delete "$ROOT/assets/comfyui/" "$HOST:$DEST/assets/comfyui/"
-rsync -az "$ROOT/lib/config/restyle_styles.dart" "$HOST:$DEST/lib/config/"
+rsync -az "$ROOT/packages/tsumiki_shared/lib/catalogs/restyle_styles.dart" "$HOST:$DEST/packages/tsumiki_shared/lib/catalogs/"
+# Beard and living-portrait tasks. render.py is here for reading: the bench talks
+# to a running instance and ComfyUI's venv has no aiogram to import it with.
+rsync -az "$ROOT"/tgbot/{beardmask,beardprompt,render}.py "$HOST:$DEST/tgbot/"
+rsync -az --delete "$ROOT/assets/drivers/" "$HOST:$DEST/assets/drivers/"
 echo "synced to $HOST:$DEST"

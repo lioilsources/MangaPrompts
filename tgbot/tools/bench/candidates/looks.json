@@ -1,0 +1,9 @@
+[
+  {"id": "none"},
+  {"id": "goatee-quiff", "beard": {"style": "goatee"}, "hair": {"style": "m-quiff"}},
+  {"id": "full-sidepart", "beard": {"style": "full-beard"}, "hair": {"style": "m-side-part"}},
+  {"id": "stubble-round-crew", "beard": {"style": "heavy-stubble"},
+   "glasses": {"style": "round", "finish": "black acetate"}, "hair": {"style": "m-crew"}},
+  {"id": "chevron-wayfarer-buzz", "beard": {"style": "chevron"},
+   "glasses": {"style": "wayfarer", "finish": "black"}, "hair": {"style": "m-buzz"}}
+]

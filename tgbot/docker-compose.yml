@@ -9,9 +9,30 @@ services:
     env_file: mangabot.env
     volumes:
       - ../assets/comfyui:/app/workflows:ro
+      - ../assets/drivers:/app/drivers:ro
       - ./data:/app/data
+    environment:
+      DRIVERS_DIR: /app/drivers
     ports:
       - "8090:8090"
+
+  # Restyler backend: the same code without a bot (AUTH_MODE=app), its own
+  # database and quota. Behind a profile, so a plain `up` of the bot does not
+  # need restyler.env. Start with: docker compose --profile restyler up -d --build
+  restyler-api:
+    profiles: ["restyler"]
+    build: .
+    container_name: restyler-api
+    restart: unless-stopped
+    env_file: restyler.env
+    volumes:
+      - ../assets/comfyui:/app/workflows:ro
+      - ../assets/drivers:/app/drivers:ro
+      - ./data-restyler:/app/data
+    environment:
+      DRIVERS_DIR: /app/drivers
+    ports:
+      - "8091:8090"
 
   # Optional: terminate tg.ol1n.com directly on JODA. Create the tunnel in
   # Cloudflare Zero Trust, put its token into mangabot.env (TUNNEL_TOKEN=…)

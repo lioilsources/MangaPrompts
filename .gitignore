@@ -40,6 +40,8 @@ ios/Flutter/ephemeral/
 tgbot/venv/
 tgbot/.venv*/
 tgbot/data/
+tgbot/data-restyler/
 tgbot/**/__pycache__/
 tgbot/.pytest_cache/
 tgbot/mangabot.env
+tgbot/restyler.env

@@ -159,6 +159,43 @@ class Database:
             )
             return kind, cur.lastrowid
 
+    def spend_generations(self, user_id: int, free_limit: int, n: int) -> list[int] | None:
+        """Atomically pays for `n` generations, free quota first, then credits:
+        one usage row per generation, so each can be refunded on its own.
+
+        Returns the usage ids, or None with nothing spent when the free quota
+        and the credits together do not cover all `n`."""
+        if n < 1:
+            raise ValueError("n must be at least 1")
+        now = time.time()
+        with self._lock, self._conn:
+            self._conn.execute(
+                "INSERT OR IGNORE INTO users(user_id, credits, created) VALUES(?, 0, ?)",
+                (user_id, now),
+            )
+            used = self._conn.execute(
+                "SELECT COUNT(*) AS n FROM usage WHERE user_id = ? AND kind = 'free' AND ts > ?",
+                (user_id, now - FREE_WINDOW_SECONDS),
+            ).fetchone()["n"]
+            free = min(n, max(0, free_limit - used))
+            paid = n - free
+            if paid:
+                cur = self._conn.execute(
+                    "UPDATE users SET credits = credits - ? WHERE user_id = ? AND credits >= ?",
+                    (paid, user_id, paid),
+                )
+                if cur.rowcount == 0:
+                    return None
+            # Inside the `with`: a failure on any row rolls all of them back,
+            # together with the credit update above.
+            return [
+                self._conn.execute(
+                    "INSERT INTO usage(user_id, kind, ts) VALUES(?, ?, ?)",
+                    (user_id, "free" if i < free else "credit", now),
+                ).lastrowid
+                for i in range(n)
+            ]
+
     def spend_video(self, user_id: int, free_limit: int) -> tuple[str, int] | None:
         """Atomically pays for one photo animation: free quota first, then
         video credits. Mirror of spend_generation with its own ledger.

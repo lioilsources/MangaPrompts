@@ -1,9 +1,11 @@
 """Environment-driven configuration for the Tsumiki Telegram bot backend.
 
-All values come from the environment (see mangabot.service EnvironmentFile);
-BOT_TOKEN is the only required one.
+All values come from the environment (see mangabot.service EnvironmentFile).
+Required: BOT_TOKEN with AUTH_MODE=telegram (the default), APP_TOKEN with
+AUTH_MODE=app — enforced by check_auth_config() when the service starts.
 """
 
+import json
 import os
 from pathlib import Path
 
@@ -154,3 +156,71 @@ HAIR_CHECKPOINT = os.environ.get("HAIR_CHECKPOINT", "").strip() or _RESTYLE_DEFA
 # The analysis waits in the same ComfyUI queue as everyone else's jobs.
 HAIR_ANALYSE_TIMEOUT = _int_env("HAIR_ANALYSE_TIMEOUT", 120)
 MAX_HAIR_IMAGE_B64_CHARS = MAX_RESTYLE_IMAGE_B64_CHARS
+
+# Instance mode. "telegram" is the Tsumiki bot. "app" is the Restyler backend:
+# no bot, no polling, `Authorization: app <APP_TOKEN>` + `X-User` instead of
+# initData. BOT_TOKEN must not be needed there, and initData must not validate
+# there — with an empty BOT_TOKEN anyone could sign it.
+AUTH_MODE = os.environ.get("AUTH_MODE", "").strip() or "telegram"
+if AUTH_MODE not in ("telegram", "app"):
+    raise RuntimeError(f"unknown AUTH_MODE '{AUTH_MODE}'")
+APP_TOKEN = os.environ.get("APP_TOKEN", "").strip()
+APP_TOKEN_MIN_CHARS = 32
+APP_NAME = os.environ.get("APP_NAME", "").strip() or "Tsumiki bot backend"
+
+
+def check_auth_config() -> None:
+    """Called at startup, not at import: the tests import this module with an
+    empty environment."""
+    if AUTH_MODE == "telegram" and not BOT_TOKEN:
+        raise RuntimeError("BOT_TOKEN is not set")
+    if AUTH_MODE == "app" and len(APP_TOKEN) < APP_TOKEN_MIN_CHARS:
+        raise RuntimeError(f"APP_TOKEN must have at least {APP_TOKEN_MIN_CHARS} characters")
+
+
+# POST /api/render: the only graphs a client may name. The app never sends
+# graph JSON. `wan_motion` has no entry — it goes through video-api.
+LIVE_WORKFLOW_FILE = "live_portrait.api.json"
+RENDER_GRAPHS = {
+    "kontext_edit": "flux_hair_kontext.api.json",
+    "restyle_flux": "flux_restyle.api.json",
+    "restyle_sdxl": "sdxl_restyle.api.json",
+    "live_portrait": LIVE_WORKFLOW_FILE,
+}
+RENDER_MAX_STEPS = 12
+RENDER_CONCURRENCY = _int_env("RENDER_CONCURRENCY", 2)
+# Generations one Wan step costs; every other step costs 1.
+RENDER_VIDEO_COST = _int_env("RENDER_VIDEO_COST", 5)
+RENDER_VIDEO_POLL = 5.0
+# A mask is a PNG of a two-tone image: kilobytes, not megabytes.
+MAX_MASK_B64_CHARS = _int_env("MAX_MASK_B64_CHARS", 2_000_000)
+# Decoded size ceiling for a photo or mask. Read from the header before any
+# pixel is touched here or on the GPU box, so a tiny PNG claiming to be
+# 30000x30000 is refused rather than decompressed.
+RENDER_MAX_PIXELS = _int_env("RENDER_MAX_PIXELS", 24_000_000)
+
+# Living portrait: LivePortrait moves the face after a driver clip, in seconds.
+LIVE_TIMEOUT = _int_env("LIVE_TIMEOUT", 180)
+LIVE_MAX_SIDE = 1080
+DRIVERS_DIR = Path(
+    os.environ.get("DRIVERS_DIR", Path(__file__).resolve().parent.parent / "assets" / "drivers")
+)
+
+
+def load_motions(directory: Path) -> dict[str, dict]:
+    """Preset id → {driver, seconds, engine, prompt, loop, label}. A missing or
+    broken manifest means no motions, not a dead service: the drivers are
+    generated separately and the Telegram instance must start without them."""
+    try:
+        motions = json.loads((directory / "manifest.json").read_text())
+    except (OSError, ValueError):
+        return {}
+    if not isinstance(motions, dict):
+        return {}
+    return {
+        k: v for k, v in motions.items()
+        if isinstance(v, dict) and v.get("engine") in ("live", "wan")
+    }
+
+
+MOTIONS = load_motions(DRIVERS_DIR)

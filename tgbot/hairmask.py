@@ -1,7 +1,7 @@
 """Inpaint mask for the Hairdresser card, from face-parsing masks.
 
-`hair_analyse.api.json` runs face parsing on the portrait and saves four
-binary masks (hair, face, hat, eyes+brows). The hair mask is the union of two
+`hair_analyse.api.json` runs face parsing on the portrait and saves binary
+masks (hair, face, hat, eyes+brows, and for the beard card lips, nose, ears). The hair mask is the union of two
 parsers: `FaceSegment` (CelebAMask-HQ, trained on face crops) stops at the
 chest on a phone selfie — 1.0 face heights below the chin where the hair
 reached 1.4 — and whatever it misses survives the repaint; `ClothesSegment`
@@ -17,8 +17,9 @@ mask the inpaint workflow repaints (white = repaint):
 
 Pure numpy + Pillow, no ComfyUI: the numbers below are what the bench
 (`tools/bench`) calibrates, and they have to be testable without a GPU.
-Ol1nLLM keeps a Dart mirror in `lib/models/hair_mask.dart` — change both
-together, the shared fixtures in the tests keep them honest.
+The Dart mirror is `packages/tsumiki_shared/lib/masks/` (Ol1nLLM still keeps its
+own copy in `lib/models/hair_mask.dart`) — change them together: the file
+fixtures in `tests/fixtures/masks` (tools/gen_fixtures.py) pin both.
 """
 
 from __future__ import annotations
@@ -126,11 +127,17 @@ class HairAnalysis:
     face: np.ndarray
     hat: np.ndarray
     features: np.ndarray = field(default=None)  # eyes + brows (+ glasses)
+    # Read by the beard card (beardmask.py) only.
+    lips: np.ndarray = field(default=None)  # mouth + both lips
+    nose: np.ndarray = field(default=None)
+    ears: np.ndarray = field(default=None)
 
     def __post_init__(self):
-        if self.features is None:
-            self.features = np.zeros_like(self.face)
-        shapes = {m.shape for m in (self.hair, self.face, self.hat, self.features)}
+        for name in ("features", "lips", "nose", "ears"):
+            if getattr(self, name) is None:
+                setattr(self, name, np.zeros_like(self.face))
+        masks = (self.hair, self.face, self.hat, self.features, self.lips, self.nose, self.ears)
+        shapes = {m.shape for m in masks}
         if len(shapes) != 1:
             raise ValueError(f"analysis masks differ in size: {shapes}")
 
@@ -401,6 +408,9 @@ ANALYSE_OUTPUTS = {
     "tsumiki_face_mask": "face",
     "tsumiki_hat_mask": "hat",
     "tsumiki_features_mask": "features",
+    "tsumiki_lips_mask": "lips",
+    "tsumiki_nose_mask": "nose",
+    "tsumiki_ears_mask": "ears",
 }
 
 

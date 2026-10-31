@@ -197,3 +197,64 @@ def test_video_jobs_table_migrates_to_timeout(db, tmp_path):
     migrated = Database(path)
     (row,) = migrated.video_jobs_pending()
     assert row["timeout"] == 0  # falls back to the configured floor
+
+
+def test_spend_generations_free_first_then_credits(db):
+    db.add_payment("c1", 7, 25, 5, "s")
+    ids = db.spend_generations(7, 2, 4)
+    assert len(ids) == 4 and len(set(ids)) == 4
+    assert db.free_used_today(7) == 2
+    assert db.credits(7) == 3
+
+
+def test_spend_generations_short_spends_nothing(db):
+    db.add_payment("c1", 7, 25, 2, "s")
+    assert db.spend_generations(7, 1, 4) is None
+    assert db.credits(7) == 2
+    assert db.free_used_today(7) == 0
+
+
+def test_spend_generations_refund_each_row(db):
+    db.add_payment("c1", 7, 25, 2, "s")
+    ids = db.spend_generations(7, 1, 3)
+    for usage_id in ids:
+        db.undo_usage(usage_id)
+    assert db.credits(7) == 2
+    assert db.free_used_today(7) == 0
+
+
+def test_spend_generations_rolls_back_a_failed_insert(db):
+    """Fails on the third usage row, after the credits went and two rows were
+    written — the whole spend has to disappear."""
+
+    class Flaky:
+        def __init__(self, conn):
+            self.conn = conn
+            self.inserts = 0
+
+        def __enter__(self):
+            return self.conn.__enter__()
+
+        def __exit__(self, *exc):
+            return self.conn.__exit__(*exc)
+
+        def execute(self, sql, *args):
+            if sql.startswith("INSERT INTO usage"):
+                self.inserts += 1
+                if self.inserts == 3:
+                    raise RuntimeError("disk full")
+            return self.conn.execute(sql, *args)
+
+    db.add_payment("c1", 7, 25, 5, "s")
+    real = db._conn
+    db._conn = Flaky(real)
+    with pytest.raises(RuntimeError):
+        db.spend_generations(7, 0, 4)
+    db._conn = real
+    assert db.credits(7) == 5
+    assert real.execute("SELECT COUNT(*) AS n FROM usage").fetchone()["n"] == 0
+
+
+def test_spend_generations_rejects_zero(db):
+    with pytest.raises(ValueError):
+        db.spend_generations(7, 1, 0)

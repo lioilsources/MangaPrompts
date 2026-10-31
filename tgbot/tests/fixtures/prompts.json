@@ -1,0 +1,1715 @@
+{
+ "hair": [
+  {
+   "block": "pixie cut, very short",
+   "style_id": "pixie",
+   "shape": {
+    "length": "short",
+    "bangs": "none",
+    "updo": false
+   },
+   "colour": "brown",
+   "engine": "flux",
+   "new_colour": null,
+   "new_colour_phrase": null,
+   "expected": "a photo of the same person with a pixie cut, very short, short hair ending above the jaw with the neck clear of hair, brown hair, natural hair texture, realistic strands, same clothes, same lighting and background, photorealistic"
+  },
+  {
+   "block": "pixie cut, very short",
+   "style_id": "pixie",
+   "shape": {
+    "length": "short",
+    "bangs": "none",
+    "updo": false
+   },
+   "colour": null,
+   "engine": "flux",
+   "new_colour": null,
+   "new_colour_phrase": null,
+   "expected": "a photo of the same person with a pixie cut, very short, short hair ending above the jaw with the neck clear of hair, natural hair, natural hair texture, realistic strands, same clothes, same lighting and background, photorealistic"
+  },
+  {
+   "block": "pixie cut, very short",
+   "style_id": "pixie",
+   "shape": {
+    "length": "short",
+    "bangs": "none",
+    "updo": false
+   },
+   "colour": "brown",
+   "engine": "flux",
+   "new_colour": "copper-red",
+   "new_colour_phrase": "vibrant copper red, natural redhead",
+   "expected": "a photo of the same person with a pixie cut, very short, short hair ending above the jaw with the neck clear of hair, vibrant copper red, natural redhead hair, natural hair texture, realistic strands, same clothes, same lighting and background, photorealistic"
+  },
+  {
+   "block": "pixie cut, very short",
+   "style_id": "pixie",
+   "shape": {
+    "length": "short",
+    "bangs": "none",
+    "updo": false
+   },
+   "colour": null,
+   "engine": "flux",
+   "new_colour": "honey-balayage",
+   "new_colour_phrase": "brown hair with soft honey blonde balayage highlights toward the ends",
+   "expected": "a photo of the same person with a pixie cut, very short, short hair ending above the jaw with the neck clear of hair, brown hair with soft honey blonde balayage highlights toward the ends hair, natural hair texture, realistic strands, same clothes, same lighting and background, photorealistic"
+  },
+  {
+   "block": "long waves",
+   "style_id": "long-waves",
+   "shape": {
+    "length": "long",
+    "bangs": "none",
+    "updo": false
+   },
+   "colour": "brown",
+   "engine": "flux",
+   "new_colour": null,
+   "new_colour_phrase": null,
+   "expected": "a photo of the same person with a long waves, long hair falling past the shoulders, brown hair, natural hair texture, realistic strands, same clothes, same lighting and background, photorealistic"
+  },
+  {
+   "block": "long waves",
+   "style_id": "long-waves",
+   "shape": {
+    "length": "long",
+    "bangs": "none",
+    "updo": false
+   },
+   "colour": null,
+   "engine": "flux",
+   "new_colour": null,
+   "new_colour_phrase": null,
+   "expected": "a photo of the same person with a long waves, long hair falling past the shoulders, natural hair, natural hair texture, realistic strands, same clothes, same lighting and background, photorealistic"
+  },
+  {
+   "block": "long waves",
+   "style_id": "long-waves",
+   "shape": {
+    "length": "long",
+    "bangs": "none",
+    "updo": false
+   },
+   "colour": "brown",
+   "engine": "flux",
+   "new_colour": "copper-red",
+   "new_colour_phrase": "vibrant copper red, natural redhead",
+   "expected": "a photo of the same person with a long waves, long hair falling past the shoulders, vibrant copper red, natural redhead hair, natural hair texture, realistic strands, same clothes, same lighting and background, photorealistic"
+  },
+  {
+   "block": "long waves",
+   "style_id": "long-waves",
+   "shape": {
+    "length": "long",
+    "bangs": "none",
+    "updo": false
+   },
+   "colour": null,
+   "engine": "flux",
+   "new_colour": "honey-balayage",
+   "new_colour_phrase": "brown hair with soft honey blonde balayage highlights toward the ends",
+   "expected": "a photo of the same person with a long waves, long hair falling past the shoulders, brown hair with soft honey blonde balayage highlights toward the ends hair, natural hair texture, realistic strands, same clothes, same lighting and background, photorealistic"
+  },
+  {
+   "block": "curtain bangs",
+   "style_id": "curtain",
+   "shape": {
+    "length": "keep",
+    "bangs": "curtain",
+    "updo": false
+   },
+   "colour": "brown",
+   "engine": "flux",
+   "new_colour": null,
+   "new_colour_phrase": null,
+   "expected": "a photo of the same person with a curtain bangs, brown hair, natural hair texture, realistic strands, same clothes, same lighting and background, photorealistic"
+  },
+  {
+   "block": "curtain bangs",
+   "style_id": "curtain",
+   "shape": {
+    "length": "keep",
+    "bangs": "curtain",
+    "updo": false
+   },
+   "colour": null,
+   "engine": "flux",
+   "new_colour": null,
+   "new_colour_phrase": null,
+   "expected": "a photo of the same person with a curtain bangs, natural hair, natural hair texture, realistic strands, same clothes, same lighting and background, photorealistic"
+  },
+  {
+   "block": "curtain bangs",
+   "style_id": "curtain",
+   "shape": {
+    "length": "keep",
+    "bangs": "curtain",
+    "updo": false
+   },
+   "colour": "brown",
+   "engine": "flux",
+   "new_colour": "copper-red",
+   "new_colour_phrase": "vibrant copper red, natural redhead",
+   "expected": "a photo of the same person with a curtain bangs, vibrant copper red, natural redhead hair, natural hair texture, realistic strands, same clothes, same lighting and background, photorealistic"
+  },
+  {
+   "block": "curtain bangs",
+   "style_id": "curtain",
+   "shape": {
+    "length": "keep",
+    "bangs": "curtain",
+    "updo": false
+   },
+   "colour": null,
+   "engine": "flux",
+   "new_colour": "honey-balayage",
+   "new_colour_phrase": "brown hair with soft honey blonde balayage highlights toward the ends",
+   "expected": "a photo of the same person with a curtain bangs, brown hair with soft honey blonde balayage highlights toward the ends hair, natural hair texture, realistic strands, same clothes, same lighting and background, photorealistic"
+  },
+  {
+   "block": "high ponytail",
+   "style_id": "ponytail",
+   "shape": {
+    "length": "keep",
+    "bangs": "none",
+    "updo": true
+   },
+   "colour": "brown",
+   "engine": "flux",
+   "new_colour": null,
+   "new_colour_phrase": null,
+   "expected": "a photo of the same person with a high ponytail, all hair gathered up and away from the neck and shoulders, brown hair, natural hair texture, realistic strands, same clothes, same lighting and background, photorealistic"
+  },
+  {
+   "block": "high ponytail",
+   "style_id": "ponytail",
+   "shape": {
+    "length": "keep",
+    "bangs": "none",
+    "updo": true
+   },
+   "colour": null,
+   "engine": "flux",
+   "new_colour": null,
+   "new_colour_phrase": null,
+   "expected": "a photo of the same person with a high ponytail, all hair gathered up and away from the neck and shoulders, natural hair, natural hair texture, realistic strands, same clothes, same lighting and background, photorealistic"
+  },
+  {
+   "block": "high ponytail",
+   "style_id": "ponytail",
+   "shape": {
+    "length": "keep",
+    "bangs": "none",
+    "updo": true
+   },
+   "colour": "brown",
+   "engine": "flux",
+   "new_colour": "copper-red",
+   "new_colour_phrase": "vibrant copper red, natural redhead",
+   "expected": "a photo of the same person with a high ponytail, all hair gathered up and away from the neck and shoulders, vibrant copper red, natural redhead hair, natural hair texture, realistic strands, same clothes, same lighting and background, photorealistic"
+  },
+  {
+   "block": "high ponytail",
+   "style_id": "ponytail",
+   "shape": {
+    "length": "keep",
+    "bangs": "none",
+    "updo": true
+   },
+   "colour": null,
+   "engine": "flux",
+   "new_colour": "honey-balayage",
+   "new_colour_phrase": "brown hair with soft honey blonde balayage highlights toward the ends",
+   "expected": "a photo of the same person with a high ponytail, all hair gathered up and away from the neck and shoulders, brown hair with soft honey blonde balayage highlights toward the ends hair, natural hair texture, realistic strands, same clothes, same lighting and background, photorealistic"
+  },
+  {
+   "block": "half-up half-down hairstyle",
+   "style_id": "half-up",
+   "shape": {
+    "length": "keep",
+    "bangs": "none",
+    "updo": true
+   },
+   "colour": "brown",
+   "engine": "flux",
+   "new_colour": null,
+   "new_colour_phrase": null,
+   "expected": "a photo of the same person with a half-up half-down hairstyle, brown hair, natural hair texture, realistic strands, same clothes, same lighting and background, photorealistic"
+  },
+  {
+   "block": "half-up half-down hairstyle",
+   "style_id": "half-up",
+   "shape": {
+    "length": "keep",
+    "bangs": "none",
+    "updo": true
+   },
+   "colour": null,
+   "engine": "flux",
+   "new_colour": null,
+   "new_colour_phrase": null,
+   "expected": "a photo of the same person with a half-up half-down hairstyle, natural hair, natural hair texture, realistic strands, same clothes, same lighting and background, photorealistic"
+  },
+  {
+   "block": "half-up half-down hairstyle",
+   "style_id": "half-up",
+   "shape": {
+    "length": "keep",
+    "bangs": "none",
+    "updo": true
+   },
+   "colour": "brown",
+   "engine": "flux",
+   "new_colour": "copper-red",
+   "new_colour_phrase": "vibrant copper red, natural redhead",
+   "expected": "a photo of the same person with a half-up half-down hairstyle, vibrant copper red, natural redhead hair, natural hair texture, realistic strands, same clothes, same lighting and background, photorealistic"
+  },
+  {
+   "block": "half-up half-down hairstyle",
+   "style_id": "half-up",
+   "shape": {
+    "length": "keep",
+    "bangs": "none",
+    "updo": true
+   },
+   "colour": null,
+   "engine": "flux",
+   "new_colour": "honey-balayage",
+   "new_colour_phrase": "brown hair with soft honey blonde balayage highlights toward the ends",
+   "expected": "a photo of the same person with a half-up half-down hairstyle, brown hair with soft honey blonde balayage highlights toward the ends hair, natural hair texture, realistic strands, same clothes, same lighting and background, photorealistic"
+  },
+  {
+   "block": "the same haircut as in the photo",
+   "style_id": "keep-cut",
+   "shape": {
+    "length": "keep",
+    "bangs": "none",
+    "updo": false
+   },
+   "colour": "brown",
+   "engine": "flux",
+   "new_colour": "copper-red",
+   "new_colour_phrase": "vibrant copper red, natural redhead",
+   "expected": "a photo of the same person with the same haircut as in the photo, vibrant copper red, natural redhead hair, natural hair texture, realistic strands, same clothes, same lighting and background, photorealistic"
+  },
+  {
+   "block": "the same haircut as in the photo",
+   "style_id": "keep-cut",
+   "shape": {
+    "length": "keep",
+    "bangs": "none",
+    "updo": false
+   },
+   "colour": null,
+   "engine": "flux",
+   "new_colour": "honey-balayage",
+   "new_colour_phrase": "brown hair with soft honey blonde balayage highlights toward the ends",
+   "expected": "a photo of the same person with the same haircut as in the photo, brown hair with soft honey blonde balayage highlights toward the ends hair, natural hair texture, realistic strands, same clothes, same lighting and background, photorealistic"
+  },
+  {
+   "block": "pixie cut, very short",
+   "style_id": "pixie",
+   "shape": {
+    "length": "short",
+    "bangs": "none",
+    "updo": false
+   },
+   "colour": "brown",
+   "engine": "sdxl",
+   "new_colour": null,
+   "new_colour_phrase": null,
+   "expected": "a photo of the same person with a pixie cut, very short, short hair ending above the jaw with the neck clear of hair, brown hair, natural hair texture, realistic strands, same clothes, same lighting and background, photorealistic"
+  },
+  {
+   "block": "pixie cut, very short",
+   "style_id": "pixie",
+   "shape": {
+    "length": "short",
+    "bangs": "none",
+    "updo": false
+   },
+   "colour": null,
+   "engine": "sdxl",
+   "new_colour": null,
+   "new_colour_phrase": null,
+   "expected": "a photo of the same person with a pixie cut, very short, short hair ending above the jaw with the neck clear of hair, natural hair, natural hair texture, realistic strands, same clothes, same lighting and background, photorealistic"
+  },
+  {
+   "block": "pixie cut, very short",
+   "style_id": "pixie",
+   "shape": {
+    "length": "short",
+    "bangs": "none",
+    "updo": false
+   },
+   "colour": "brown",
+   "engine": "sdxl",
+   "new_colour": "copper-red",
+   "new_colour_phrase": "vibrant copper red, natural redhead",
+   "expected": "a photo of the same person with a pixie cut, very short, short hair ending above the jaw with the neck clear of hair, vibrant copper red, natural redhead hair, natural hair texture, realistic strands, same clothes, same lighting and background, photorealistic"
+  },
+  {
+   "block": "pixie cut, very short",
+   "style_id": "pixie",
+   "shape": {
+    "length": "short",
+    "bangs": "none",
+    "updo": false
+   },
+   "colour": null,
+   "engine": "sdxl",
+   "new_colour": "honey-balayage",
+   "new_colour_phrase": "brown hair with soft honey blonde balayage highlights toward the ends",
+   "expected": "a photo of the same person with a pixie cut, very short, short hair ending above the jaw with the neck clear of hair, brown hair with soft honey blonde balayage highlights toward the ends hair, natural hair texture, realistic strands, same clothes, same lighting and background, photorealistic"
+  },
+  {
+   "block": "long waves",
+   "style_id": "long-waves",
+   "shape": {
+    "length": "long",
+    "bangs": "none",
+    "updo": false
+   },
+   "colour": "brown",
+   "engine": "sdxl",
+   "new_colour": null,
+   "new_colour_phrase": null,
+   "expected": "a photo of the same person with a long waves, long hair falling past the shoulders, brown hair, natural hair texture, realistic strands, same clothes, same lighting and background, photorealistic"
+  },
+  {
+   "block": "long waves",
+   "style_id": "long-waves",
+   "shape": {
+    "length": "long",
+    "bangs": "none",
+    "updo": false
+   },
+   "colour": null,
+   "engine": "sdxl",
+   "new_colour": null,
+   "new_colour_phrase": null,
+   "expected": "a photo of the same person with a long waves, long hair falling past the shoulders, natural hair, natural hair texture, realistic strands, same clothes, same lighting and background, photorealistic"
+  },
+  {
+   "block": "long waves",
+   "style_id": "long-waves",
+   "shape": {
+    "length": "long",
+    "bangs": "none",
+    "updo": false
+   },
+   "colour": "brown",
+   "engine": "sdxl",
+   "new_colour": "copper-red",
+   "new_colour_phrase": "vibrant copper red, natural redhead",
+   "expected": "a photo of the same person with a long waves, long hair falling past the shoulders, vibrant copper red, natural redhead hair, natural hair texture, realistic strands, same clothes, same lighting and background, photorealistic"
+  },
+  {
+   "block": "long waves",
+   "style_id": "long-waves",
+   "shape": {
+    "length": "long",
+    "bangs": "none",
+    "updo": false
+   },
+   "colour": null,
+   "engine": "sdxl",
+   "new_colour": "honey-balayage",
+   "new_colour_phrase": "brown hair with soft honey blonde balayage highlights toward the ends",
+   "expected": "a photo of the same person with a long waves, long hair falling past the shoulders, brown hair with soft honey blonde balayage highlights toward the ends hair, natural hair texture, realistic strands, same clothes, same lighting and background, photorealistic"
+  },
+  {
+   "block": "curtain bangs",
+   "style_id": "curtain",
+   "shape": {
+    "length": "keep",
+    "bangs": "curtain",
+    "updo": false
+   },
+   "colour": "brown",
+   "engine": "sdxl",
+   "new_colour": null,
+   "new_colour_phrase": null,
+   "expected": "a photo of the same person with a curtain bangs, brown hair, natural hair texture, realistic strands, same clothes, same lighting and background, photorealistic"
+  },
+  {
+   "block": "curtain bangs",
+   "style_id": "curtain",
+   "shape": {
+    "length": "keep",
+    "bangs": "curtain",
+    "updo": false
+   },
+   "colour": null,
+   "engine": "sdxl",
+   "new_colour": null,
+   "new_colour_phrase": null,
+   "expected": "a photo of the same person with a curtain bangs, natural hair, natural hair texture, realistic strands, same clothes, same lighting and background, photorealistic"
+  },
+  {
+   "block": "curtain bangs",
+   "style_id": "curtain",
+   "shape": {
+    "length": "keep",
+    "bangs": "curtain",
+    "updo": false
+   },
+   "colour": "brown",
+   "engine": "sdxl",
+   "new_colour": "copper-red",
+   "new_colour_phrase": "vibrant copper red, natural redhead",
+   "expected": "a photo of the same person with a curtain bangs, vibrant copper red, natural redhead hair, natural hair texture, realistic strands, same clothes, same lighting and background, photorealistic"
+  },
+  {
+   "block": "curtain bangs",
+   "style_id": "curtain",
+   "shape": {
+    "length": "keep",
+    "bangs": "curtain",
+    "updo": false
+   },
+   "colour": null,
+   "engine": "sdxl",
+   "new_colour": "honey-balayage",
+   "new_colour_phrase": "brown hair with soft honey blonde balayage highlights toward the ends",
+   "expected": "a photo of the same person with a curtain bangs, brown hair with soft honey blonde balayage highlights toward the ends hair, natural hair texture, realistic strands, same clothes, same lighting and background, photorealistic"
+  },
+  {
+   "block": "high ponytail",
+   "style_id": "ponytail",
+   "shape": {
+    "length": "keep",
+    "bangs": "none",
+    "updo": true
+   },
+   "colour": "brown",
+   "engine": "sdxl",
+   "new_colour": null,
+   "new_colour_phrase": null,
+   "expected": "a photo of the same person with a high ponytail, all hair gathered up and away from the neck and shoulders, brown hair, natural hair texture, realistic strands, same clothes, same lighting and background, photorealistic"
+  },
+  {
+   "block": "high ponytail",
+   "style_id": "ponytail",
+   "shape": {
+    "length": "keep",
+    "bangs": "none",
+    "updo": true
+   },
+   "colour": null,
+   "engine": "sdxl",
+   "new_colour": null,
+   "new_colour_phrase": null,
+   "expected": "a photo of the same person with a high ponytail, all hair gathered up and away from the neck and shoulders, natural hair, natural hair texture, realistic strands, same clothes, same lighting and background, photorealistic"
+  },
+  {
+   "block": "high ponytail",
+   "style_id": "ponytail",
+   "shape": {
+    "length": "keep",
+    "bangs": "none",
+    "updo": true
+   },
+   "colour": "brown",
+   "engine": "sdxl",
+   "new_colour": "copper-red",
+   "new_colour_phrase": "vibrant copper red, natural redhead",
+   "expected": "a photo of the same person with a high ponytail, all hair gathered up and away from the neck and shoulders, vibrant copper red, natural redhead hair, natural hair texture, realistic strands, same clothes, same lighting and background, photorealistic"
+  },
+  {
+   "block": "high ponytail",
+   "style_id": "ponytail",
+   "shape": {
+    "length": "keep",
+    "bangs": "none",
+    "updo": true
+   },
+   "colour": null,
+   "engine": "sdxl",
+   "new_colour": "honey-balayage",
+   "new_colour_phrase": "brown hair with soft honey blonde balayage highlights toward the ends",
+   "expected": "a photo of the same person with a high ponytail, all hair gathered up and away from the neck and shoulders, brown hair with soft honey blonde balayage highlights toward the ends hair, natural hair texture, realistic strands, same clothes, same lighting and background, photorealistic"
+  },
+  {
+   "block": "half-up half-down hairstyle",
+   "style_id": "half-up",
+   "shape": {
+    "length": "keep",
+    "bangs": "none",
+    "updo": true
+   },
+   "colour": "brown",
+   "engine": "sdxl",
+   "new_colour": null,
+   "new_colour_phrase": null,
+   "expected": "a photo of the same person with a half-up half-down hairstyle, brown hair, natural hair texture, realistic strands, same clothes, same lighting and background, photorealistic"
+  },
+  {
+   "block": "half-up half-down hairstyle",
+   "style_id": "half-up",
+   "shape": {
+    "length": "keep",
+    "bangs": "none",
+    "updo": true
+   },
+   "colour": null,
+   "engine": "sdxl",
+   "new_colour": null,
+   "new_colour_phrase": null,
+   "expected": "a photo of the same person with a half-up half-down hairstyle, natural hair, natural hair texture, realistic strands, same clothes, same lighting and background, photorealistic"
+  },
+  {
+   "block": "half-up half-down hairstyle",
+   "style_id": "half-up",
+   "shape": {
+    "length": "keep",
+    "bangs": "none",
+    "updo": true
+   },
+   "colour": "brown",
+   "engine": "sdxl",
+   "new_colour": "copper-red",
+   "new_colour_phrase": "vibrant copper red, natural redhead",
+   "expected": "a photo of the same person with a half-up half-down hairstyle, vibrant copper red, natural redhead hair, natural hair texture, realistic strands, same clothes, same lighting and background, photorealistic"
+  },
+  {
+   "block": "half-up half-down hairstyle",
+   "style_id": "half-up",
+   "shape": {
+    "length": "keep",
+    "bangs": "none",
+    "updo": true
+   },
+   "colour": null,
+   "engine": "sdxl",
+   "new_colour": "honey-balayage",
+   "new_colour_phrase": "brown hair with soft honey blonde balayage highlights toward the ends",
+   "expected": "a photo of the same person with a half-up half-down hairstyle, brown hair with soft honey blonde balayage highlights toward the ends hair, natural hair texture, realistic strands, same clothes, same lighting and background, photorealistic"
+  },
+  {
+   "block": "the same haircut as in the photo",
+   "style_id": "keep-cut",
+   "shape": {
+    "length": "keep",
+    "bangs": "none",
+    "updo": false
+   },
+   "colour": "brown",
+   "engine": "sdxl",
+   "new_colour": "copper-red",
+   "new_colour_phrase": "vibrant copper red, natural redhead",
+   "expected": "a photo of the same person with the same haircut as in the photo, vibrant copper red, natural redhead hair, natural hair texture, realistic strands, same clothes, same lighting and background, photorealistic"
+  },
+  {
+   "block": "the same haircut as in the photo",
+   "style_id": "keep-cut",
+   "shape": {
+    "length": "keep",
+    "bangs": "none",
+    "updo": false
+   },
+   "colour": null,
+   "engine": "sdxl",
+   "new_colour": "honey-balayage",
+   "new_colour_phrase": "brown hair with soft honey blonde balayage highlights toward the ends",
+   "expected": "a photo of the same person with the same haircut as in the photo, brown hair with soft honey blonde balayage highlights toward the ends hair, natural hair texture, realistic strands, same clothes, same lighting and background, photorealistic"
+  },
+  {
+   "block": "pixie cut, very short",
+   "style_id": "pixie",
+   "shape": {
+    "length": "short",
+    "bangs": "none",
+    "updo": false
+   },
+   "colour": "brown",
+   "engine": "kontext",
+   "new_colour": null,
+   "new_colour_phrase": null,
+   "expected": "Change the person's hairstyle to a pixie cut, very short. Short hair ending above the jaw with the neck clear of hair. Keep the brown hair colour. Keep the face, facial features, expression, skin, clothes, lighting and background exactly the same."
+  },
+  {
+   "block": "pixie cut, very short",
+   "style_id": "pixie",
+   "shape": {
+    "length": "short",
+    "bangs": "none",
+    "updo": false
+   },
+   "colour": null,
+   "engine": "kontext",
+   "new_colour": null,
+   "new_colour_phrase": null,
+   "expected": "Change the person's hairstyle to a pixie cut, very short. Short hair ending above the jaw with the neck clear of hair. Keep the natural hair colour. Keep the face, facial features, expression, skin, clothes, lighting and background exactly the same."
+  },
+  {
+   "block": "pixie cut, very short",
+   "style_id": "pixie",
+   "shape": {
+    "length": "short",
+    "bangs": "none",
+    "updo": false
+   },
+   "colour": "brown",
+   "engine": "kontext",
+   "new_colour": "copper-red",
+   "new_colour_phrase": "vibrant copper red, natural redhead",
+   "expected": "Change the person's hairstyle to a pixie cut, very short. Short hair ending above the jaw with the neck clear of hair. Dye the hair vibrant copper red, natural redhead. Keep the face, facial features, expression, skin, clothes, lighting and background exactly the same."
+  },
+  {
+   "block": "pixie cut, very short",
+   "style_id": "pixie",
+   "shape": {
+    "length": "short",
+    "bangs": "none",
+    "updo": false
+   },
+   "colour": null,
+   "engine": "kontext",
+   "new_colour": "honey-balayage",
+   "new_colour_phrase": "brown hair with soft honey blonde balayage highlights toward the ends",
+   "expected": "Change the person's hairstyle to a pixie cut, very short. Short hair ending above the jaw with the neck clear of hair. Dye the hair brown hair with soft honey blonde balayage highlights toward the ends. Keep the face, facial features, expression, skin, clothes, lighting and background exactly the same."
+  },
+  {
+   "block": "long waves",
+   "style_id": "long-waves",
+   "shape": {
+    "length": "long",
+    "bangs": "none",
+    "updo": false
+   },
+   "colour": "brown",
+   "engine": "kontext",
+   "new_colour": null,
+   "new_colour_phrase": null,
+   "expected": "Change the person's hairstyle to a long waves. Long hair falling past the shoulders. Keep the brown hair colour. Keep the face, facial features, expression, skin, clothes, lighting and background exactly the same."
+  },
+  {
+   "block": "long waves",
+   "style_id": "long-waves",
+   "shape": {
+    "length": "long",
+    "bangs": "none",
+    "updo": false
+   },
+   "colour": null,
+   "engine": "kontext",
+   "new_colour": null,
+   "new_colour_phrase": null,
+   "expected": "Change the person's hairstyle to a long waves. Long hair falling past the shoulders. Keep the natural hair colour. Keep the face, facial features, expression, skin, clothes, lighting and background exactly the same."
+  },
+  {
+   "block": "long waves",
+   "style_id": "long-waves",
+   "shape": {
+    "length": "long",
+    "bangs": "none",
+    "updo": false
+   },
+   "colour": "brown",
+   "engine": "kontext",
+   "new_colour": "copper-red",
+   "new_colour_phrase": "vibrant copper red, natural redhead",
+   "expected": "Change the person's hairstyle to a long waves. Long hair falling past the shoulders. Dye the hair vibrant copper red, natural redhead. Keep the face, facial features, expression, skin, clothes, lighting and background exactly the same."
+  },
+  {
+   "block": "long waves",
+   "style_id": "long-waves",
+   "shape": {
+    "length": "long",
+    "bangs": "none",
+    "updo": false
+   },
+   "colour": null,
+   "engine": "kontext",
+   "new_colour": "honey-balayage",
+   "new_colour_phrase": "brown hair with soft honey blonde balayage highlights toward the ends",
+   "expected": "Change the person's hairstyle to a long waves. Long hair falling past the shoulders. Dye the hair brown hair with soft honey blonde balayage highlights toward the ends. Keep the face, facial features, expression, skin, clothes, lighting and background exactly the same."
+  },
+  {
+   "block": "curtain bangs",
+   "style_id": "curtain",
+   "shape": {
+    "length": "keep",
+    "bangs": "curtain",
+    "updo": false
+   },
+   "colour": "brown",
+   "engine": "kontext",
+   "new_colour": null,
+   "new_colour_phrase": null,
+   "expected": "Change the person's hairstyle to a curtain bangs. Keep the brown hair colour. Keep the face, facial features, expression, skin, clothes, lighting and background exactly the same."
+  },
+  {
+   "block": "curtain bangs",
+   "style_id": "curtain",
+   "shape": {
+    "length": "keep",
+    "bangs": "curtain",
+    "updo": false
+   },
+   "colour": null,
+   "engine": "kontext",
+   "new_colour": null,
+   "new_colour_phrase": null,
+   "expected": "Change the person's hairstyle to a curtain bangs. Keep the natural hair colour. Keep the face, facial features, expression, skin, clothes, lighting and background exactly the same."
+  },
+  {
+   "block": "curtain bangs",
+   "style_id": "curtain",
+   "shape": {
+    "length": "keep",
+    "bangs": "curtain",
+    "updo": false
+   },
+   "colour": "brown",
+   "engine": "kontext",
+   "new_colour": "copper-red",
+   "new_colour_phrase": "vibrant copper red, natural redhead",
+   "expected": "Change the person's hairstyle to a curtain bangs. Dye the hair vibrant copper red, natural redhead. Keep the face, facial features, expression, skin, clothes, lighting and background exactly the same."
+  },
+  {
+   "block": "curtain bangs",
+   "style_id": "curtain",
+   "shape": {
+    "length": "keep",
+    "bangs": "curtain",
+    "updo": false
+   },
+   "colour": null,
+   "engine": "kontext",
+   "new_colour": "honey-balayage",
+   "new_colour_phrase": "brown hair with soft honey blonde balayage highlights toward the ends",
+   "expected": "Change the person's hairstyle to a curtain bangs. Dye the hair brown hair with soft honey blonde balayage highlights toward the ends. Keep the face, facial features, expression, skin, clothes, lighting and background exactly the same."
+  },
+  {
+   "block": "high ponytail",
+   "style_id": "ponytail",
+   "shape": {
+    "length": "keep",
+    "bangs": "none",
+    "updo": true
+   },
+   "colour": "brown",
+   "engine": "kontext",
+   "new_colour": null,
+   "new_colour_phrase": null,
+   "expected": "Change the person's hairstyle to a high ponytail. All hair gathered up and away from the neck and shoulders. Keep the brown hair colour. Keep the face, facial features, expression, skin, clothes, lighting and background exactly the same."
+  },
+  {
+   "block": "high ponytail",
+   "style_id": "ponytail",
+   "shape": {
+    "length": "keep",
+    "bangs": "none",
+    "updo": true
+   },
+   "colour": null,
+   "engine": "kontext",
+   "new_colour": null,
+   "new_colour_phrase": null,
+   "expected": "Change the person's hairstyle to a high ponytail. All hair gathered up and away from the neck and shoulders. Keep the natural hair colour. Keep the face, facial features, expression, skin, clothes, lighting and background exactly the same."
+  },
+  {
+   "block": "high ponytail",
+   "style_id": "ponytail",
+   "shape": {
+    "length": "keep",
+    "bangs": "none",
+    "updo": true
+   },
+   "colour": "brown",
+   "engine": "kontext",
+   "new_colour": "copper-red",
+   "new_colour_phrase": "vibrant copper red, natural redhead",
+   "expected": "Change the person's hairstyle to a high ponytail. All hair gathered up and away from the neck and shoulders. Dye the hair vibrant copper red, natural redhead. Keep the face, facial features, expression, skin, clothes, lighting and background exactly the same."
+  },
+  {
+   "block": "high ponytail",
+   "style_id": "ponytail",
+   "shape": {
+    "length": "keep",
+    "bangs": "none",
+    "updo": true
+   },
+   "colour": null,
+   "engine": "kontext",
+   "new_colour": "honey-balayage",
+   "new_colour_phrase": "brown hair with soft honey blonde balayage highlights toward the ends",
+   "expected": "Change the person's hairstyle to a high ponytail. All hair gathered up and away from the neck and shoulders. Dye the hair brown hair with soft honey blonde balayage highlights toward the ends. Keep the face, facial features, expression, skin, clothes, lighting and background exactly the same."
+  },
+  {
+   "block": "half-up half-down hairstyle",
+   "style_id": "half-up",
+   "shape": {
+    "length": "keep",
+    "bangs": "none",
+    "updo": true
+   },
+   "colour": "brown",
+   "engine": "kontext",
+   "new_colour": null,
+   "new_colour_phrase": null,
+   "expected": "Change the person's hairstyle to a half-up half-down hairstyle. Keep the brown hair colour. Keep the face, facial features, expression, skin, clothes, lighting and background exactly the same."
+  },
+  {
+   "block": "half-up half-down hairstyle",
+   "style_id": "half-up",
+   "shape": {
+    "length": "keep",
+    "bangs": "none",
+    "updo": true
+   },
+   "colour": null,
+   "engine": "kontext",
+   "new_colour": null,
+   "new_colour_phrase": null,
+   "expected": "Change the person's hairstyle to a half-up half-down hairstyle. Keep the natural hair colour. Keep the face, facial features, expression, skin, clothes, lighting and background exactly the same."
+  },
+  {
+   "block": "half-up half-down hairstyle",
+   "style_id": "half-up",
+   "shape": {
+    "length": "keep",
+    "bangs": "none",
+    "updo": true
+   },
+   "colour": "brown",
+   "engine": "kontext",
+   "new_colour": "copper-red",
+   "new_colour_phrase": "vibrant copper red, natural redhead",
+   "expected": "Change the person's hairstyle to a half-up half-down hairstyle. Dye the hair vibrant copper red, natural redhead. Keep the face, facial features, expression, skin, clothes, lighting and background exactly the same."
+  },
+  {
+   "block": "half-up half-down hairstyle",
+   "style_id": "half-up",
+   "shape": {
+    "length": "keep",
+    "bangs": "none",
+    "updo": true
+   },
+   "colour": null,
+   "engine": "kontext",
+   "new_colour": "honey-balayage",
+   "new_colour_phrase": "brown hair with soft honey blonde balayage highlights toward the ends",
+   "expected": "Change the person's hairstyle to a half-up half-down hairstyle. Dye the hair brown hair with soft honey blonde balayage highlights toward the ends. Keep the face, facial features, expression, skin, clothes, lighting and background exactly the same."
+  },
+  {
+   "block": "the same haircut as in the photo",
+   "style_id": "keep-cut",
+   "shape": {
+    "length": "keep",
+    "bangs": "none",
+    "updo": false
+   },
+   "colour": "brown",
+   "engine": "kontext",
+   "new_colour": "copper-red",
+   "new_colour_phrase": "vibrant copper red, natural redhead",
+   "expected": "Change the person's hair colour to vibrant copper red, natural redhead. Keep the haircut, length and hair texture. Keep the face, facial features, expression, skin, clothes, lighting and background exactly the same."
+  },
+  {
+   "block": "the same haircut as in the photo",
+   "style_id": "keep-cut",
+   "shape": {
+    "length": "keep",
+    "bangs": "none",
+    "updo": false
+   },
+   "colour": null,
+   "engine": "kontext",
+   "new_colour": "honey-balayage",
+   "new_colour_phrase": "brown hair with soft honey blonde balayage highlights toward the ends",
+   "expected": "Change the person's hair colour to brown hair with soft honey blonde balayage highlights toward the ends. Keep the haircut, length and hair texture. Keep the face, facial features, expression, skin, clothes, lighting and background exactly the same."
+  }
+ ],
+ "beard": [
+  {
+   "block": "",
+   "style_id": "clean-shaven",
+   "colour": "dark brown",
+   "grey": false,
+   "expected": "Shave off the beard and moustache completely so the man is clean-shaven with smooth bare skin. Keep the face, eyes, nose, lips, expression, skin tone, hair, clothes, lighting and background exactly the same."
+  },
+  {
+   "block": "",
+   "style_id": "clean-shaven",
+   "colour": null,
+   "grey": false,
+   "expected": "Shave off the beard and moustache completely so the man is clean-shaven with smooth bare skin. Keep the face, eyes, nose, lips, expression, skin tone, hair, clothes, lighting and background exactly the same."
+  },
+  {
+   "block": "",
+   "style_id": "clean-shaven",
+   "colour": "black",
+   "grey": true,
+   "expected": "Shave off the beard and moustache completely so the man is clean-shaven with smooth bare skin. Keep the face, eyes, nose, lips, expression, skin tone, hair, clothes, lighting and background exactly the same."
+  },
+  {
+   "block": "light five o'clock shadow stubble, very short even facial hair",
+   "style_id": "light-stubble",
+   "colour": "dark brown",
+   "grey": false,
+   "expected": "Give the man a light five o'clock shadow stubble, very short even facial hair, dark brown, matching his hair, with realistic individual hairs and natural density. Keep the face, eyes, nose, lips, expression, skin tone, hair, clothes, lighting and background exactly the same."
+  },
+  {
+   "block": "light five o'clock shadow stubble, very short even facial hair",
+   "style_id": "light-stubble",
+   "colour": null,
+   "grey": false,
+   "expected": "Give the man a light five o'clock shadow stubble, very short even facial hair, natural, matching his hair, with realistic individual hairs and natural density. Keep the face, eyes, nose, lips, expression, skin tone, hair, clothes, lighting and background exactly the same."
+  },
+  {
+   "block": "light five o'clock shadow stubble, very short even facial hair",
+   "style_id": "light-stubble",
+   "colour": "black",
+   "grey": true,
+   "expected": "Give the man a light five o'clock shadow stubble, very short even facial hair, salt-and-pepper grey, matching his hair, with realistic individual hairs and natural density. Keep the face, eyes, nose, lips, expression, skin tone, hair, clothes, lighting and background exactly the same."
+  },
+  {
+   "block": "heavy stubble, 3–5 mm even facial hair over cheeks, jaw and chin",
+   "style_id": "heavy-stubble",
+   "colour": "dark brown",
+   "grey": false,
+   "expected": "Give the man a heavy stubble, 3–5 mm even facial hair over cheeks, jaw and chin, dark brown, matching his hair, with realistic individual hairs and natural density. Keep the face, eyes, nose, lips, expression, skin tone, hair, clothes, lighting and background exactly the same."
+  },
+  {
+   "block": "heavy stubble, 3–5 mm even facial hair over cheeks, jaw and chin",
+   "style_id": "heavy-stubble",
+   "colour": null,
+   "grey": false,
+   "expected": "Give the man a heavy stubble, 3–5 mm even facial hair over cheeks, jaw and chin, natural, matching his hair, with realistic individual hairs and natural density. Keep the face, eyes, nose, lips, expression, skin tone, hair, clothes, lighting and background exactly the same."
+  },
+  {
+   "block": "heavy stubble, 3–5 mm even facial hair over cheeks, jaw and chin",
+   "style_id": "heavy-stubble",
+   "colour": "black",
+   "grey": true,
+   "expected": "Give the man a heavy stubble, 3–5 mm even facial hair over cheeks, jaw and chin, salt-and-pepper grey, matching his hair, with realistic individual hairs and natural density. Keep the face, eyes, nose, lips, expression, skin tone, hair, clothes, lighting and background exactly the same."
+  },
+  {
+   "block": "short boxed beard, neatly trimmed full beard with clean sharp cheek and neck lines",
+   "style_id": "short-boxed",
+   "colour": "dark brown",
+   "grey": false,
+   "expected": "Give the man a short boxed beard, neatly trimmed full beard with clean sharp cheek and neck lines, dark brown, matching his hair, with realistic individual hairs and natural density. Keep the face, eyes, nose, lips, expression, skin tone, hair, clothes, lighting and background exactly the same."
+  },
+  {
+   "block": "short boxed beard, neatly trimmed full beard with clean sharp cheek and neck lines",
+   "style_id": "short-boxed",
+   "colour": null,
+   "grey": false,
+   "expected": "Give the man a short boxed beard, neatly trimmed full beard with clean sharp cheek and neck lines, natural, matching his hair, with realistic individual hairs and natural density. Keep the face, eyes, nose, lips, expression, skin tone, hair, clothes, lighting and background exactly the same."
+  },
+  {
+   "block": "short boxed beard, neatly trimmed full beard with clean sharp cheek and neck lines",
+   "style_id": "short-boxed",
+   "colour": "black",
+   "grey": true,
+   "expected": "Give the man a short boxed beard, neatly trimmed full beard with clean sharp cheek and neck lines, salt-and-pepper grey, matching his hair, with realistic individual hairs and natural density. Keep the face, eyes, nose, lips, expression, skin tone, hair, clothes, lighting and background exactly the same."
+  },
+  {
+   "block": "corporate beard, short tidy full beard about 1 cm, well groomed",
+   "style_id": "corporate",
+   "colour": "dark brown",
+   "grey": false,
+   "expected": "Give the man a corporate beard, short tidy full beard about 1 cm, well groomed, dark brown, matching his hair, with realistic individual hairs and natural density. Keep the face, eyes, nose, lips, expression, skin tone, hair, clothes, lighting and background exactly the same."
+  },
+  {
+   "block": "corporate beard, short tidy full beard about 1 cm, well groomed",
+   "style_id": "corporate",
+   "colour": null,
+   "grey": false,
+   "expected": "Give the man a corporate beard, short tidy full beard about 1 cm, well groomed, natural, matching his hair, with realistic individual hairs and natural density. Keep the face, eyes, nose, lips, expression, skin tone, hair, clothes, lighting and background exactly the same."
+  },
+  {
+   "block": "corporate beard, short tidy full beard about 1 cm, well groomed",
+   "style_id": "corporate",
+   "colour": "black",
+   "grey": true,
+   "expected": "Give the man a corporate beard, short tidy full beard about 1 cm, well groomed, salt-and-pepper grey, matching his hair, with realistic individual hairs and natural density. Keep the face, eyes, nose, lips, expression, skin tone, hair, clothes, lighting and background exactly the same."
+  },
+  {
+   "block": "full thick beard with moustache, medium length covering cheeks, jaw and chin",
+   "style_id": "full-beard",
+   "colour": "dark brown",
+   "grey": false,
+   "expected": "Give the man a full thick beard with moustache, medium length covering cheeks, jaw and chin, dark brown, matching his hair, with realistic individual hairs and natural density. Keep the face, eyes, nose, lips, expression, skin tone, hair, clothes, lighting and background exactly the same."
+  },
+  {
+   "block": "full thick beard with moustache, medium length covering cheeks, jaw and chin",
+   "style_id": "full-beard",
+   "colour": null,
+   "grey": false,
+   "expected": "Give the man a full thick beard with moustache, medium length covering cheeks, jaw and chin, natural, matching his hair, with realistic individual hairs and natural density. Keep the face, eyes, nose, lips, expression, skin tone, hair, clothes, lighting and background exactly the same."
+  },
+  {
+   "block": "full thick beard with moustache, medium length covering cheeks, jaw and chin",
+   "style_id": "full-beard",
+   "colour": "black",
+   "grey": true,
+   "expected": "Give the man a full thick beard with moustache, medium length covering cheeks, jaw and chin, salt-and-pepper grey, matching his hair, with realistic individual hairs and natural density. Keep the face, eyes, nose, lips, expression, skin tone, hair, clothes, lighting and background exactly the same."
+  },
+  {
+   "block": "long full beard reaching the upper chest, thick moustache",
+   "style_id": "long-beard",
+   "colour": "dark brown",
+   "grey": false,
+   "expected": "Give the man a long full beard reaching the upper chest, thick moustache, dark brown, matching his hair, with realistic individual hairs and natural density. Keep the face, eyes, nose, lips, expression, skin tone, hair, clothes, lighting and background exactly the same."
+  },
+  {
+   "block": "long full beard reaching the upper chest, thick moustache",
+   "style_id": "long-beard",
+   "colour": null,
+   "grey": false,
+   "expected": "Give the man a long full beard reaching the upper chest, thick moustache, natural, matching his hair, with realistic individual hairs and natural density. Keep the face, eyes, nose, lips, expression, skin tone, hair, clothes, lighting and background exactly the same."
+  },
+  {
+   "block": "long full beard reaching the upper chest, thick moustache",
+   "style_id": "long-beard",
+   "colour": "black",
+   "grey": true,
+   "expected": "Give the man a long full beard reaching the upper chest, thick moustache, salt-and-pepper grey, matching his hair, with realistic individual hairs and natural density. Keep the face, eyes, nose, lips, expression, skin tone, hair, clothes, lighting and background exactly the same."
+  },
+  {
+   "block": "garibaldi beard, wide full rounded beard with an integrated moustache",
+   "style_id": "garibaldi",
+   "colour": "dark brown",
+   "grey": false,
+   "expected": "Give the man a garibaldi beard, wide full rounded beard with an integrated moustache, dark brown, matching his hair, with realistic individual hairs and natural density. Keep the face, eyes, nose, lips, expression, skin tone, hair, clothes, lighting and background exactly the same."
+  },
+  {
+   "block": "garibaldi beard, wide full rounded beard with an integrated moustache",
+   "style_id": "garibaldi",
+   "colour": null,
+   "grey": false,
+   "expected": "Give the man a garibaldi beard, wide full rounded beard with an integrated moustache, natural, matching his hair, with realistic individual hairs and natural density. Keep the face, eyes, nose, lips, expression, skin tone, hair, clothes, lighting and background exactly the same."
+  },
+  {
+   "block": "garibaldi beard, wide full rounded beard with an integrated moustache",
+   "style_id": "garibaldi",
+   "colour": "black",
+   "grey": true,
+   "expected": "Give the man a garibaldi beard, wide full rounded beard with an integrated moustache, salt-and-pepper grey, matching his hair, with realistic individual hairs and natural density. Keep the face, eyes, nose, lips, expression, skin tone, hair, clothes, lighting and background exactly the same."
+  },
+  {
+   "block": "ducktail beard, full beard tapered to a point under the chin",
+   "style_id": "ducktail",
+   "colour": "dark brown",
+   "grey": false,
+   "expected": "Give the man a ducktail beard, full beard tapered to a point under the chin, dark brown, matching his hair, with realistic individual hairs and natural density. Keep the face, eyes, nose, lips, expression, skin tone, hair, clothes, lighting and background exactly the same."
+  },
+  {
+   "block": "ducktail beard, full beard tapered to a point under the chin",
+   "style_id": "ducktail",
+   "colour": null,
+   "grey": false,
+   "expected": "Give the man a ducktail beard, full beard tapered to a point under the chin, natural, matching his hair, with realistic individual hairs and natural density. Keep the face, eyes, nose, lips, expression, skin tone, hair, clothes, lighting and background exactly the same."
+  },
+  {
+   "block": "ducktail beard, full beard tapered to a point under the chin",
+   "style_id": "ducktail",
+   "colour": "black",
+   "grey": true,
+   "expected": "Give the man a ducktail beard, full beard tapered to a point under the chin, salt-and-pepper grey, matching his hair, with realistic individual hairs and natural density. Keep the face, eyes, nose, lips, expression, skin tone, hair, clothes, lighting and background exactly the same."
+  },
+  {
+   "block": "goatee, hair on the chin only with a clean-shaven jaw, no moustache",
+   "style_id": "goatee",
+   "colour": "dark brown",
+   "grey": false,
+   "expected": "Give the man a goatee, hair on the chin only with a clean-shaven jaw, no moustache, dark brown, matching his hair, with realistic individual hairs and natural density. Keep the face, eyes, nose, lips, expression, skin tone, hair, clothes, lighting and background exactly the same."
+  },
+  {
+   "block": "goatee, hair on the chin only with a clean-shaven jaw, no moustache",
+   "style_id": "goatee",
+   "colour": null,
+   "grey": false,
+   "expected": "Give the man a goatee, hair on the chin only with a clean-shaven jaw, no moustache, natural, matching his hair, with realistic individual hairs and natural density. Keep the face, eyes, nose, lips, expression, skin tone, hair, clothes, lighting and background exactly the same."
+  },
+  {
+   "block": "goatee, hair on the chin only with a clean-shaven jaw, no moustache",
+   "style_id": "goatee",
+   "colour": "black",
+   "grey": true,
+   "expected": "Give the man a goatee, hair on the chin only with a clean-shaven jaw, no moustache, salt-and-pepper grey, matching his hair, with realistic individual hairs and natural density. Keep the face, eyes, nose, lips, expression, skin tone, hair, clothes, lighting and background exactly the same."
+  },
+  {
+   "block": "circle beard, goatee connected to a moustache in a ring around the mouth, shaved cheeks",
+   "style_id": "circle-beard",
+   "colour": "dark brown",
+   "grey": false,
+   "expected": "Give the man a circle beard, goatee connected to a moustache in a ring around the mouth, shaved cheeks, dark brown, matching his hair, with realistic individual hairs and natural density. Keep the face, eyes, nose, lips, expression, skin tone, hair, clothes, lighting and background exactly the same."
+  },
+  {
+   "block": "circle beard, goatee connected to a moustache in a ring around the mouth, shaved cheeks",
+   "style_id": "circle-beard",
+   "colour": null,
+   "grey": false,
+   "expected": "Give the man a circle beard, goatee connected to a moustache in a ring around the mouth, shaved cheeks, natural, matching his hair, with realistic individual hairs and natural density. Keep the face, eyes, nose, lips, expression, skin tone, hair, clothes, lighting and background exactly the same."
+  },
+  {
+   "block": "circle beard, goatee connected to a moustache in a ring around the mouth, shaved cheeks",
+   "style_id": "circle-beard",
+   "colour": "black",
+   "grey": true,
+   "expected": "Give the man a circle beard, goatee connected to a moustache in a ring around the mouth, shaved cheeks, salt-and-pepper grey, matching his hair, with realistic individual hairs and natural density. Keep the face, eyes, nose, lips, expression, skin tone, hair, clothes, lighting and background exactly the same."
+  },
+  {
+   "block": "van dyke beard, pointed goatee and a separate styled moustache, shaved cheeks",
+   "style_id": "van-dyke",
+   "colour": "dark brown",
+   "grey": false,
+   "expected": "Give the man a van dyke beard, pointed goatee and a separate styled moustache, shaved cheeks, dark brown, matching his hair, with realistic individual hairs and natural density. Keep the face, eyes, nose, lips, expression, skin tone, hair, clothes, lighting and background exactly the same."
+  },
+  {
+   "block": "van dyke beard, pointed goatee and a separate styled moustache, shaved cheeks",
+   "style_id": "van-dyke",
+   "colour": null,
+   "grey": false,
+   "expected": "Give the man a van dyke beard, pointed goatee and a separate styled moustache, shaved cheeks, natural, matching his hair, with realistic individual hairs and natural density. Keep the face, eyes, nose, lips, expression, skin tone, hair, clothes, lighting and background exactly the same."
+  },
+  {
+   "block": "van dyke beard, pointed goatee and a separate styled moustache, shaved cheeks",
+   "style_id": "van-dyke",
+   "colour": "black",
+   "grey": true,
+   "expected": "Give the man a van dyke beard, pointed goatee and a separate styled moustache, shaved cheeks, salt-and-pepper grey, matching his hair, with realistic individual hairs and natural density. Keep the face, eyes, nose, lips, expression, skin tone, hair, clothes, lighting and background exactly the same."
+  },
+  {
+   "block": "anchor beard tracing the jawline to a point under the chin with a pencil moustache",
+   "style_id": "anchor",
+   "colour": "dark brown",
+   "grey": false,
+   "expected": "Give the man a anchor beard tracing the jawline to a point under the chin with a pencil moustache, dark brown, matching his hair, with realistic individual hairs and natural density. Keep the face, eyes, nose, lips, expression, skin tone, hair, clothes, lighting and background exactly the same."
+  },
+  {
+   "block": "anchor beard tracing the jawline to a point under the chin with a pencil moustache",
+   "style_id": "anchor",
+   "colour": null,
+   "grey": false,
+   "expected": "Give the man a anchor beard tracing the jawline to a point under the chin with a pencil moustache, natural, matching his hair, with realistic individual hairs and natural density. Keep the face, eyes, nose, lips, expression, skin tone, hair, clothes, lighting and background exactly the same."
+  },
+  {
+   "block": "anchor beard tracing the jawline to a point under the chin with a pencil moustache",
+   "style_id": "anchor",
+   "colour": "black",
+   "grey": true,
+   "expected": "Give the man a anchor beard tracing the jawline to a point under the chin with a pencil moustache, salt-and-pepper grey, matching his hair, with realistic individual hairs and natural density. Keep the face, eyes, nose, lips, expression, skin tone, hair, clothes, lighting and background exactly the same."
+  },
+  {
+   "block": "chin strap beard, a thin line of hair along the jawline, no moustache",
+   "style_id": "chin-strap",
+   "colour": "dark brown",
+   "grey": false,
+   "expected": "Give the man a chin strap beard, a thin line of hair along the jawline, no moustache, dark brown, matching his hair, with realistic individual hairs and natural density. Keep the face, eyes, nose, lips, expression, skin tone, hair, clothes, lighting and background exactly the same."
+  },
+  {
+   "block": "chin strap beard, a thin line of hair along the jawline, no moustache",
+   "style_id": "chin-strap",
+   "colour": null,
+   "grey": false,
+   "expected": "Give the man a chin strap beard, a thin line of hair along the jawline, no moustache, natural, matching his hair, with realistic individual hairs and natural density. Keep the face, eyes, nose, lips, expression, skin tone, hair, clothes, lighting and background exactly the same."
+  },
+  {
+   "block": "chin strap beard, a thin line of hair along the jawline, no moustache",
+   "style_id": "chin-strap",
+   "colour": "black",
+   "grey": true,
+   "expected": "Give the man a chin strap beard, a thin line of hair along the jawline, no moustache, salt-and-pepper grey, matching his hair, with realistic individual hairs and natural density. Keep the face, eyes, nose, lips, expression, skin tone, hair, clothes, lighting and background exactly the same."
+  },
+  {
+   "block": "soul patch, a small tuft of hair just below the lower lip, otherwise clean-shaven",
+   "style_id": "soul-patch",
+   "colour": "dark brown",
+   "grey": false,
+   "expected": "Give the man a soul patch, a small tuft of hair just below the lower lip, otherwise clean-shaven, dark brown, matching his hair, with realistic individual hairs and natural density. Keep the face, eyes, nose, lips, expression, skin tone, hair, clothes, lighting and background exactly the same."
+  },
+  {
+   "block": "soul patch, a small tuft of hair just below the lower lip, otherwise clean-shaven",
+   "style_id": "soul-patch",
+   "colour": null,
+   "grey": false,
+   "expected": "Give the man a soul patch, a small tuft of hair just below the lower lip, otherwise clean-shaven, natural, matching his hair, with realistic individual hairs and natural density. Keep the face, eyes, nose, lips, expression, skin tone, hair, clothes, lighting and background exactly the same."
+  },
+  {
+   "block": "soul patch, a small tuft of hair just below the lower lip, otherwise clean-shaven",
+   "style_id": "soul-patch",
+   "colour": "black",
+   "grey": true,
+   "expected": "Give the man a soul patch, a small tuft of hair just below the lower lip, otherwise clean-shaven, salt-and-pepper grey, matching his hair, with realistic individual hairs and natural density. Keep the face, eyes, nose, lips, expression, skin tone, hair, clothes, lighting and background exactly the same."
+  },
+  {
+   "block": "mutton chops, thick sideburns extending down the cheeks to the jaw, clean chin, no moustache",
+   "style_id": "mutton-chops",
+   "colour": "dark brown",
+   "grey": false,
+   "expected": "Give the man a mutton chops, thick sideburns extending down the cheeks to the jaw, clean chin, no moustache, dark brown, matching his hair, with realistic individual hairs and natural density. Keep the face, eyes, nose, lips, expression, skin tone, hair, clothes, lighting and background exactly the same."
+  },
+  {
+   "block": "mutton chops, thick sideburns extending down the cheeks to the jaw, clean chin, no moustache",
+   "style_id": "mutton-chops",
+   "colour": null,
+   "grey": false,
+   "expected": "Give the man a mutton chops, thick sideburns extending down the cheeks to the jaw, clean chin, no moustache, natural, matching his hair, with realistic individual hairs and natural density. Keep the face, eyes, nose, lips, expression, skin tone, hair, clothes, lighting and background exactly the same."
+  },
+  {
+   "block": "mutton chops, thick sideburns extending down the cheeks to the jaw, clean chin, no moustache",
+   "style_id": "mutton-chops",
+   "colour": "black",
+   "grey": true,
+   "expected": "Give the man a mutton chops, thick sideburns extending down the cheeks to the jaw, clean chin, no moustache, salt-and-pepper grey, matching his hair, with realistic individual hairs and natural density. Keep the face, eyes, nose, lips, expression, skin tone, hair, clothes, lighting and background exactly the same."
+  },
+  {
+   "block": "chevron moustache, thick full moustache covering the upper lip, clean-shaven otherwise",
+   "style_id": "chevron",
+   "colour": "dark brown",
+   "grey": false,
+   "expected": "Give the man a chevron moustache, thick full moustache covering the upper lip, clean-shaven otherwise, dark brown, matching his hair, with realistic individual hairs and natural density. Keep the face, eyes, nose, lips, expression, skin tone, hair, clothes, lighting and background exactly the same."
+  },
+  {
+   "block": "chevron moustache, thick full moustache covering the upper lip, clean-shaven otherwise",
+   "style_id": "chevron",
+   "colour": null,
+   "grey": false,
+   "expected": "Give the man a chevron moustache, thick full moustache covering the upper lip, clean-shaven otherwise, natural, matching his hair, with realistic individual hairs and natural density. Keep the face, eyes, nose, lips, expression, skin tone, hair, clothes, lighting and background exactly the same."
+  },
+  {
+   "block": "chevron moustache, thick full moustache covering the upper lip, clean-shaven otherwise",
+   "style_id": "chevron",
+   "colour": "black",
+   "grey": true,
+   "expected": "Give the man a chevron moustache, thick full moustache covering the upper lip, clean-shaven otherwise, salt-and-pepper grey, matching his hair, with realistic individual hairs and natural density. Keep the face, eyes, nose, lips, expression, skin tone, hair, clothes, lighting and background exactly the same."
+  },
+  {
+   "block": "handlebar moustache with long ends curled upward, clean-shaven otherwise",
+   "style_id": "handlebar",
+   "colour": "dark brown",
+   "grey": false,
+   "expected": "Give the man a handlebar moustache with long ends curled upward, clean-shaven otherwise, dark brown, matching his hair, with realistic individual hairs and natural density. Keep the face, eyes, nose, lips, expression, skin tone, hair, clothes, lighting and background exactly the same."
+  },
+  {
+   "block": "handlebar moustache with long ends curled upward, clean-shaven otherwise",
+   "style_id": "handlebar",
+   "colour": null,
+   "grey": false,
+   "expected": "Give the man a handlebar moustache with long ends curled upward, clean-shaven otherwise, natural, matching his hair, with realistic individual hairs and natural density. Keep the face, eyes, nose, lips, expression, skin tone, hair, clothes, lighting and background exactly the same."
+  },
+  {
+   "block": "handlebar moustache with long ends curled upward, clean-shaven otherwise",
+   "style_id": "handlebar",
+   "colour": "black",
+   "grey": true,
+   "expected": "Give the man a handlebar moustache with long ends curled upward, clean-shaven otherwise, salt-and-pepper grey, matching his hair, with realistic individual hairs and natural density. Keep the face, eyes, nose, lips, expression, skin tone, hair, clothes, lighting and background exactly the same."
+  },
+  {
+   "block": "thin pencil moustache just above the upper lip, clean-shaven otherwise",
+   "style_id": "pencil",
+   "colour": "dark brown",
+   "grey": false,
+   "expected": "Give the man a thin pencil moustache just above the upper lip, clean-shaven otherwise, dark brown, matching his hair, with realistic individual hairs and natural density. Keep the face, eyes, nose, lips, expression, skin tone, hair, clothes, lighting and background exactly the same."
+  },
+  {
+   "block": "thin pencil moustache just above the upper lip, clean-shaven otherwise",
+   "style_id": "pencil",
+   "colour": null,
+   "grey": false,
+   "expected": "Give the man a thin pencil moustache just above the upper lip, clean-shaven otherwise, natural, matching his hair, with realistic individual hairs and natural density. Keep the face, eyes, nose, lips, expression, skin tone, hair, clothes, lighting and background exactly the same."
+  },
+  {
+   "block": "thin pencil moustache just above the upper lip, clean-shaven otherwise",
+   "style_id": "pencil",
+   "colour": "black",
+   "grey": true,
+   "expected": "Give the man a thin pencil moustache just above the upper lip, clean-shaven otherwise, salt-and-pepper grey, matching his hair, with realistic individual hairs and natural density. Keep the face, eyes, nose, lips, expression, skin tone, hair, clothes, lighting and background exactly the same."
+  },
+  {
+   "block": "walrus moustache, very thick and bushy, hanging over the upper lip",
+   "style_id": "walrus",
+   "colour": "dark brown",
+   "grey": false,
+   "expected": "Give the man a walrus moustache, very thick and bushy, hanging over the upper lip, dark brown, matching his hair, with realistic individual hairs and natural density. Keep the face, eyes, nose, lips, expression, skin tone, hair, clothes, lighting and background exactly the same."
+  },
+  {
+   "block": "walrus moustache, very thick and bushy, hanging over the upper lip",
+   "style_id": "walrus",
+   "colour": null,
+   "grey": false,
+   "expected": "Give the man a walrus moustache, very thick and bushy, hanging over the upper lip, natural, matching his hair, with realistic individual hairs and natural density. Keep the face, eyes, nose, lips, expression, skin tone, hair, clothes, lighting and background exactly the same."
+  },
+  {
+   "block": "walrus moustache, very thick and bushy, hanging over the upper lip",
+   "style_id": "walrus",
+   "colour": "black",
+   "grey": true,
+   "expected": "Give the man a walrus moustache, very thick and bushy, hanging over the upper lip, salt-and-pepper grey, matching his hair, with realistic individual hairs and natural density. Keep the face, eyes, nose, lips, expression, skin tone, hair, clothes, lighting and background exactly the same."
+  },
+  {
+   "block": "horseshoe moustache running down both sides of the mouth to the jaw",
+   "style_id": "horseshoe",
+   "colour": "dark brown",
+   "grey": false,
+   "expected": "Give the man a horseshoe moustache running down both sides of the mouth to the jaw, dark brown, matching his hair, with realistic individual hairs and natural density. Keep the face, eyes, nose, lips, expression, skin tone, hair, clothes, lighting and background exactly the same."
+  },
+  {
+   "block": "horseshoe moustache running down both sides of the mouth to the jaw",
+   "style_id": "horseshoe",
+   "colour": null,
+   "grey": false,
+   "expected": "Give the man a horseshoe moustache running down both sides of the mouth to the jaw, natural, matching his hair, with realistic individual hairs and natural density. Keep the face, eyes, nose, lips, expression, skin tone, hair, clothes, lighting and background exactly the same."
+  },
+  {
+   "block": "horseshoe moustache running down both sides of the mouth to the jaw",
+   "style_id": "horseshoe",
+   "colour": "black",
+   "grey": true,
+   "expected": "Give the man a horseshoe moustache running down both sides of the mouth to the jaw, salt-and-pepper grey, matching his hair, with realistic individual hairs and natural density. Keep the face, eyes, nose, lips, expression, skin tone, hair, clothes, lighting and background exactly the same."
+  }
+ ],
+ "restyle": [
+  {
+   "style_id": "ukiyoe",
+   "medium": "photo",
+   "expected": "a photorealistic photograph of a fully clothed person wearing the clothes from the photo, natural skin texture, realistic lighting, true-to-life detail, ukiyo-e style, bold black outlines, flat color areas, elegant curved lines, stylized hair and clothing folds, limited color palette, japanese woodblock print aesthetic",
+   "negative": "illustration, painting, drawing, cartoon, anime, 3d render, nude, naked, nsfw, bad quality, worst quality, low quality, jpeg artifacts, blurry, watermark, deformed, disfigured, bad anatomy, bad hands"
+  },
+  {
+   "style_id": "ukiyoe",
+   "medium": "illustration",
+   "expected": "a painted illustration of a fully clothed person, artwork, ukiyo-e style, bold black outlines, flat color areas, elegant curved lines, stylized hair and clothing folds, limited color palette, japanese woodblock print aesthetic",
+   "negative": "photograph, photorealistic, photo, 3d render, nude, naked, nsfw, bad quality, worst quality, low quality, jpeg artifacts, blurry, watermark, deformed, disfigured, bad anatomy, bad hands"
+  },
+  {
+   "style_id": "vangogh-arles",
+   "medium": "photo",
+   "expected": "a photorealistic photograph of a fully clothed person wearing the clothes from the photo, natural skin texture, realistic lighting, true-to-life detail, portrait painting by Vincent van Gogh in Arles, thick impasto brushstrokes, vivid complementary colours, yellow and blue, green shadows on the face, flat patterned background, directional hatched strokes following the form, visible paint ridges",
+   "negative": "illustration, painting, drawing, cartoon, anime, 3d render, nude, naked, nsfw, bad quality, worst quality, low quality, jpeg artifacts, blurry, watermark, deformed, disfigured, bad anatomy, bad hands"
+  },
+  {
+   "style_id": "vangogh-arles",
+   "medium": "illustration",
+   "expected": "a painted illustration of a fully clothed person, artwork, portrait painting by Vincent van Gogh in Arles, thick impasto brushstrokes, vivid complementary colours, yellow and blue, green shadows on the face, flat patterned background, directional hatched strokes following the form, visible paint ridges",
+   "negative": "photograph, photorealistic, photo, 3d render, nude, naked, nsfw, bad quality, worst quality, low quality, jpeg artifacts, blurry, watermark, deformed, disfigured, bad anatomy, bad hands"
+  }
+ ],
+ "colour_names": [
+  {
+   "lab": [
+    15.0,
+    0.0,
+    0.0
+   ],
+   "name": "black"
+  },
+  {
+   "lab": [
+    15.0,
+    5.0,
+    15.0
+   ],
+   "name": "dark brown"
+  },
+  {
+   "lab": [
+    15.0,
+    25.0,
+    12.0
+   ],
+   "name": "auburn"
+  },
+  {
+   "lab": [
+    15.0,
+    -20.0,
+    -5.0
+   ],
+   "name": "teal"
+  },
+  {
+   "lab": [
+    15.0,
+    10.0,
+    -40.0
+   ],
+   "name": "blue-black"
+  },
+  {
+   "lab": [
+    15.0,
+    40.0,
+    -30.0
+   ],
+   "name": "purple"
+  },
+  {
+   "lab": [
+    21.0,
+    0.0,
+    0.0
+   ],
+   "name": "black"
+  },
+  {
+   "lab": [
+    21.0,
+    5.0,
+    15.0
+   ],
+   "name": "dark brown"
+  },
+  {
+   "lab": [
+    21.0,
+    25.0,
+    12.0
+   ],
+   "name": "auburn"
+  },
+  {
+   "lab": [
+    21.0,
+    -20.0,
+    -5.0
+   ],
+   "name": "teal"
+  },
+  {
+   "lab": [
+    21.0,
+    10.0,
+    -40.0
+   ],
+   "name": "blue-black"
+  },
+  {
+   "lab": [
+    21.0,
+    40.0,
+    -30.0
+   ],
+   "name": "purple"
+  },
+  {
+   "lab": [
+    30.0,
+    0.0,
+    0.0
+   ],
+   "name": "brown"
+  },
+  {
+   "lab": [
+    30.0,
+    5.0,
+    15.0
+   ],
+   "name": "brown"
+  },
+  {
+   "lab": [
+    30.0,
+    25.0,
+    12.0
+   ],
+   "name": "auburn"
+  },
+  {
+   "lab": [
+    30.0,
+    -20.0,
+    -5.0
+   ],
+   "name": "teal"
+  },
+  {
+   "lab": [
+    30.0,
+    10.0,
+    -40.0
+   ],
+   "name": "blue"
+  },
+  {
+   "lab": [
+    30.0,
+    40.0,
+    -30.0
+   ],
+   "name": "purple"
+  },
+  {
+   "lab": [
+    40.0,
+    0.0,
+    0.0
+   ],
+   "name": "grey"
+  },
+  {
+   "lab": [
+    40.0,
+    5.0,
+    15.0
+   ],
+   "name": "light brown"
+  },
+  {
+   "lab": [
+    40.0,
+    25.0,
+    12.0
+   ],
+   "name": "auburn"
+  },
+  {
+   "lab": [
+    40.0,
+    -20.0,
+    -5.0
+   ],
+   "name": "teal"
+  },
+  {
+   "lab": [
+    40.0,
+    10.0,
+    -40.0
+   ],
+   "name": "blue"
+  },
+  {
+   "lab": [
+    40.0,
+    40.0,
+    -30.0
+   ],
+   "name": "purple"
+  },
+  {
+   "lab": [
+    60.0,
+    0.0,
+    0.0
+   ],
+   "name": "grey"
+  },
+  {
+   "lab": [
+    60.0,
+    5.0,
+    15.0
+   ],
+   "name": "blonde"
+  },
+  {
+   "lab": [
+    60.0,
+    25.0,
+    12.0
+   ],
+   "name": "auburn"
+  },
+  {
+   "lab": [
+    60.0,
+    -20.0,
+    -5.0
+   ],
+   "name": "teal"
+  },
+  {
+   "lab": [
+    60.0,
+    10.0,
+    -40.0
+   ],
+   "name": "blue"
+  },
+  {
+   "lab": [
+    60.0,
+    40.0,
+    -30.0
+   ],
+   "name": "purple"
+  },
+  {
+   "lab": [
+    80.0,
+    0.0,
+    0.0
+   ],
+   "name": "white"
+  },
+  {
+   "lab": [
+    80.0,
+    5.0,
+    15.0
+   ],
+   "name": "platinum blonde"
+  },
+  {
+   "lab": [
+    80.0,
+    25.0,
+    12.0
+   ],
+   "name": "auburn"
+  },
+  {
+   "lab": [
+    80.0,
+    -20.0,
+    -5.0
+   ],
+   "name": "teal"
+  },
+  {
+   "lab": [
+    80.0,
+    10.0,
+    -40.0
+   ],
+   "name": "blue"
+  },
+  {
+   "lab": [
+    80.0,
+    40.0,
+    -30.0
+   ],
+   "name": "purple"
+  }
+ ],
+ "feather": [
+  {
+   "width": 832,
+   "height": 1216,
+   "expand": 7,
+   "blur": 18
+  },
+  {
+   "width": 1450,
+   "height": 2576,
+   "expand": 15,
+   "blur": 39
+  },
+  {
+   "width": 2576,
+   "height": 1450,
+   "expand": 15,
+   "blur": 39
+  },
+  {
+   "width": 10,
+   "height": 10,
+   "expand": 1,
+   "blur": 1
+  }
+ ],
+ "hair_negative": "nude, naked, nsfw, hat, cap, helmet, headband, deformed hair, floating hair, extra face, second person, blurry, watermark, low quality",
+ "beard_negative": "fake beard, painted beard, patchy beard, deformed lips, extra face, second person, blurry, watermark"
+}

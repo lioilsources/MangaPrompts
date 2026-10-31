@@ -1,0 +1,12 @@
+# Versions measured in docs/ondevice-parity.md (Python 3.14, macOS arm64).
+torch==2.15.0
+torchvision==0.29.2
+transformers==5.22.1
+safetensors
+onnx==1.23.2
+onnxscript==0.7.2
+onnxruntime==1.31.1
+onnxconverter-common
+# Exactly what ComfyUI runs on SPARK: Pillow 13.0.0 resizes differently (+-1 on 16 % of bytes).
+pillow==12.1.1
+numpy==2.5.4

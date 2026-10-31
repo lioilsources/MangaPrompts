@@ -1,0 +1,30 @@
+{
+  "blink": {
+    "label": "Blink", "driver": "blink.mp4", "seconds": 3, "engine": "live", "loop": true, "seed": null,
+    "prompt": "the person blinks naturally twice, otherwise perfectly still, looking at the camera"
+  },
+  "glance": {
+    "label": "Glance", "driver": "glance.mp4", "seconds": 3, "engine": "live", "loop": true, "seed": null,
+    "prompt": "the person's eyes glance to the left, then to the right, then back to the camera, head still"
+  },
+  "look-around": {
+    "label": "Look around", "driver": "look-around.mp4", "seconds": 4, "engine": "live", "loop": true, "seed": null,
+    "prompt": "the person slowly turns their head slightly left, then right, looking around curiously, then back to the camera"
+  },
+  "smile": {
+    "label": "Smile", "driver": "smile.mp4", "seconds": 3, "engine": "live", "loop": true, "seed": null,
+    "prompt": "the person breaks into a warm natural smile, then relaxes back to neutral"
+  },
+  "nod": {
+    "label": "Nod", "driver": "nod.mp4", "seconds": 2, "engine": "live", "loop": true, "seed": null,
+    "prompt": "the person gives a small friendly nod and returns to neutral"
+  },
+  "alive": {
+    "label": "Alive", "driver": "alive.mp4", "seconds": 10, "engine": "live", "loop": true,
+    "parts": ["blink", "look-around", "smile"]
+  },
+  "hair-breeze": {
+    "label": "Hair in the breeze", "driver": null, "seconds": 5, "engine": "wan", "loop": false,
+    "prompt": "a gentle breeze moves the person's hair softly, the person stays still and looks at the camera"
+  }
+}

@@ -18,6 +18,15 @@ count and exits. Sweep keys: `<node id>.<input>` patches the graph after
 prepare_workflow; `mask.<CONSTANT>` overrides a hairmask tunable
 (`mask.ENVELOPE_SCALE` scales every envelope); `graph.facepass=1` adds a
 FLUX face pass to the restyle graph.
+
+`--dry-run` is `--plan`. Three tasks have a module of their own (beardbench.py,
+pipeline.py, livebench.py), registered in the tables above `plan_cells`:
+
+    run.py beard   --engines kontext --styles all --srcs srcs/m-short.png,srcs/m-beard-full.png \\
+                   --seeds 1,2 --sweep 'mask.BELOW_CHIN_full=0.2|0.3' '10.guidance=2.5|3.5' --out out/beard-r1
+    run.py pipeline --looks candidates/looks.json --order beard,glasses,hair hair,glasses,beard \\
+                   --styles ukiyoe,anime --engines flux,sdxl --srcs srcs/m-short.png --out out/pipeline-r0
+    run.py live    --motions blink,smile --srcs srcs/w-long.png --engines live --out out/live-r0
 """
 
 from __future__ import annotations
@@ -219,6 +228,41 @@ def mask_tunables(values: dict):
 
 # ── matrix ──────────────────────────────────────────────────────────────────
 
+# Tasks with a module of their own. Adding one is a line in each table; the
+# planning and building of restyle and hair stays where it is.
+import beardbench  # noqa: E402
+import livebench  # noqa: E402
+import pipeline  # noqa: E402
+
+WORKFLOWS[("beard", "kontext")] = "flux_hair_kontext.api.json"
+# args, sweeps, seeds, srcs, engines → cells
+CELL_PLANNERS = {"beard": beardbench.plan, "live": livebench.plan, "pipeline": pipeline.plan}
+# CellContext, ident, row → graph, inside run_matrix's loop
+CELL_BUILDERS = {"beard": beardbench.build}
+# argv after the task, this module; a task with its own arguments or loop
+SUBCOMMANDS = {"beard": beardbench.main, "live": livebench.main, "pipeline": pipeline.main}
+
+
+def task_parser(task: str, engines: str, seeds: str = "777") -> argparse.ArgumentParser:
+    """The options every task shares."""
+    ap = argparse.ArgumentParser(prog=f"run.py {task}")
+    ap.add_argument("--url", default="http://127.0.0.1:8188")
+    ap.add_argument("--out", required=True)
+    ap.add_argument("--cache", default=str(HERE / "cache"))
+    ap.add_argument("--engines", default=engines)
+    ap.add_argument("--media", default="photo")
+    ap.add_argument("--styles")
+    ap.add_argument("--srcs", required=True)
+    ap.add_argument("--seeds", default=seeds)
+    ap.add_argument("--sweep", nargs="*")
+    ap.add_argument("--ckpt")
+    ap.add_argument("--limit", type=int)
+    ap.add_argument("--plan", "--dry-run", dest="plan", action="store_true")
+    ap.add_argument("--timeout", type=float, default=900)
+    ap.add_argument("--min-free-gb", type=float, default=20.0)
+    ap.set_defaults(task=task)
+    return ap
+
 
 def plan_cells(args) -> list[dict]:
     cells = []
@@ -226,7 +270,9 @@ def plan_cells(args) -> list[dict]:
     seeds = [int(s) for s in csv(args.seeds)] or [777]
     srcs = csv(args.srcs)
     engines = csv(args.engines)
-    if args.task == "restyle":
+    if args.task in CELL_PLANNERS:
+        cells = CELL_PLANNERS[args.task](args, sweeps, seeds, srcs, engines)
+    elif args.task == "restyle":
         styles = csv(args.styles)
         if args.baseline:
             styles = [catalog.BASELINE] + [s for s in styles if s != catalog.BASELINE]
@@ -274,6 +320,10 @@ def run_matrix(args) -> None:
     src_paths = {Path(s).name: Path(s) for s in csv(args.srcs)}
     manifest_path = out / "manifest.json"
     manifest = json.loads(manifest_path.read_text()) if manifest_path.exists() else {"cells": {}}
+    if args.plan:  # before the copies below: a plan needs no source on disk
+        finished = sum(manifest["cells"].get(c["key"], {}).get("status") in ("done", "refused") for c in cells)
+        log(f"{len(cells)} cells, {finished} already finished, {len(cells) - finished} to render")
+        return
     manifest["task"] = args.task
     manifest.setdefault("srcs", {})
     for name, p in src_paths.items():
@@ -282,8 +332,6 @@ def run_matrix(args) -> None:
         manifest["srcs"][name] = f"srcs/{name}"
     todo = [c for c in cells if manifest["cells"].get(c["key"], {}).get("status") not in ("done", "refused")]
     log(f"{len(cells)} cells, {len(cells) - len(todo)} already finished, {len(todo)} to render")
-    if args.plan:
-        return
 
     c = Comfy(args.url)
     uploaded: dict[str, str] = {}
@@ -303,7 +351,10 @@ def run_matrix(args) -> None:
             if ident["src"] not in uploaded:
                 uploaded[ident["src"]] = c.upload(src.read_bytes(), f"bench_src_{hashlib.sha1(src.read_bytes()).hexdigest()[:12]}.png")
             tpl = templates.setdefault((ident["task"], ident["engine"]), load_template(ident["task"], ident["engine"]))
-            if ident["task"] == "restyle":
+            builder = CELL_BUILDERS.get(ident["task"])
+            if builder:
+                wf = builder(beardbench.CellContext(c, cache, out, name, src, uploaded[ident["src"]], tpl), ident, row)
+            elif ident["task"] == "restyle":
                 prompt, negative = catalog.restyle_prompt(ident["style"], ident["medium"])
                 wf = prepare_workflow(tpl, prompt=prompt, negative=negative, image_name=uploaded[ident["src"]],
                                       checkpoint=ident["ckpt"], latent=latent_for(src.read_bytes()))
@@ -361,10 +412,25 @@ def run_matrix(args) -> None:
             + (f"  ({row.get('error')})" if row.get("error") else "") + f"  eta {eta / 60:.0f} min")
 
 
+def src_specs() -> list[dict]:
+    """prompts.json, then the Restyler's sources (srcs/prompts-restyler.json);
+    an id in both keeps the first (the glasses branch adds three of them to
+    prompts.json, same prompt and seed)."""
+    specs: dict[str, dict] = {}
+    for name in ("prompts.json", "prompts-restyler.json"):
+        for spec in json.loads((HERE / "srcs" / name).read_text()):
+            specs.setdefault(spec["id"], spec)
+    return list(specs.values())
+
+
 def srcgen(args) -> None:
     out = Path(args.out)
     out.mkdir(parents=True, exist_ok=True)
-    specs = json.loads((HERE / "srcs" / "prompts.json").read_text())
+    specs = src_specs()
+    if args.plan:
+        for spec in specs:
+            log(f"{'have' if (out / (spec['id'] + '.png')).exists() else 'render'} {spec['id']}")
+        return
     c = Comfy(args.url)
     tpl = load_template_file("juggernaut_lightning_txt2img.api.json")
     for spec in specs:
@@ -390,6 +456,9 @@ def analyse_srcs(args) -> None:
 
 
 def main() -> None:
+    if len(sys.argv) > 1 and sys.argv[1] in SUBCOMMANDS:
+        SUBCOMMANDS[sys.argv[1]](sys.argv[2:], sys.modules[__name__])
+        return
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("task", choices=["restyle", "hair", "srcgen", "analyse"])
     ap.add_argument("--url", default="http://127.0.0.1:8188")
@@ -406,7 +475,7 @@ def main() -> None:
     ap.add_argument("--ckpt")
     ap.add_argument("--baseline", action="store_true")
     ap.add_argument("--limit", type=int)
-    ap.add_argument("--plan", action="store_true")
+    ap.add_argument("--plan", "--dry-run", dest="plan", action="store_true")
     ap.add_argument("--timeout", type=float, default=900)
     ap.add_argument("--min-free-gb", type=float, default=20.0)
     args = ap.parse_args()
