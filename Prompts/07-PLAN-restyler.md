@@ -1,399 +1,363 @@
-# PLAN — Restyler: nová mobilní appka (selfie → vlasy → brýle → styly → fotobuňka)
+# PLAN — Restyler: nová mobilní appka, offline-first (selfie → vousy → brýle → vlasy → styly → fotobuňka)
 
 > Pro Opuse. Nová **Flutter iOS/Android appka Restyler** (nové repo
-> `lioilsources/Restyler`), **ne Telegram Mini App**. Zabalí tři karty
-> Tsumiki do jednoho průvodce a skončí mřížkou jako z fotobuňky. Backend
-> zůstává `MangaPrompts/tgbot/` (tentýž kód, druhá instance **bez bota**,
-> za Cloudflare Access jako služby Ol1nLLM). Staví na `04-PLAN-kadernik.md`
-> (vlasy), `06-PLAN-bryle.md` (brýle, model jobu s víc obrázky) a
-> `03-PLAN-restyle-painters-flux.md` (styly + identita). Pořadí
-> závislostí: **06 §3 (Job s `image_paths`) musí být hotové dřív**, nebo se
-> udělá tady.
+> `lioilsources/Restyler`), ne Telegram Mini App. **Co nejvíc offline**:
+> parsing tváře, masky, odhad barvy, prompty, katalogy s náhledy, projekty i
+> pás fotobuňky se dělají v telefonu. Síť je potřeba na **jediný endpoint**
+> `POST /api/render`, který na SPARKu vyrenderuje zadaný řetězec kroků a vrátí
+> obrázky. Backend je `MangaPrompts/tgbot/` (tentýž kód, druhá instance bez
+> bota, za Cloudflare Access). Staví na `04-PLAN-kadernik.md` (vlasy),
+> `06-PLAN-bryle.md` (brýle), `08-PLAN-vousy.md` (vousy, nový),
+> `03-PLAN-restyle-painters-flux.md` (styly + identita) a na Dart zrcadle
+> masky z Ol1nLLM (`lib/models/hair_mask.dart`, `05-PLAN-ol1nllm-kadernik.md`).
 
 ## Zadání a rozhodnutí
 
-Uživatel se vyfotí, (1) změní nebo přebarví vlasy, (2) vybere brýle, (3) svůj
-nový vzhled prožene přes identitu tváře do několika stylů — epochy, malíři,
-média — a dostane **mřížku jako z fotobuňky**: rámeček 0 je jeho nový vzhled
-jako fotka, rámečky 1..K jsou styly.
-
-Rozhodnutí, která plán dělá za uživatele (s důvodem — kdyby nesouhlasil,
-mění se jen jedna věc):
+Uživatel se vyfotí, (1) změní vousy (muži), (2) vybere brýle, (3) změní nebo
+přebarví vlasy, (4) svůj nový vzhled prožene přes identitu tváře do několika
+stylů — epochy, malíři, média — a dostane **mřížku jako z fotobuňky**:
+rámeček 0 je nový vzhled jako fotka, rámečky 1..K jsou styly. Každý krok jde
+přeskočit.
 
 | rozhodnutí | důvod |
 |---|---|
-| **Nativní appka, distribuce zatím soukromá (TestFlight / APK), jako Ol1nLLM** | appka nese CF Access service token v `--dart-define` (vzor Ol1nLLM `Makefile`). To je přijatelné pro appku pro sebe a známé, **ne pro store** — veřejná verze potřebuje účty a platby (§9), a to je jiný plán |
-| **Pipeline běží na serveru (`tgbot`), appka jen zadá a polluje** | pipeline trvá 4–8 min a iOS appku do minuty uspí; stavový automat v telefonu by se obnovoval po každém stupni. Server má mezivýsledky v ruce, nahrává je rovnou do ComfyUI, skládá pás. A hlavně: `hairmask`, `glassesmask`, `hairprompt` a restyle grafy jsou **měřené** benchem právě v `tgbot` — appka měří to, co ships. Varianta „orchestrace v telefonu nad ComfyUI jako Ol1nLLM" je v §8 |
-| **Druhá instance `tgbot` bez Telegramu**: `AUTH_MODE=app`, žádný `BOT_TOKEN`, žádné doručení do chatu | jeden codebase, jiný env. Backend už má seam `job.user_id > 0` = „pošli do chatu"; uživatelé appky dostanou záporná id a nic se neposílá |
-| **Auth: CF Access service token (síť) + `Authorization: app <APP_TOKEN>` + `X-User` (kdo)** | CF Access drží dveře (policy `non_identity` jako `llm.ol1n.com`), `APP_TOKEN` drží, že volá naše appka, `X-User` rozlišuje lidi kvůli kvótě a historii. Žádný účet, žádné heslo — soukromá appka |
-| **Účtování vypnuté, kvóta ano**: `FREE_DAILY_LIMIT` na instanci (např. 30 generací/den/uživatel), kredity se nekupují | Stars nejsou, IAP je Fáze 2. Ledger zůstává v kódu netknutý, jen nemá kde brát kredity; 402 appka ukáže jako „dnes už dost, zítra zas" |
-| **Sdílený kód do Dart balíčku `tsumiki_shared` v MangaPrompts, bez Telegramu v jádru** | katalogy jsou **generované z benche** v MangaPrompts — kopie by zestárla do týdne. Backend klient dostane pluggable auth: Tsumiki web dosadí `tma <initData>`, Restyler `app <token>` + CF hlavičky. Restyler bere balíček jako `git: {url, path, ref}` pinnutý na tag |
-| **Pořadí stupňů: vlasy → brýle → styly** | analýza brýlí (obočí, oči) běží na **výstupu vlasů**, protože nová ofina zakryje obočí; styly dostanou obrázek, kde už obojí je |
-| **Styly přes restyle graf (depth + PuLID/InstantID) a prompt nese vlasy i brýle** | restyle generuje celý obraz znovu: hloubková mapa udrží siluetu nového účesu, ale barvu vlasů a tenké obruby ne. Co se nedostane do promptu, zmizí; server zná výběr a dosadí ho (§1). **Kontext stylizace** (instrukce bez ControlNetu) je druhý engine, který bench změří vedle (§5) |
-| **Rámeček 0 = nový vzhled jako fotka** | pipeline ho stejně vyrobí a je to jediný rámeček, kde brýle a vlasy jsou jistě vidět |
-| **Pás fotobuňky skládá server (Pillow)**, appka ukazuje mřížku živě a pás stáhne na sdílení | jeden PNG je to, co se sdílí; mřížka se plní po rámečcích |
-| **Projekty se drží v telefonu (Hive + soubory), resume přes `jobId`** | vzor Ol1nLLM (`GenNode.jobId`, `follow()`): po uspání se appka napojí na běžící job a dotáhne rámečky, které mezitím dojely. Server drží výstupy v `DATA_DIR/outputs` |
+| **Analýza tváře běží v telefonu, stejným modelem jako na serveru** | dnes analýzu dělá ComfyUI (`hair_analyse.api.json`, `FaceSegment` = SegFormer na CelebAMask-HQ, 19 tříd: vlasy, kůže, oči, obočí, nos, rty, **brýle, uši, čepice, krk, oblečení**). Tenhle model se exportuje do ONNX a běží na telefonu; masky pak sedí na kalibraci benche. Jiný parser (MediaPipe) by znamenal novou kalibraci všech konstant |
+| **Masky, barva vlasů, prompty a pás: Dart, offline** | `hair_mask.dart` v Ol1nLLM je hotové zrcadlo `hairmask.py` (541 řádků, stejné konstanty a fixtury); `package:image` dekóduje PNG i JPEG. Brýle a vousy dostanou totéž zrcadlo. Prompty jsou dnes v Dartu taky (`hairPrompt`), restyle věty v `restyle_styles.dart` |
+| **Server je hloupý renderer: `POST /api/render` s řetězcem kroků** | nic z Restyleru (masky, prompty, pořadí) na serveru nežije. Krok = `{graph, input: "source" \| "<krok>", prompt, mask?}` z whitelistu grafů; server řetězec vyrenderuje (výstup kroku je vstup dalšího), vrátí obrázky. Tsumiki endpointy (`/api/hair`…) zůstávají pro Mini App |
+| **Řetězec stále běží na serveru, ne po krocích z telefonu** | stupeň 2 potřebuje výstup stupně 1 jako **vstup ComfyUI**; posílat ho do telefonu a zpátky by stálo minuty na mobilních datech a iOS appku uspí do minuty. Server drží mezivýsledky v `/input` ComfyUI a telefon jen polluje. „Offline" znamená *logika* v telefonu, ne přenos obrázků sem a tam |
+| **Všechny masky se počítají na originální selfie** | telefon nevidí mezivýsledky. Pořadí **vousy → brýle → vlasy → styly** je zvolené tak, aby maska počítaná na originálu platila i pro vstup svého kroku: vousy a brýle mění jen tvář, kterou maska vlasů chrání; brýle sedí na očích, které maska vlasů i vousů vynechává. Co se tím ztratí (nová ofina přes obočí, kam už brýle sedí), měří bench osou `order` (§6) |
+| **Jen Kontext edit pro vousy/brýle/vlasy, restyle graf pro styly** | tři editační grafy jsou tentýž `flux_hair_kontext.api.json` s jiným promptem a maskou — server má jeden graf `kontext_edit`. Styly jedou přes `flux_restyle`/`sdxl_restyle` (depth + PuLID/InstantID), prompt nese vousy, brýle i vlasy, protože co není v promptu, restyle zahodí |
+| **Soukromá distribuce (TestFlight/APK), CF Access token v `--dart-define`** jako Ol1nLLM | appka nese secret; store = účty + platby = Fáze 2 |
+| **Auth `app <APP_TOKEN>` + `X-User`, kvóta per uživatel, žádné platby** | Stars nejsou; `FREE_DAILY_LIMIT` na instanci; záporná user id vypnou doručení do chatu (seam `job.user_id > 0` už existuje) |
+| **Sdílený Dart balíček `tsumiki_shared` v MangaPrompts** (katalogy, masky, prompty, náhledy, klient) | katalogy generuje bench tam; masky musí mít Python i Dart verzi se stejnými fixturami; Restyler bere `git: {url, path, ref}` na tag. Ol1nLLM na balíček přejde později (Fáze 2), do té doby je jeho `hair_mask.dart` **zdroj**, ze kterého se do balíčku kopíruje |
+| **Výsledky se stáhnou do telefonu a dál žijí offline** (Hive + soubory) | projekt jde otevřít, sdílet a skládat do pásu bez sítě; `jobId` zůstává jen na resume během renderu |
 
 ## Co je hotové a znovu se použije (ověřeno v kódu 2026-10-31)
 
 | potřeba | kde | poznámka |
 |---|---|---|
-| vlasy | `POST /api/hair` tělo: analýza → `hairmask.prepare` → `hairprompt.prompt` → Kontext graf | vytáhnout do `stages.hair(session, image, spec) -> (bytes, colour)` |
-| brýle | `06-PLAN` `/api/glasses` | `stages.glasses(session, image, spec) -> bytes` — v pipeline **jedno** provedení |
-| styly + identita | `POST /api/restyle`: `RESTYLE_ENGINES[medium]`, `flux_restyle.api.json` (PuLID 0.9, InstantX depth 0.55), `sdxl_restyle` (InstantID), `latent_for` | `stages.restyle(session, image, prompt, negative, medium) -> bytes` |
-| katalog stylů | `lib/config/restyle_styles.dart`: 48 stylů / 6 skupin, `restylePrompt(style, medium)` = medium věta + blok | medium věty se stanou kontraktem i pro server (§1) |
-| job s víc obrázky, průběh | `06-PLAN` §3 (`Job.prompt_ids`, `image_paths`, `images_done/total`, `/image/{i}`) | pipeline přidá `stage`, `frames`, `strip` |
-| auth seam | `app.current_user_id`: schémata `tma` a `dev`; `bot = Bot(...) if BOT_TOKEN else None`, `lifespan` dnes bez tokenu padá | přidat schéma `app`, lifespan bez bota |
-| kvóta | `db.spend_generation` (volné napřed, pak kredity), `undo_usage` | zobecnit na N v jedné transakci |
-| CF Access z appky | Ol1nLLM: `CF-Access-Client-Id/Secret` hlavičky z `--dart-define`, `Makefile` s `.env.local` | tentýž vzor; **nikdy web build** (CLAUDE.md Tsumiki: dart-define secrets by do bundlu protekly) |
-| resume po uspání | Ol1nLLM `_resumeInFlightJob`, `GenInterrupted`, backoff, `WidgetsBindingObserver` | vzor pro `BoothProject.jobId` |
-| bench | `run.py restyle`, `score.py` (identita, reakce, `worn` z 06, délka/barva vlasů), `sheet.py` | nový task `pipeline` |
+| Dart maska vlasů + barva | Ol1nLLM `lib/models/hair_mask.dart`: `BoolMask`, `HairAnalysis`, `buildHairMask`, `estimateHairColour`, `maskToPng`, `hairFeatherPx`, konstanty 1:1 s Pythonem | do `tsumiki_shared/lib/masks/` jako kanonická kopie; primitivy (`faceBox`, `dilate`, `roundedRect`) sdílí brýle i vousy |
+| Dart prompt vlasů | Ol1nLLM `hairstyle_preset.dart::hairPrompt(style, colour, instruction:, newColour:)` = Tsumiki `hairprompt.py` | do balíčku; `instruction: true` je Kontext věta |
+| katalogy | `hairstyles`, `hairstyle_catalog` (+ `cs` v kandidátech), `glasses_catalog` (06), `restyle_styles` (48 stylů, medium věty) | náhledy `assets/hair`, `assets/glasses`, nově `assets/beard` |
+| Kontext edit graf | `flux_hair_kontext.api.json` (ReferenceLatent, maska → `GrowMaskWithBlur` → `ImageCompositeMasked`, `TsumikiAlignToReference`) | na serveru pod klíčem `kontext_edit`; feather z velikosti masky (`hairmask.apply_feather`) |
+| restyle grafy + identita | `flux_restyle.api.json` (PuLID 0.9, InstantX depth 0.55), `sdxl_restyle` (InstantID), `latent_for` | klíče `restyle_flux`, `restyle_sdxl` |
+| job s víc obrázky, průběh | `06-PLAN` §3 (`prompt_ids`, `image_paths`, `images_done/total`, `/image/{i}`) | `/api/render` ho používá, přidá `steps` |
+| auth seam | `current_user_id` (`tma`, `dev`), `bot = Bot(...) if BOT_TOKEN else None`, `lifespan` bez tokenu padá | schéma `app`, lifespan bez bota |
+| kvóta | `db.spend_generation`, `undo_usage` | `spend_generations(n)` v jedné transakci |
+| CF Access z appky | Ol1nLLM `Makefile` (`.env.local`, `--dart-define`), hlavičky `CF-Access-Client-Id/Secret` | tentýž vzor |
+| resume po uspání | Ol1nLLM `_resumeInFlightJob`, `WidgetsBindingObserver`, backoff | vzor pro `BoothProject.jobId` |
+| bench | `run.py` (hair, restyle; glasses z 06; beard z 08), `score.py`, `sheet.py`, `verdicts.py`, `export_catalog.py` | nový task `pipeline` a nástroj parity (§2) |
 
 ---
 
 ## Architektura
 
 ```
-Restyler (Flutter iOS/Android)                    CF Access (service token)      JODA: restyler-api (tgbot, AUTH_MODE=app)
-  1 Selfie   camera/gallery ≤1536 px                                              │
-  2 Vlasy    HairPicker (tsumiki_shared)                                          │
-  3 Brýle    GlassesPicker (typ + provedení / nechat / sundat)                    │
-  4 Styly    K = 4|6|8, mixy Epochy/Malíři/Média/Překvapení, medium per rámeček   │
-  5 Booth    POST /api/pipeline ─────────────────────────────────────────────────▶ 1. validace, 429, dekódování                 (400/429)
-             {image, hair?, glasses?, frames[]}                                   2. usage = db.spend_generations(user, limit, n) (402)
-             ◀── {job_id, frames_total} ──────────────────────────────────────────  3. Job(stage="hair") → _watch_pipeline
-             GET /api/jobs/{id}  (poll 3 s; po resume totéž)                          a. hair:    analýza → maska → Kontext → A
-             ◀── {status, stage, frames_done, frames_total, failed[]}                 b. glasses: analýza(A) → maska → Kontext → B
-             GET /api/jobs/{id}/frame/{k}  → PNG do app support dir                   c. frame 0 = B (| A | originál)
-             GET /api/jobs/{id}/strip      → pás na sdílení                           d. frames 1..K: restyle(B, prompt_k), window 2, selhaný = refund 1
-                                                                                      e. strip.compose → outputs/<job>_strip.png
-  Hive `booth_projects`: BoothProject{id, jobId, selfie, hair, glasses, frames[], framePaths[], status}
+TELEFON (offline)                                                SÍŤ                 SERVER (restyler-api = tgbot, AUTH_MODE=app)
+selfie (kamera/galerie, ≤1536 px)
+  └─ FaceParser (ONNX, CelebAMask-HQ 19 tříd)  →  masky: hair, skin, brows, eyes, nose, lips, glasses, ears, hat, cloth
+  └─ hairColour = estimateHairColour(rgb, hair)
+kroky průvodce (každý „Nechat"):
+  vousy  → beardMask(parse, style.region)   + beardPrompt(style, hairColour)
+  brýle  → glassesMask(parse, style.fit)    + glassesPrompt(style, finish)
+  vlasy  → hairMask(parse, style.shape)     + hairPrompt(style, hairColour, newColour)
+  styly  → K × restylePrompt(style, medium, look{beard, glasses, hair})
+RenderPlan = [ {id:"beard",   graph:"kontext_edit",  input:"source", prompt, mask},
+               {id:"glasses", graph:"kontext_edit",  input:"beard",  prompt, mask},
+               {id:"hair",    graph:"kontext_edit",  input:"glasses",prompt, mask},
+               {id:"s1..sK",  graph:"restyle_flux",  input:"hair",   prompt, negative, medium} ]
+                                                              ──▶ POST /api/render {source, steps}        (402/429/422)
+                                                              ◀── {job_id, steps_total}                   usage = spend_generations(n)
+                                                                                                          DAG: krok čeká na svůj input; nezávislé kroky
+                                                              GET /api/jobs/{id} (poll 3 s)               (styly) rolling window RENDER_CONCURRENCY=2
+                                                              ◀── {status, steps:{id:{status,error?}}, done, total}
+                                                              GET /api/jobs/{id}/step/{id} → PNG         výstupy v DATA_DIR/outputs, vstupy v ComfyUI /input
+Hive booth_projects + soubory: rámeček 0 = poslední editační krok (nebo selfie), 1..K styly
+pás fotobuňky = package:image (grid 2 sloupce / strip 1 sloupec) → gal / share_plus
 ```
 
-Mezivýsledky A, B jdou do ComfyUI pod jménem per job (`restyler_<job>_a.png`);
-telefon je vidí až jako rámeček 0.
+Na server jde **jedna** fotka (originál) a masky (PNG, ~kB). Nic jiného
+Restyler na serveru nepotřebuje; server neví, co je účes.
 
 ---
 
 ## Kroky
 
-### 0. `packages/tsumiki_shared` v MangaPrompts (refaktor, Tsumiki musí zůstat zelená)
-
-Přesunout beze změny chování:
+### 0. `packages/tsumiki_shared` v MangaPrompts (Tsumiki zůstává zelená)
 
 ```
 packages/tsumiki_shared/
-  lib/catalogs/   hairstyles.dart, hairstyle_catalog.dart, glasses.dart, glasses_catalog.dart, restyle_styles.dart
-  lib/backend/    backend_client.dart   (dnešní TelegramBackendService bez Telegramu: baseUrl + AuthProvider → Map<String,String> hlaviček)
-                  image_generation_service.dart (GeneratedImage, PaymentRequiredException), job polling, /api/me model (TgAccount → Account)
-  lib/ui/         style_card.dart (dnešní `_StyleCard` s náhledem — zveřejnit), paywall_sheet.dart (text přes parametr: Tsumiki „Buy credits", Restyler „Limit for today")
-  assets/hair/ assets/glasses/
-  test/           hairstyles_test, restyle_styles_test, glasses_test (přesun)
+  lib/catalogs/   hairstyles(+catalog), glasses(+catalog), beards(+catalog), restyle_styles  — Hairstyle.cs atd. z kandidátů
+  lib/masks/      bool_mask.dart (BoolMask, faceBox, dilate, roundedRect, maskToPng, decodeMaskPng)   ← z Ol1nLLM hair_mask.dart
+                  face_parse.dart (FaceParse: 19 tříd → BoolMask per třída; HairAnalysis z něj)
+                  hair_mask.dart, glasses_mask.dart, beard_mask.dart, hair_colour.dart
+  lib/prompts/    hair_prompt.dart, glasses_prompt.dart, beard_prompt.dart, restyle_prompt.dart (medium → look → styl)
+  lib/backend/    backend_client.dart (baseUrl + AuthProvider), render_plan.dart (RenderStep, RenderPlan.toJson), job polling, Account
+  lib/ui/         style_card.dart, quota_sheet.dart
+  assets/hair/ assets/glasses/ assets/beard/
+  test/           katalogy; masky nad SDÍLENÝMI fixturami (viz níž); prompty pinnuté na řetězce z Pythonu
 ```
 
-- **Telegram zůstává v Tsumiki**: `platform/telegram_webapp*.dart`,
-  `TelegramAuth implements AuthProvider` (vrací `Authorization: tma …`),
-  `account_provider` nad klientem. Balíček **nesmí** importovat `dart:io`
-  ani `dart:js_interop` (test grepem — CLAUDE.md pravidlo o seamech).
-- `preview` gettery → `'packages/tsumiki_shared/assets/hair/$id.jpg'`;
-  `export_catalog.py` cílí do balíčku (`TARGET`, `PREVIEW_DIR`);
-  `catalog.py`/`test_bench_catalog.py` čtou `restyle_styles.dart` z nové cesty.
-- Tsumiki `pubspec.yaml`: `tsumiki_shared: {path: packages/tsumiki_shared}`;
-  importy přepsat; `flutter analyze` + `flutter test` zelené **před** čímkoli
-  dalším; commit sám. Tag `shared-v1`; Restyler pinuje `ref:`.
+- **Fixtury masek jsou soubory**, ne kód: `tgbot/tests/fixtures/masks/<case>/{parse.png, expected-<style>.png}`
+  generuje Python (`hairmask`, `glassesmask`, `beardmask`), Dart testy je čtou
+  (balíček má `test/fixtures` jako symlink/kopii přes `tools/sync_fixtures.sh`).
+  Dnešní `synthetic()` v obou jazycích je slabší pojistka — stejný vzorec
+  napsaný dvakrát může být dvakrát stejně špatně.
+- Prompty: `test/prompts_test.dart` čte `tgbot/tests/fixtures/prompts.json`
+  (vstup → očekávaný řetězec, zapsaný Pythonem) — vzor `test_bench_catalog`.
+- Balíček **bez** `dart:io`, `dart:js_interop`, bez Telegramu (test grepem).
+  `TelegramAuth` a `telegram_webapp*` zůstávají v Tsumiki.
+- `export_catalog.py` cílí do balíčku; `preview` →
+  `'packages/tsumiki_shared/assets/<kind>/$id.jpg'`.
+- Tsumiki `pubspec`: `path: packages/tsumiki_shared`; analyze + test zelené;
+  commit sám; tag `shared-v1`.
 
-### 1. Backend: `stages.py`, `restyleprompt.py`, `db.py`, `strip.py`, `app.py`, `config.py`
+### 1. Parsing tváře v telefonu (`tools/ondevice/` v MangaPrompts + `face_parse.dart`)
 
-**`stages.py`** (nový): tři čisté funkce, které dnešní endpointy jen volají.
+1. **Zjistit model**: na SPARKu `models/RMBG/` — co `FaceSegment` opravdu
+   načítá (CLAUDE.md říká SegFormer na CelebAMask-HQ, plán 04 psal BiSeNet;
+   rozhoduje soubor na disku). `export_parser.py`: HF/torch → ONNX, vstup
+   512×512 (stejné `process_res` jako graf), výstup 19 logitů; `--fp16`;
+   ověřit `onnxruntime` na SPARKu, že výstup == ComfyUI maska (IoU ≥ 0.98 na
+   `srcs/`). Pokud je model SegFormer-B5 (85 M), změřit čas na iPhonu/Androidu
+   v kroku 3 spike; strop **3 s**. Nad strop → menší člen rodiny
+   (SegFormer-B0/B2 dotrénovaný na CelebAMask-HQ, nebo BiSeNet 13 M) **a
+   parity gate**: IoU masek proti serverovému parseru ≥ 0.90 na `srcs/` per
+   třída (hair, skin, brows, eyes, glasses); pod ním se přepočítává kalibrace
+   a to je jiný plán.
+2. **Druhý parser na dlouhé vlasy**: `ClothesSegment` (ATR) kvůli vlasům přes
+   hruď (hair-matrix §1). Export stejnou cestou (`segformer_b2_clothes`),
+   nebo — levněji — MediaPipe `selfie_multiclass_256x256` (třída hair, 256²,
+   tflite→ONNX). Parita stejná metrika; vyhraje ten, co projde a je menší.
+3. `face_parse.dart`: `onnxruntime` (pub `onnxruntime`, CoreML/NNAPI EP)
+   — jeden runtime pro oba modely; modely jako assety balíčku (`assets/models/*.onnx`,
+   velikost zapsat do README; nad 50 MB → stahovat při prvním startu a
+   cachovat, ne bundlovat). Předzpracování = to, co dělá ComfyUI uzel
+   (resize na 512 s poměrem? pad? — **přečíst z kódu uzlu**, ne hádat;
+   `tools/ondevice/README.md` to zapíše). Výstup `FaceParse` → `HairAnalysis`
+   (`hair = face∪clothes hair`, `face` = skin+nose+eyes+brows+lips+glasses,
+   `hat`, `features`, `glasses`, `ears`, `lips`, `nose`).
+4. `tools/ondevice/parity.py`: ComfyUI maska vs. ONNX maska per třída na
+   `srcs/` + reálných selfie z telefonu (lokálně, mimo repo) → tabulka do
+   `docs/ondevice-parity.md`. Běží na SPARKu i jako Dart integrační test
+   (zlaté masky z Pythonu v fixtures).
+
+### 2. Backend: `POST /api/render`, režim `app`
+
+**Kontrakt** (`app.py`):
 
 ```python
-async def hair(session, image: bytes, spec: HairSpec, tag: str) -> tuple[bytes, str | None]
-async def glasses(session, image: bytes, spec: GlassesSpec, tag: str) -> bytes
-async def restyle(session, image: bytes, prompt: str, negative: str, medium: str, tag: str) -> bytes
+class RenderStep(BaseModel):
+    id: str = Field(pattern=r"^[a-z0-9_-]{1,16}$")
+    graph: Literal["kontext_edit", "restyle_flux", "restyle_sdxl"]
+    input: str                      # "source" | id dřívějšího kroku
+    prompt: str = Field(min_length=1, max_length=MAX_PROMPT_CHARS)
+    negative: str = ""
+    mask: str | None = None         # b64 PNG, povinná pro kontext_edit, zakázaná jinde
+    medium: Literal["photo", "illustration"] | None = None   # jen restyle_sdxl → RESTYLE_CHECKPOINTS
+class RenderRequest(BaseModel):
+    source: str                     # b64, ≤ MAX_RESTYLE_IMAGE_B64_CHARS
+    steps: list[RenderStep] = Field(min_length=1, max_length=RENDER_MAX_STEPS)   # 12
 ```
 
-Každá: upload → (analýza → maska) → `prepare_workflow` → `queue_prompt` →
-`wait_for_image`. Chyby: `StageRefused(code, message)` (fotka bez tváře,
-bez očí, bez brýlí k sundání — chyba uživatele) vs. `ComfyError` (server).
-`/api/hair`, `/api/glasses`, `/api/restyle` se přepíšou na tyhle funkce —
-jejich testy musí procházet beze změny, to je důkaz refaktoru.
+Validace před čímkoli: id unikátní, `input` ukazuje na `source` nebo na
+dřívější krok (DAG bez cyklu z definice), maska má rozměr zdroje
+(`imagesize`), `kontext_edit` bez masky → 422. `RENDER_GRAPHS = {"kontext_edit":
+"flux_hair_kontext.api.json", "restyle_flux": "flux_restyle.api.json",
+"restyle_sdxl": "sdxl_restyle.api.json"}` v `config.py` — graf se vybírá jen
+z této mapy, appka nikdy neposílá JSON grafu.
 
-**`restyleprompt.py`** (nový — prompt stupně 3 skládá server, protože zná
-vzhled):
+**Běh** (`_watch_render`): `usage = spend_generations(user, limit, len(steps))`
+(402 → nic). Upload `source` jako `restyler_<job>_source.png`; kroky v
+topologickém pořadí; krok startuje, až má vstup (výstup předchozího kroku
+se nahraje do ComfyUI jako `restyler_<job>_<id>.png` — bytes už server má);
+nezávislé kroky (styly) `RENDER_CONCURRENCY = 2`. `kontext_edit`:
+`prepare_workflow(mask_name=…)` + `hairmask.apply_feather(wf, mask_png)`
+(geometrie masky, ne účesu — zůstává na serveru, protože graf je tam).
+`restyle_*`: `latent=latent_for(input_bytes)`, `checkpoint` jen pro sdxl.
+Chyba kroku → `steps[id].status=error`, refund 1, **kroky závislé na něm**
+se označí `skipped` s refundem (nic se nerenderuje). Konec: aspoň jeden
+výstup → `done`. Výstupy `outputs/<job>_<id>.png`.
 
-```python
-MEDIUM = {"photo": "...", "illustration": "..."}   # doslova věty z restyle_styles.dart; test je pinuje proti Dartu (vzor test_bench_catalog)
-def prompt(style_block, medium, hair: HairSpec | None, hair_colour: str | None, glasses: GlassesSpec | None) -> str:
-    look = []
-    if hair:    look.append(f"with {hair.block}, {colour_phrase} hair")      # nová barva, jinak barva z analýzy stupně 1
-    if glasses: look.append(f"wearing {'dark ' if glasses.tinted else ''}{glasses.finish} {glasses.block}")
-    return ", ".join([MEDIUM[medium], *look, style_block])
-```
+`GET /api/jobs/{id}` → `{status, done, total, steps: {id: {status: queued|running|done|error|skipped, error?}}}`;
+`GET /api/jobs/{id}/step/{id}` → PNG (404 dokud není `done`). Job patří
+uživateli. Žádný strip, žádná caption, žádný chat — to vše dělá telefon.
 
-Pořadí **medium → vzhled → styl**: medium je to, s čím se nesmí hádat
-(CLAUDE.md), vzhled je obsah, styl jde poslední jako dnes. Kam patří vzhled,
-je laboratorní osa `param.lookPosition=middle|end` (§5), ne rozhodnutí od
-stolu. `restyle_styles.dart` dostane `restylePrompt(style, medium, {look})`,
-aby Tsumiki a bench skládaly tentýž řetězec.
-
-**Auth** (`app.py`, `config.py`):
-
-```python
-AUTH_MODE = os.environ.get("AUTH_MODE", "telegram")     # telegram | app
-APP_TOKEN = os.environ.get("APP_TOKEN", "")
-if AUTH_MODE == "telegram" and not BOT_TOKEN: raise RuntimeError(...)
-if AUTH_MODE == "app" and len(APP_TOKEN) < 32: raise RuntimeError(...)
-```
-
-`current_user_id`: schéma `app` — `value == APP_TOKEN` (`hmac.compare_digest`)
-a hlavička `X-User` (`^[a-z0-9_-]{2,32}$`, 400 bez ní) →
-`user_id = -(int.from_bytes(sha256(X-User)[:6]) + 1)` (záporné, stabilní,
-bez kolize s Telegram id; `user_id > 0` seam vypne chat). `tma` se v režimu
-`app` odmítá a naopak. `lifespan`: polling a `bot.session.close()` jen když
-`bot is not None`; `_watch_job`/`_watch_video_job`/`_tell_user` už mají
-podmínku `user_id > 0` — ověřit, že nikde není `bot.` bez ní (grep v testu).
-CORS v režimu `app` zbytečný, nevadí.
+**Auth** (`config.py`, `app.py`): `AUTH_MODE = telegram | app`;
+`APP_TOKEN ≥ 32` znaků v režimu `app`, `BOT_TOKEN` povinný jen v `telegram`.
+Schéma `app`: `compare_digest(value, APP_TOKEN)` + `X-User`
+(`^[a-z0-9_-]{2,32}$`, jinak 400) → `user_id = -(int.from_bytes(sha256(user)[:6]) + 1)`.
+`lifespan`: polling a `bot.session.close()` jen s botem; test grepem, že
+`bot.` se nikde nevolá bez `user_id > 0`. `tma` v režimu `app` → 401.
 
 **`db.spend_generations(user_id, free_limit, n) -> list[int] | None`**:
-jedna transakce, smyčka dnešní logiky (volné napřed, pak kredity);
-nedostatek → rollback a `None`. Test: 3 volné + 2 kredity, n=5 → 5 usage;
-n=6 → None a stav nezměněn.
+jedna transakce, rollback při nedostatku.
 
-**`strip.py`**: `compose(frames: list[bytes], labels: list[str], layout) -> bytes`.
-Rámečky na stejný poměr (ořez na střed podle rámečku 0), bílý rám 3 %
-kratší strany, mezera 2 %, popisek stylu pod rámečkem (font
-`tgbot/assets/Inter-Regular.ttf`, `python:3.12-slim` žádný TTF nemá —
-`COPY` v Dockerfile, test ověří existenci). Layout `grid` (2 sloupce) a
-`strip` (1 sloupec, klasická fotobuňka). Pillow v `requirements.txt` je.
-Test: 5 rámečků různých velikostí → jeden PNG, poměr 2:3 ± 1 % u všech.
+Testy `tgbot/tests/test_render_api.py` (FakeComfy počítá uploady a páruje
+vstup kroku s výstupem předchozího): řetězec beard→glasses→hair→4 styly →
+7 usage, 7 promptů, krok `glasses` dostal výstup `beard` (ne source), styly
+dostaly výstup `hair`, `kontext_edit` má `__MASK__` a feather podle masky,
+`restyle_sdxl` má checkpoint a latent podle vstupu; krok `hair` spadne →
+styly `skipped`, 5 refundů, `done` s 2 výstupy; styl 2 spadne → 1 refund,
+ostatní `done`; cyklus/neznámý `input` → 422; maska u restyle → 422;
+`kontext_edit` bez masky → 422; 13 kroků → 422; 402 bez promptu; 429;
+cizí job → 404; `RENDER_CONCURRENCY` nikdy překročena; `test_auth.py`
+režim `app` (bez `X-User` 400, špatný token 401, `tma` 401, lifespan bez
+`BOT_TOKEN` nastartuje).
 
-**`config.py`**: `PIPELINE_MAX_FRAMES = 8`, `RESTYLE_CONCURRENCY = 2`,
-`PIPELINE_TIMEOUT = 2400`, `MAX_PIPELINE_IMAGE_B64_CHARS`, `AUTH_MODE`,
-`APP_TOKEN`, `APP_NAME` („Tsumiki" | „Restyler" — logy, `/start` tam, kde bot je).
-
-**`jobs.py`**: `Job.stage: str | None`, `Job.failed_frames: list[int]`,
-`Job.strip_path`, `Job.frames_total`. Zbytek z 06. Joby zůstávají v paměti
-(restart = ztráta běžící pipeline); persistovat jako video joby (`db.video_jobs`)
-je Fáze 2 — appka to pozná jako 404 na `jobId` a nabídne „Spustit znovu".
-
-**`app.py` — `POST /api/pipeline`**:
-
-- `PipelineRequest`: `image`, `hair: HairSpec | None` (= `HairRequest` bez
-  `image`), `glasses: GlassesSpec | None` (= `GlassesRequest` bez `image`,
-  `finish: str` jedno provedení), `frames: list[FrameSpec{style_id, block ≤ 600, label ≤ 80, medium}]`,
-  `len(frames) ≤ PIPELINE_MAX_FRAMES`, aspoň jeden stupeň.
-- `_watch_pipeline`: `StageRefused`/`ComfyError` ve stupni 1/2 → `status=error`,
-  `error=message`, refund **všech** usage (nic nevzniklo). Rámeček k selže →
-  `failed_frames.append(k)`, refund jedné usage, jede dál. Konec:
-  `frames_done ≥ 1` → `done`, strip z hotových.
-- `GET /api/jobs/{id}` + `stage`, `frames_done`, `frames_total`, `failed`;
-  `GET /api/jobs/{id}/frame/{k}` (404 nad `frames_done`); `GET /api/jobs/{id}/strip`.
-  Job patří uživateli (`job.user_id == user_id`, jako dnes).
-
-Testy `tgbot/tests/test_pipeline_api.py` (FakeComfy z 06, navíc počítá, **který
-obrázek** šel do kterého promptu) + `test_auth.py` rozšířený o režim `app`:
-happy path hair+glasses+4 → 6 usage, 6 promptů, analýza brýlí dostala výstup
-vlasů, restyle dostal výstup brýlí, prompt rámečku = medium→vzhled→styl,
-`frames_total 5`, rámeček 0 = výstup brýlí, strip vznikl, **žádné** volání
-bota; bez tváře → error + 6 refundů; rámeček 2 spadne → `done`, `failed [2]`,
-1 refund; jen styly → rámeček 0 = originál; 402 bez jediného promptu; 429;
-cizí `job_id` → 404; `app` bez `X-User` → 400, špatný token → 401, `tma`
-v režimu `app` → 401; `RESTYLE_CONCURRENCY` nikdy překročena; lifespan bez
-`BOT_TOKEN` v režimu `app` nastartuje.
-
-### 2. Nasazení druhé instance (JODA, Cloudflare)
+### 3. Nasazení (JODA, Cloudflare)
 
 ```yaml
   restyler-api:
     build: .
     container_name: restyler-api
     restart: unless-stopped
-    env_file: restyler.env      # AUTH_MODE=app, APP_TOKEN=<64 hex>, APP_NAME=Restyler, FREE_DAILY_LIMIT=30,
-                                # COMFY_URL=…, DATA_DIR=/app/data; žádný BOT_TOKEN, MINIAPP_URL, ALLOWED_ORIGINS
-    volumes:
-      - ../assets/comfyui:/app/workflows:ro
-      - ./data-restyler:/app/data
+    env_file: restyler.env   # AUTH_MODE=app, APP_TOKEN=<64 hex>, APP_NAME=Restyler, FREE_DAILY_LIMIT=40, COMFY_URL=…
+    volumes: [ "../assets/comfyui:/app/workflows:ro", "./data-restyler:/app/data" ]
     ports: ["8091:8090"]
 ```
 
-`restyler.env.example` vedle `mangabot.env.example`. Cloudflare: public
-hostname `restyler-api.ol1n.com` → `http://restyler-api:8090`, **Access
-aplikace** s policy `non_identity` na service token (nový pár jen pro
-Restyler — ne ten z `llm.ol1n.com`, aby šel rotovat sám). Appka posílá
-`CF-Access-Client-Id/Secret` + `Authorization: app …` + `X-User`.
-Oba backendy sdílí ComfyUI frontu; `jobs.active_count` je per instance.
-`docs/telegram-release.md` dostane sestru `docs/restyler-release.md`: CF
-Access app + token, `restyler.env`, TestFlight/APK, rotace.
+`restyler.env.example`; CF public hostname `restyler-api.ol1n.com` →
+`http://restyler-api:8090`, Access app s `non_identity` na **novém** service
+tokenu (rotace nezasáhne Ol1nLLM). `docs/restyler-release.md` (token, env,
+TestFlight/APK, rotace).
 
-### 3. Repo `Restyler` (Flutter iOS/Android)
+### 4. Repo `Restyler` (Flutter iOS/Android)
 
-Vzor Ol1nLLM: `Makefile` s `-include .env.local` a `--dart-define`
-(`CF_ACCESS_CLIENT_ID`, `CF_ACCESS_CLIENT_SECRET`, `RESTYLER_APP_TOKEN`,
-`RESTYLER_USER`, volitelně `RESTYLER_API_URL`, LAN jen `make debug`), cíle
-`run / debug / build-ios / build-android`. **Žádný web target** (secrets by
-protekly do bundlu; `flutter create --platforms ios,android`).
+`Makefile` jako Ol1nLLM (`.env.local`: `CF_ACCESS_CLIENT_ID/SECRET`,
+`RESTYLER_APP_TOKEN`, `RESTYLER_USER`, volitelně `RESTYLER_API_URL` pro LAN
+jen `make debug`). **Žádný web target.**
 
 ```
 lib/
-  main.dart                      Hive.initFlutter, ProviderScope, BackendClient(baseUrl, AppAuth(token, user))
-  app.dart                       MaterialApp, vlastní téma (ne klon Tsumiki ani Ol1nLLM)
-  models/booth_project.dart      BoothProject{id, createdAt, jobId?, selfiePath, hair{styleId,colourId}?, glasses{styleId,finish}?,
-                                 frames[{styleId, medium, label}], framePaths[], stripPath?, status, failed[], error?}  — Hive JSON, soubory relativně (vzor GenImage.baseDir)
-  providers/booth_provider.dart  StateNotifier + WidgetsBindingObserver: start(draft) → jobId → poll 3 s → stáhnout nové rámečky → Hive;
-                                 resume při startu, `resumed` a 5 s po výpadku (vzor music/story providerů); 404 na jobId → status `lost` + „Spustit znovu"
-  services/pipeline_service.dart start(draft) → jobId; status(jobId); frame(jobId,k) → bytes; strip(jobId); chyby česky z těla (`detail`)
-  screens/
-    home_screen.dart             seznam projektů (náhled rámečku 0, datum, počet stylů) + FAB „Nová fotobuňka"
-    selfie_step.dart             image_picker camera (přední) / galerie, ≤1536 px, tipy (čelně, oči vidět, bez čepice)
-    hair_step.dart               HairPicker (shared, náhledy), barvy, „Nechat vlasy"
-    glasses_step.dart            GlassesPicker, provedení jako chipy, „Bez brýlí" / „Sundat brýle"
-    styles_step.dart             K volič 4/6/8 (zbývající kvóta z /api/me: „dnes ještě 12"), mixy, ruční výběr, medium per rámeček
-    booth_screen.dart            mřížka 2 sloupce, rámeček 0 nahoře přes šířku; stage text („Stříhám…", „Nasazuji brýle…", „Maluji 3/4");
-                                 klepnutí → detail (uložit `gal`, sdílet `share_plus`); „Sdílet pás" → /strip
-  widgets/                       frame_tile (placeholder / hotový / selhal s ikonou), stage_banner
-test/  booth_project_test (serializace, cena = počet stupňů, prázdný draft nejde odeslat), pipeline_service_test (status parsování nad fixturou),
-       booth_widget_test (plnění, selhaný rámeček), mixes_test (každé id mixu existuje v kRestyleStyles)
+  main.dart                        Hive.initFlutter; FaceParser.load() (ONNX sessions, lazy při prvním selfie); BackendClient(AppAuth)
+  models/booth_project.dart        {id, createdAt, selfiePath, parsePath?, beard?, glasses?, hair{styleId,colourId}?, frames[{styleId,medium}],
+                                   plan (RenderPlan JSON — co se poslalo), jobId?, stepPaths{id: path}, status, failed[], error?}
+  providers/booth_provider.dart    draft → analyse (isolate: FaceParser + masky + barva; chyby česky dřív než se cokoli pošle)
+                                   → plan → start → poll 3 s → stáhnout hotové kroky → Hive; resume při startu / resumed / po výpadku;
+                                   404 na jobId → `lost` + „Spustit znovu" (plán je uložený, nic se nepřepočítává)
+  services/render_service.dart     start(source, plan) → jobId; status; step(jobId, id) → bytes
+  services/strip.dart              package:image: grid/strip, bílý rám, popisky (font jako asset)
+  screens/ home (projekty), selfie_step, beard_step, glasses_step, hair_step, styles_step (K 4/6/8, mixy, kvóta z /api/me), booth_screen
+  widgets/ frame_tile, stage_banner („Upravuji vousy…", „Nasazuji brýle…", „Stříhám…", „Maluji 3/4")
+test/  booth_project_test, render_plan_test (pořadí kroků, input odkazy, přeskočené kroky se do plánu nedostanou, cena = počet kroků),
+       strip_test (poměr rámečků), analyse_test (zlaté masky z fixtures → stejný plán jako Python), mixes_test
 ```
 
-- Mixy: `kBoothMixes = {'Epochy': [...], 'Malíři': [...], 'Média': [...]}`
-  nad id z `kRestyleStyles`. **„Média"** (akvarel, tužka, olej, dřevořez,
-  komiks) dnešní katalog jako skupinu nemá — Popular a tradice část
-  pokryjí; chybějící bloky jsou kandidáti pro `run.py restyle`, ne ruční
-  zápis do appky.
-- Jazyk UI: **česky** (jako Ol1nLLM; soukromá appka). Popisky účesů a
-  barev mají `cs` v kandidátském JSONu — `export_catalog.py` ho vypíše do
-  katalogu (`Hairstyle.cs`), styly Restyle `cs` nemají → Fáze 2, do té doby
-  anglický label.
-- Pozadí: iOS appku uspí, provider se po `resumed` napojí a dotáhne
-  rámečky; server pipeline dojede sám. Lokální notifikace „Fotobuňka je
-  hotová" = Fáze 2 (vyžaduje push nebo BG fetch).
-- `pubspec`: `tsumiki_shared` (git, ref), `flutter_riverpod`, `hive_flutter`,
-  `image_picker`, `http`, `path_provider`, `gal`, `share_plus`, `uuid`.
-  iOS target podle `image_picker` (14+), `NSCameraUsageDescription`,
+- Analýza běží **hned po selfie** (isolate, ~1–3 s) a hned řekne „tvář
+  nenalezena / oči nejsou vidět / na fotce nejsou vousy k oholení" — bez
+  sítě a bez kvóty. Náhled masky (volitelný, debug chip) ukáže pás, který se
+  přemaluje.
+- Rámeček 0 = výstup posledního editačního kroku, který byl v plánu (jinak
+  selfie). Mixy nad `kRestyleStyles` (`mixes_test` hlídá id). Jazyk UI
+  česky; `cs` popisky z kandidátů, styly Restyle zatím anglicky.
+- `pubspec`: `tsumiki_shared` (git ref), `onnxruntime`, `flutter_riverpod`,
+  `hive_flutter`, `image_picker`, `image`, `http`, `path_provider`, `gal`,
+  `share_plus`, `uuid`. iOS 14+, `NSCameraUsageDescription`,
   `NSPhotoLibraryAddUsageDescription`.
 
-### 4. Co se mění v Tsumiki
+### 5. Vousy
 
-Funkčně nic. Po §0 jen importy a `TelegramAuth`; `/api/hair|glasses|restyle`
-jedou přes `stages.py`. Karta „Fotobuňka" v Tsumiki nad týmž `/api/pipeline`
-je jeden `TsumikiScreen` navíc — mimo tento plán.
+Samostatný plán `08-PLAN-vousy.md`: maska dolní části tváře (nos → brada,
+spánky → ucho), Kontext instrukce, kandidáti (strniště, plnovous, bradka,
+kníry, oholit), bench gate, katalog `beard_catalog.dart` + náhledy na
+`m-short`. Restyler ho bere jako krok 1 průvodce (`beard_mask.dart`,
+`beard_prompt.dart` v balíčku); Tsumiki může dostat kartu nad týmž kódem.
 
-### 5. Tuning feedback loop — bench task `pipeline`
+### 6. Tuning feedback loop — bench
 
-Otázka, kterou nikdo neměřil: **přežije nový účes a brýle průchod přes
-restyle?** Dnešní restyle měřil identitu a reakci na styl, ne obsah.
+Tři měření, každé svoje:
 
-`run.py pipeline --engines flux,sdxl,kontext --styles <restyle ids> --looks
-looks.json --srcs … --seeds 1,2` — `looks.json` = `{hair, colour, glasses,
-finish}` kombinace; stupně 1–2 se renderují jednou per (src, look) a cachují
-(`out/<run>/looks/`), stupeň 3 per (look, style, engine, seed). Engine
-`kontext` = nový graf `flux_restyle_kontext.api.json`: instrukce „Turn this
-photo into {style block}. Keep the person, their hairstyle, glasses, pose and
-clothes." bez ControlNetu a bez PuLID — **kandidát**; `restyle-flux-results`
-ukázal, že Kontext s depth ControlNetem pózu nedrží, bez něj to nikdo nezkoušel.
+**a) Parita parseru** (§1.4): IoU per třída, serverový vs. on-device model;
+gate ≥ 0.90 (hair, skin, brows, eyes, glasses), `docs/ondevice-parity.md`.
+
+**b) Řetězec** — `run.py pipeline --order beard,glasses,hair --looks looks.json
+--styles … --engines flux,sdxl,kontext --srcs … --seeds …`: stupně se
+renderují **přes `/api/render` běžící instance** (ne přes `prepare_workflow`
+přímo) — bench tím měří i kontrakt; masky z Pythonu (stejné jako Dart díky
+fixturám). Osa `order` (`beard,glasses,hair` vs. `hair,glasses,beard`)
+ukáže, co stojí masky počítané na originálu.
 
 | metrika | jak | práh |
 |---|---|---|
-| `identity` | ArcFace výstup × **původní selfie** (řetězec identit se sčítá) | ≥ 0.50 (jeden skok měl 0.6; kalibrovat na baseline bez vlasů a brýlí) |
-| `hair_kept` | `length_ok` + `colour_ok` ze `score.py` proti **cíli stupně 1** | ≥ 2/3 |
-| `glasses_kept` | `worn` z 06 (face parsing `Eyeglasses`); u malířských stylů parsing selhává → CLIP „wearing glasses" vs „without glasses", zisk ≥ 0.1 proti rámečku bez brýlí | ≥ 2/3 |
-| `style_reaction` | histogram vůči baseline bez stylu (stávající) | ≥ 0.10 |
-| `clothed`, `clean` | stávající | 100 % |
+| `identity` | ArcFace výstup × **původní selfie** | ≥ 0.50 (tři Kontext skoky + restyle; kalibrovat na baseline bez úprav) |
+| `beard_kept`, `glasses_kept`, `hair_kept` | metriky z 08 / 06 / `score.py` proti **cíli svého kroku**, měřené na výstupu *každého dalšího* kroku — kde se změna ztratila | ≥ 2/3 |
+| `style_reaction`, `clothed`, `clean` | stávající | 0.10 / 100 % / 100 % |
 
-Osy sweepu: `param.lookPosition=middle|end`, `15.weight=0.7|0.9` (PuLID —
-drží tvář, přebíjí styl), `11.strength=0.45|0.55|0.7` (depth — silueta účesu
-vs. volnost stylu), `9.guidance=3.0|3.5`, `graph.pulid_from=original|look`
-(§7.2).
+Osy: `param.lookPosition=middle|end`, `15.weight=0.7|0.9` (PuLID),
+`11.strength=0.45|0.55|0.7` (depth), `graph.pulid_from=original|look`
+(PuLID embedding ze selfie místo z výstupu kroku — řetězec identit se sčítá).
+Engine `kontext` pro styly = `flux_restyle_kontext.api.json` (instrukce bez
+ControlNetu) jako kandidát.
 
-**Gate per styl, ne per katalog**: mapa styl → `{carries_hair,
-carries_glasses, engine}`. Export do `restyle_styles.dart` jako
-`RestyleStyle.carries` (`export_catalog.py --task restyle-carry`); Restyler
-v kroku 4 u stylu, který brýle neudrží, ukáže „brýle tenhle styl většinou
-neudrží" (nebo ho při zvolených brýlích zašedne — rozhodne oko na archu).
-Odmítnout věrohodný požadavek je horší než varovat — totéž pravidlo jako
-u enginů Kadeřníka.
+**Gate per styl**: `RestyleStyle.carries {hair, glasses, beard}` exportem;
+Restyler u stylu varuje („brýle tenhle styl většinou neudrží"). Kola:
+0 = 2 looks × 4 styly × 3 enginy × 1 src (40 min); 1 = 4 looks × 48 stylů ×
+2 enginy × 1 src (~7 h); 2 = přeživší × 3 srcs × 2 seedy + sweepy (~6 h).
+Výstup `docs/pipeline-matrix.md`.
 
-Kola (~60–90 s/rámeček stupně 3 vč. fronty; kolo 0 změří):
+**c) Vousy** — kola v 08.
 
-| kolo | rozsah | buňky | čas |
-|---|---|---|---|
-| 0 | 2 looks × 4 styly (ukiyoe, vangogh-arles, hopper, art-deco) × 3 enginy × 1 src × 1 seed | 24 + 2 | 40 min |
-| 1 | 4 looks (krátké/dlouhé × čiré/sluneční) × 48 stylů × 2 enginy (flux, kontext) × 1 src × 1 seed | ~400 | ~7 h |
-| 2 | přeživší × 3 srcs (`w-long`, `m-short`, `w-glasses`) × 2 seedy + sweep PuLID/depth na 6 stylech, kde `glasses_kept` padalo | ~350 | ~6 h |
+### 7. Dokumentace a rollout
 
-Výstup `docs/pipeline-matrix.md`, export `carries`, teprve pak TestFlight
-pro víc lidí. Do té doby appka funguje bez varování — pipeline je
-testovatelná s fake ComfyUI od prvního dne.
+- MangaPrompts `CLAUDE.md`: `packages/tsumiki_shared` (jádro bez Telegramu a
+  `dart:io`; masky a prompty mají Python originál a Dart zrcadlo pinnuté
+  **souborovými** fixturami; katalogy exportuje bench), `/api/render`
+  (whitelist grafů, DAG, refund per krok, `skipped`), `AUTH_MODE=app`,
+  `tools/ondevice/` (export, parita). `tgbot/README.md`, `CHANGELOG.md`.
+- Restyler `CLAUDE.md`: offline-first, co běží v telefonu, jediný endpoint,
+  `make run`, posun `ref` balíčku, žádný web build, modely ONNX (odkud, velikost).
+- Rollout: §0 → §1 spike (čas parseru na telefonu, parita) **před** §2 —
+  kdyby model na telefonu neběžel do 3 s a parita nevyšla, mění se §1, ne
+  zbytek → §2 + testy → `restyler-api` → appka proti LAN → 08 kolo 0–1 →
+  §6b kolo 0–1 → `carries` → TestFlight/APK. E2E: selfie bez sítě → masky,
+  chyby a plán hned; síť → 7 kroků, mřížka se plní, pás ze telefonu, kvóta
+  −7; shodit ComfyUI u kroku `hair` → styly `skipped`, −2; uspat appku 3
+  min → dotaženo; restart backendu → „Spustit znovu" stejným plánem;
+  špatný token 401; Tsumiki po §0 beze změny; Ol1nLLM beze změny.
 
-### 6. Dokumentace a rollout
+### 8. Rizika
 
-- MangaPrompts `CLAUDE.md`: „`packages/tsumiki_shared`" (co tam je, bench
-  exportuje katalogy tam, Restyler pinuje tag, žádný Telegram ani `dart:io`
-  v jádru), „`stages.py` + `/api/pipeline`" (pořadí, účtování N, refund per
-  stupeň, strip), „`AUTH_MODE=app`" (druhá instance bez bota, záporná user id).
-  `tgbot/README.md`: Pipeline, režim `app`, instance `restyler-api`. `CHANGELOG.md`.
-- Restyler `CLAUDE.md` (krátké): co appka je, `make run` s `.env.local`,
-  závislost na `tsumiki_shared` a jak posunout `ref`, backend URL, **žádný
-  web build**, katalogy a bench žijí v MangaPrompts.
-- Rollout: §0 merge (Tsumiki zelená) → §1 + testy → `restyler-api` na JODĚ
-  s dev tokenem → Restyler repo, `make debug` proti LAN (`RESTYLER_API_URL=http://joda:8091`,
-  jen debug — release manifest nemá cleartext) → kolo 0–1 → `carries` →
-  TestFlight / APK. E2E: selfie → vlasy + brýle + 4 styly → mřížka se plní,
-  pás sdílený z telefonu, kvóta −6; bez tváře → chyba hned, kvóta 0; jen
-  styly K=4 → rámeček 0 = selfie; shodit ComfyUI uprostřed → díra + 1
-  refund; uspat appku na 3 min → po návratu dotažené rámečky; restart
-  backendu během jobu → „Spustit znovu"; 402 před odesláním; špatný
-  `APP_TOKEN` → 401; Tsumiki po §0 beze změny.
+1. **Model na telefonu je jiný než na serveru** → masky nesedí na
+   kalibraci. Proto export *téhož* modelu, parita jako gate, menší model jen
+   s přepočtem. Čas: SegFormer-B5 na 512² může být 2–6 s na starším
+   Androidu — strop 3 s, jinak menší člen rodiny.
+2. **Masky z originálu vs. vstup kroku**: nová ofina může přepsat obočí,
+   kde brýle sedí; dlouhý plnovous může zasáhnout obálku vlasů `long`.
+   Pořadí vousy→brýle→vlasy to minimalizuje, osa `order` to měří. Záloha:
+   krok `reparse` na serveru (analýza mezivýsledku) — ale to je přesně ta
+   logika, která nemá na serveru být; až když to oko na archu vyžádá.
+3. **Styl smaže vzhled** → `carries` a varování; Kontext engine jako záloha.
+4. **Identita přes čtyři skoky** → `pulid_from=original`.
+5. **Secrets v binárce** → soukromá distribuce, token jen pro Restyler,
+   kvóta per `X-User`; store = Fáze 2.
+6. **Joby v paměti**: restart `restyler-api` ztratí běžící řetězec; appka
+   má uložený plán a nabídne „Spustit znovu"; persistence jobů = Fáze 2;
+   deploy při prázdné frontě (`/healthz` vrací `active_jobs`).
+7. **Generický endpoint** = kdo má token, renderuje cokoli z whitelistu.
+   Prompty mají délkový strop, grafy jsou tři, kvóta platí; víc ochrany
+   soukromá appka nepotřebuje.
+8. **Tři kopie masek** (Python, balíček, Ol1nLLM) do Fáze 2 — souborové
+   fixtury ve všech třech testech; Ol1nLLM přejde na balíček.
+9. **Velikost appky**: dva ONNX modely (desítky až stovky MB). Nad 50 MB se
+   stahují při prvním startu z `restyler-api.ol1n.com/models/` (statické,
+   za Access) — jediná výjimka z „jen render", a jen jednou.
 
-### 7. Rizika
+### 9. Co nedělat (a proč)
 
-1. **Styl smaže vzhled.** Depth drží siluetu, prompt barvu a brýle; malířské
-   styly s volnou kresbou brýle nejspíš ztratí. Proto `carries` per styl a
-   varování; Kontext engine jako záloha.
-2. **Identita přes dva skoky.** PuLID dostane embedding z B, ne ze selfie.
-   Alternativa k měření: PuLID číst z **originálu** (druhý `LoadImage` do
-   `ApplyPulidFlux.image`), hloubku z B — bez nového uzlu; osa
-   `graph.pulid_from=original|look`.
-3. **Secrets v appce.** CF token + `APP_TOKEN` jsou v binárce; kdo appku má,
-   může volat backend. Proto soukromá distribuce, kvóta per `X-User`, token
-   jen pro Restyler (rotace nezasáhne Ol1nLLM) a `docs/restyler-release.md`
-   s rotací. Store = účty + IAP (§9).
-4. **`X-User` je sebeidentifikace.** Dva lidé se stejným jménem sdílí kvótu;
-   pro soukromou appku přijatelné, zapsat do README.
-5. **Délka.** ~1 min vlasy + ~1 min brýle + K×~70 s / 2 → K=4 ≈ 4–5 min.
-   Appka usne; resume to řeší, notifikace je Fáze 2.
-6. **Dva backendy, jedna fronta.** `RESTYLE_CONCURRENCY=2`, stupně 1–2
-   sériově; kdyby Tsumiki uživatelé čekali, snížit env na 1.
-7. **Joby v paměti.** Restart `restyler-api` uprostřed pipeline ji ztratí;
-   appka ukáže „Spustit znovu", kvóta za nedoběhlé rámečky se **nevrací**
-   (není komu — usage je zapsaná, job pryč). Persistovat joby jako video
-   joby je Fáze 2; do té doby deploy jen při prázdné frontě (`/healthz`
-   může vracet `active_jobs`).
-8. **Refaktor §0 rozbije web import graph Tsumiki** — balíček bez `dart:io`
-   (test grepem), `comfy_image_service` zůstává v Tsumiki.
-9. **Katalog v balíčku, bench v MangaPrompts, appka jinde.** Katalog se mění
-   jen exportem v MangaPrompts; Restyler jen posune `ref`. Do obou `CLAUDE.md`.
+- **Ne analýza na serveru pro Restyler** (dnešní `hair_analyse` graf): celé
+  zadání je offline; graf zůstává jen pro Tsumiki Mini App.
+- **Ne mezivýsledky do telefonu a zpět**: minuty přenosu, uspaná appka,
+  nic z toho uživatel nepotřebuje vidět dřív než hotové rámečky.
+- **Ne MediaPipe/ML Kit jako hlavní parser**: jiné třídy (bez brýlí, uší,
+  čepice), jiná kalibrace. Nejvýš jako druhý parser na dlouhé vlasy, s paritou.
+- **Ne kopie katalogů do Restyleru**; **ne web build**; **ne účty a platby v v1**.
 
-### 8. Co nedělat (a proč)
+### 10. Fáze 2
 
-- **Ne orchestrace v telefonu nad ComfyUI (model Ol1nLLM)**: tři stupně a K
-  renderů = 4–8 min, iOS uspí po minutě; stavový automat s resume per stupeň
-  je víc kódu než celý `stages.py`, a hlavně by appka skládala masky a
-  prompty znovu v Dartu — druhé zrcadlo `hairmask`/`glassesmask`, které by
-  bench neměřil. Ol1nLLM zrcadlo existuje z jiného důvodu (Image Studio nemá
-  backend); Restyler backend má.
-- **Ne kopie katalogů do Restyleru**: do týdne by lhaly o tom, co bench změřil.
-- **Ne web build Restyleru**: dart-define secrets v bundlu (pravidlo
-  z Tsumiki `deploy-web.yml`).
-- **Ne účty a platby v v1**: soukromá appka, kvóta stačí; store je jiný plán.
-
-### 9. Fáze 2
-
-- **Veřejná verze**: Sign in with Apple / Google → backend vydává per-user
-  token, IAP balíčky místo Stars (`PACKAGES` zůstává, mění se zdroj kreditu),
-  CF Access pryč (veřejná doména + rate limit). To je samostatný plán.
-- Lokální notifikace „Fotobuňka je hotová" (BG fetch / push).
-- Persistence pipeline jobů na serveru (vzor `video_jobs`), refund při pádu.
-- Karta „Fotobuňka" v Tsumiki nad týmž endpointem.
-- „Média" jako měřená skupina stylů (`run.py restyle` → `restyle_styles.dart`).
-- České popisky stylů Restyle (`cs` do katalogu), animace rámečku (Animate umí).
+- Ol1nLLM přejde na `tsumiki_shared` (jedno Dart zrcadlo).
+- Veřejná verze: Sign in with Apple/Google, IAP, bez CF Access.
+- Persistence render jobů na serveru (vzor `video_jobs`), refund při pádu.
+- Krok `reparse` jen pokud to arch vyžádá (riziko 2).
+- Lokální notifikace po dokončení; „Média" jako měřená skupina stylů; české
+  popisky stylů; karta „Fotobuňka" a „Vousy" v Tsumiki nad týmž kódem.
