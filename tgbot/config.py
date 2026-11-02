@@ -206,6 +206,10 @@ DRIVERS_DIR = Path(
     os.environ.get("DRIVERS_DIR", Path(__file__).resolve().parent.parent / "assets" / "drivers")
 )
 
+# Parser weights for app builds: CI downloads them from here, the repo is public
+# and cannot hold them. Only `*.onnx` files straight in this directory are served.
+MODELS_DIR = Path(os.environ.get("MODELS_DIR", Path(__file__).resolve().parent / "models"))
+
 
 def load_motions(directory: Path) -> dict[str, dict]:
     """Preset id → {driver, seconds, engine, prompt, loop, label}. A missing or

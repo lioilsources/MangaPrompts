@@ -194,3 +194,36 @@ def test_bot_is_only_used_for_positive_users():
             if uses:
                 body = ast.get_source_segment(source, fn)
                 assert "user_id > 0" in body or "user_id <= 0" in body, f"{name}:{fn.name}"
+
+
+# --- /api/models (CI downloads the parser weights) ---------------------------
+
+
+@pytest.fixture
+def models_dir(app_client, tmp_path, monkeypatch):
+    import config
+
+    directory = tmp_path / "models"
+    directory.mkdir()
+    (directory / "face.onnx").write_bytes(b"weights")
+    (directory / "notes.txt").write_text("not a model")
+    (tmp_path / "outside.onnx").write_bytes(b"secret")
+    monkeypatch.setattr(config, "MODELS_DIR", directory)
+    return directory
+
+
+def test_models_serves_an_onnx_file(app_client, models_dir):
+    r = app_client.get("/api/models/face.onnx", headers=_app_headers())
+    assert r.status_code == 200
+    assert r.content == b"weights"
+
+
+def test_models_needs_the_app_token(app_client, models_dir):
+    assert app_client.get("/api/models/face.onnx").status_code == 401
+    assert app_client.get("/api/models/face.onnx", headers=_app_headers(token="b" * 40)).status_code == 401
+
+
+@pytest.mark.parametrize("name", ["notes.txt", "missing.onnx", "..%2Foutside.onnx", "%2E%2E%2Foutside.onnx"])
+def test_models_serves_nothing_else(app_client, models_dir, name):
+    r = app_client.get(f"/api/models/{name}", headers=_app_headers())
+    assert r.status_code == 404

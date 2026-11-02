@@ -41,6 +41,7 @@ tgbot/venv/
 tgbot/.venv*/
 tgbot/data/
 tgbot/data-restyler/
+tgbot/models-restyler/
 tgbot/**/__pycache__/
 tgbot/.pytest_cache/
 tgbot/mangabot.env

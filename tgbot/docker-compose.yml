@@ -29,8 +29,10 @@ services:
       - ../assets/comfyui:/app/workflows:ro
       - ../assets/drivers:/app/drivers:ro
       - ./data-restyler:/app/data
+      - ./models-restyler:/app/models:ro
     environment:
       DRIVERS_DIR: /app/drivers
+      MODELS_DIR: /app/models
     ports:
       - "8091:8090"
 

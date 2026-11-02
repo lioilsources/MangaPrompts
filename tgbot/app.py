@@ -411,6 +411,15 @@ async def me(user_id: int = Depends(current_user_id)):
     }
 
 
+
+@app.get("/api/models/{name}")
+async def model_file(name: str, user_id: int = Depends(current_user_id)):
+    """Parser weights for app builds (CI). Same auth as every other endpoint."""
+    path = config.MODELS_DIR / name
+    if not name.endswith(".onnx") or path.parent != config.MODELS_DIR or not path.is_file():
+        raise HTTPException(status_code=404, detail="no such model")
+    return FileResponse(path, media_type="application/octet-stream", filename=name)
+
 @app.post("/api/invoice")
 async def create_invoice(req: InvoiceRequest, user_id: int = Depends(current_user_id)):
     if bot is None:
