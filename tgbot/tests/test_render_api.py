@@ -685,3 +685,12 @@ def test_cost_counts_against_the_quota(env, monkeypatch):
     client, comfy, _ = env
     monkeypatch.setattr(appmod.config, "FREE_DAILY_LIMIT", 4)
     assert post(client, [wan()]).status_code == 402
+
+
+def test_quota_off_renders_past_the_limit_and_spends_nothing(env, monkeypatch):
+    client, comfy, _ = env
+    monkeypatch.setattr(appmod.config, "FREE_DAILY_LIMIT", 0)
+    monkeypatch.setattr(appmod.config, "QUOTA", False)
+    r = post(client, chain())
+    assert r.status_code == 200
+    assert spent() == 0

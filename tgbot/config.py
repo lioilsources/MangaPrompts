@@ -165,6 +165,10 @@ AUTH_MODE = os.environ.get("AUTH_MODE", "").strip() or "telegram"
 if AUTH_MODE not in ("telegram", "app"):
     raise RuntimeError(f"unknown AUTH_MODE '{AUTH_MODE}'")
 APP_TOKEN = os.environ.get("APP_TOKEN", "").strip()
+# Daily free limit and credits. Restyler runs QUOTA=off: no accounts, no
+# payments, so a 402 there is only a dead end. /api/render and /api/live then
+# spend and refund nothing; the Telegram app keeps the default.
+QUOTA = os.environ.get("QUOTA", "on").strip().lower() != "off"
 APP_TOKEN_MIN_CHARS = 32
 APP_NAME = os.environ.get("APP_NAME", "").strip() or "Tsumiki bot backend"
 

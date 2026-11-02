@@ -306,7 +306,7 @@ async def post_render(req: RenderRequest, user_id: int = Depends(_user)):
     h = _host
     if h.jobs.active_count(user_id, "render") >= 1:
         raise HTTPException(status_code=429, detail="wait for your previous render to finish")
-    usage = h.db.spend_generations(user_id, config.FREE_DAILY_LIMIT, plan.cost)
+    usage = h.db.spend_generations(user_id, config.FREE_DAILY_LIMIT, plan.cost) if config.QUOTA else []
     if usage is None:
         raise HTTPException(
             status_code=402,
@@ -525,13 +525,15 @@ async def post_live(req: LiveRequest, user_id: int = Depends(_user)):
     if user_id in h._hair_analysing or h.jobs.active_count(user_id, "image") >= 1:
         raise HTTPException(status_code=429, detail="wait for your previous generation to finish")
 
-    spend = h.db.spend_generation(user_id, config.FREE_DAILY_LIMIT)
-    if spend is None:
-        raise HTTPException(
-            status_code=402,
-            detail="your free daily limit is used up and you have no credits",
-        )
-    _, usage_id = spend
+    usage_id = None
+    if config.QUOTA:
+        spend = h.db.spend_generation(user_id, config.FREE_DAILY_LIMIT)
+        if spend is None:
+            raise HTTPException(
+                status_code=402,
+                detail="your free daily limit is used up and you have no credits",
+            )
+        _, usage_id = spend
     job = Job(
         user_id=user_id, prompt="", workflow="live", status="running",
         caption=live_caption(req.motion, preset),
@@ -548,7 +550,7 @@ async def post_live(req: LiveRequest, user_id: int = Depends(_user)):
         except (ComfyError, aiohttp.ClientError, asyncio.TimeoutError) as e:
             job.status = "error"
             job.error = "ComfyUI is unavailable"
-            h.db.undo_usage(usage_id)
+            _refund(usage_id)
             log.error("live submit failed: %s", e)
             raise HTTPException(status_code=502, detail="ComfyUI is unavailable") from e
     job.prompt_id = prompt_id
@@ -557,7 +559,13 @@ async def post_live(req: LiveRequest, user_id: int = Depends(_user)):
     return {"job_id": job.id, "queue_position": queue_number}
 
 
-async def _watch_live(job: Job, usage_id: int) -> None:
+def _refund(usage_id: int | None) -> None:
+    """Live jobs spend one row, or none with QUOTA off."""
+    if usage_id is not None:
+        _host.db.undo_usage(usage_id)
+
+
+async def _watch_live(job: Job, usage_id: int | None) -> None:
     h = _host
     try:
         async with aiohttp.ClientSession() as session:
@@ -570,13 +578,13 @@ async def _watch_live(job: Job, usage_id: int) -> None:
     except ComfyError as e:
         job.status = "error"
         job.error = str(e)
-        h.db.undo_usage(usage_id)
+        _refund(usage_id)
         log.error("live job %s failed: %s", job.id, e)
         return
     except Exception as e:  # noqa: BLE001 — watcher must never crash silently
         job.status = "error"
         job.error = "internal error"
-        h.db.undo_usage(usage_id)
+        _refund(usage_id)
         log.exception("live job %s crashed: %s", job.id, e)
         return
     job.video_path = path
