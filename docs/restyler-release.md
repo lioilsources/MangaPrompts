@@ -53,6 +53,14 @@ v Zero Trust.
 `X-User` není autentizace: kdo má `APP_TOKEN`, může se představit kýmkoli. Stačí
 to pro soukromou distribuci, ne pro store.
 
+## Vkládání originálu u kroků Kontext
+
+Graf `flux_hair_kontext.api.json` vrací pro `kontext_edit` jen srovnaný výstup
+modelu (`composite.raw_output`), originál zpět vkládá `composite.paste_back`
+v Pythonu: jen tam, kde se render s originálem shoduje. Grafové vkládání nechávalo
+při posunutém obličeji šmouhy a dvojité obočí (bench kolo 3, 13 ze 104 vlasů).
+Log kroku hlásí `drift`, podíl chráněné plochy, kde zůstal render.
+
 ## Kvóta
 
 `FREE_DAILY_LIMIT=40` za 24 h na `X-User`. Krok stojí 1, `wan_motion` stojí

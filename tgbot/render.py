@@ -35,6 +35,7 @@ from fastapi.responses import FileResponse
 from PIL import Image, ImageOps
 from pydantic import BaseModel, Field
 
+import composite
 import config
 import hairmask
 from comfy import ComfyError, prepare_workflow
@@ -364,6 +365,7 @@ class _RenderRun:
         h = _host
         image_name = await self._comfy_name(step.input)
         template = h._load_template_file(step.graph, config.RENDER_GRAPHS[step.graph])
+        paste = False
         if step.graph == "kontext_edit":
             mask = self.plan.masks[step.id]
             # Prefix of its own: a step called `x_mask` must not overwrite this.
@@ -375,6 +377,9 @@ class _RenderRun:
                 image_name=image_name, mask_name=mask_name,
             )
             hairmask.apply_feather(wf, mask)
+            # The source goes back in here, only where the edit still lines up
+            # with it (composite.py) — the graph's own paste left seams.
+            paste = composite.raw_output(wf)
         else:
             width, height = photo_size(self.outputs[step.input])
             wf = prepare_workflow(
@@ -383,9 +388,17 @@ class _RenderRun:
                 latent=snap_to_sdxl_bucket(width, height),
             )
         prompt_id, _ = await h.comfy.queue_prompt(self.session, wf, prompt=step.prompt)
-        return await h.comfy.wait_for_output(
+        data = await h.comfy.wait_for_output(
             self.session, prompt_id, kind="image", timeout=config.JOB_TIMEOUT
         )
+        if not paste:
+            return data
+        res = await asyncio.to_thread(
+            composite.paste_back, self.outputs[step.input], data, self.plan.masks[step.id]
+        )
+        log.info("render %s/%s: drift %.2f, %s", self.job.id, step.id, res.drift,
+                 "pasted" if res.pasted else "kept as drawn")
+        return res.png
 
     async def _live_portrait(self, step: RenderStep) -> bytes:
         h = _host

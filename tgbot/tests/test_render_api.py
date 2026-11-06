@@ -203,13 +203,17 @@ def test_full_chain(env):
     assert all(v["kind"] == "image" for v in body["steps"].values())
     assert "error" not in body["steps"]["beard"]
     assert len(comfy.prompts) == 7
-    assert comfy.input_of("beard") == source
-    assert comfy.input_of("glasses") == comfy.outputs["beard"]
-    assert comfy.input_of("hair") == comfy.outputs["glasses"]
-    for s in ("s1", "s2", "s3", "s4"):
-        assert comfy.input_of(s) == comfy.outputs["hair"]
-    # the hair output went up once, however many styles read it
     job_id = r.json()["job_id"]
+
+    def stored(step):  # a kontext step's output is pasted back after ComfyUI
+        return (appmod.config.DATA_DIR / "outputs" / f"{job_id}_{step}.png").read_bytes()
+
+    assert comfy.input_of("beard") == source
+    assert comfy.input_of("glasses") == stored("beard")
+    assert comfy.input_of("hair") == stored("glasses")
+    for s in ("s1", "s2", "s3", "s4"):
+        assert comfy.input_of(s) == stored("hair")
+    # the hair output went up once, however many styles read it
     assert comfy.upload_log.count(f"restyler_{job_id}_hair.png") == 1
     assert comfy.upload_log.count(f"restyler_{job_id}_source.png") == 1
     assert spent() == 7
@@ -227,16 +231,20 @@ def test_kontext_step_has_mask_and_feather_from_the_mask(env):
     grow = next(n for n in wf.values() if n["class_type"] == "GrowMaskWithBlur")
     assert grow["inputs"]["expand"] == expand and grow["inputs"]["blur_radius"] == blur
     assert wf["8"]["inputs"]["text"] == "hair"
+    # ComfyUI hands back the aligned edit; the paste-back runs in composite.py
+    comp = next(n for n in wf.values() if n["class_type"] == "ImageCompositeMasked")
+    save = next(n for n in wf.values() if n["class_type"] == "SaveImage")
+    assert save["inputs"]["images"] == comp["inputs"]["source"]
 
 
 def test_sdxl_step_has_checkpoint_and_latent_of_its_input(env):
     client, comfy, _ = env
-    comfy.output_size = (120, 80)  # landscape, unlike the portrait source
+    comfy.output_size = (120, 80)  # landscape, unlike the portrait default
     steps = [
-        edit("hair", "source"),
+        edit("hair", "source", mask=b64(png(120, 80))),
         style("s1", graph="restyle_sdxl", medium="illustration", negative="ugly"),
     ]
-    finish(client, post(client, steps).json()["job_id"])
+    finish(client, post(client, steps, png(120, 80)).json()["job_id"])
     wf = comfy.prompts[1]["wf"]
     by_class = {n["class_type"]: n for n in wf.values()}
     assert by_class["CheckpointLoaderSimple"]["inputs"]["ckpt_name"] == SDXL_CKPT
@@ -549,9 +557,11 @@ def test_rejected_graph_forgets_the_driver(env):
 def test_live_input_is_the_previous_step(env):
     client, comfy, _ = env
     steps = [edit("hair", "source"), live("v", "hair")]
-    finish(client, post(client, steps).json()["job_id"])
+    job_id = post(client, steps).json()["job_id"]
+    finish(client, job_id)
     wf = comfy.prompts[1]["wf"]
-    assert comfy.uploads[_image_name(wf).removeprefix("in/")] == comfy.outputs["hair"]
+    hair = (appmod.config.DATA_DIR / "outputs" / f"{job_id}_hair.png").read_bytes()
+    assert comfy.uploads[_image_name(wf).removeprefix("in/")] == hair
 
 
 def test_live_input_is_scaled_to_1080_and_even(env):

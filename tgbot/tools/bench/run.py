@@ -48,6 +48,7 @@ import numpy as np  # noqa: E402
 from PIL import Image  # noqa: E402
 
 import catalog  # noqa: E402
+import composite  # noqa: E402
 import haircolours  # noqa: E402
 import hairmask as hm  # noqa: E402
 from comfy import prepare_workflow  # noqa: E402
@@ -388,12 +389,22 @@ def run_matrix(args) -> None:
                 # photo is colour_src — one field for both lost the target once.
                 row.update(prompt=prompt, colour_src=colour, shape=style["shape"], mask=f"masks/{name}",
                            mask_area=round(res.area, 4), face_box=res.face_box)
-            apply_graph_variants(wf, ident["sweep"])
-            apply_node_sweep(wf, ident["sweep"])
+            sweep = ident["sweep"]
+            apply_graph_variants(wf, sweep)
+            apply_node_sweep(wf, sweep)
+            # The paste-back runs here, as on the server (composite.py); the
+            # sweep's graph.composite=0 keeps the edit as drawn.
+            paste = sweep.get("graph.composite") not in (0, False, "0") and composite.raw_output(wf)
             set_seed(wf, ident["seed"])
             prefix = f"bench_{key}"
             set_save_prefix(wf, prefix)
             png = c.run(wf, (prefix,), timeout=args.timeout)[prefix]
+            if paste and (out / "masks" / name).exists():
+                (out / "raw").mkdir(exist_ok=True)
+                (out / "raw" / name).write_bytes(png)
+                res = composite.paste_back(src.read_bytes(), png, (out / "masks" / name).read_bytes())
+                png = res.png
+                row.update(pasted=res.pasted, drift=res.drift, raw=f"raw/{name}")
             save_png_and_thumb(out, name, png)
             row["status"] = "done"
         except hm.HairMaskError:
