@@ -35,8 +35,8 @@ RAMP = 2.0 * SIGMA
 # A colour distance (RGB, 0–255) up to AGREE_FULL pastes fully, from AGREE_NONE
 # not at all; the gate itself is smoothed by GATE_BLUR so it has no edges.
 AGREE_BLUR = 0.005
-AGREE_FULL = 18.0
-AGREE_NONE = 45.0
+AGREE_FULL = 14.0
+AGREE_NONE = 32.0
 GATE_BLUR = 0.006
 # Work resolution of the gate (long side); it is smooth, so scaling it up
 # costs nothing visible and keeps a 1536 px photo fast.
