@@ -61,6 +61,15 @@ v Pythonu: jen tam, kde se render s originálem shoduje. Grafové vkládání ne
 při posunutém obličeji šmouhy a dvojité obočí (bench kolo 3, 13 ze 104 vlasů).
 Log kroku hlásí `drift`, podíl chráněné plochy, kde zůstal render.
 
+## Plná fronta ComfyUI
+
+ComfyUI na SPARKu sdílí Restyler s dávkami jiných projektů. U obrázkových kroků
+běží `JOB_TIMEOUT` (300 s) až od chvíle, kdy render začne. Čekání ve frontě má
+vlastní limit `RENDER_QUEUE_TIMEOUT` (600 s); kdo ho přečká, je z fronty smazán.
+Při víc než `RENDER_QUEUE_MAX` (8) čekajících promptech se krok vůbec nezařadí.
+Oba případy končí chybou kroku `busy: …` s vrácenou generací a appka ukáže
+„Server je teď vytížený. Zkus to za pár minut“.
+
 ## Kvóta
 
 `FREE_DAILY_LIMIT=40` za 24 h na `X-User`. Krok stojí 1, `wan_motion` stojí

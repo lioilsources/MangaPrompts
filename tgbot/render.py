@@ -38,7 +38,7 @@ from pydantic import BaseModel, Field
 import composite
 import config
 import hairmask
-from comfy import ComfyError, prepare_workflow
+from comfy import ComfyBusy, ComfyError, prepare_workflow
 from imagesize import image_size, snap_to_sdxl_bucket
 from jobs import Job
 from video import VideoError, VideoJobGone
@@ -363,6 +363,10 @@ class _RenderRun:
 
     async def _edit_or_restyle(self, step: RenderStep) -> bytes:
         h = _host
+        # Someone else's batch fills the queue: say "later" now instead of
+        # timing out behind it.
+        if await h.comfy.pending_count(self.session) > config.RENDER_QUEUE_MAX:
+            raise ComfyBusy()
         image_name = await self._comfy_name(step.input)
         template = h._load_template_file(step.graph, config.RENDER_GRAPHS[step.graph])
         paste = False
@@ -389,7 +393,8 @@ class _RenderRun:
             )
         prompt_id, _ = await h.comfy.queue_prompt(self.session, wf, prompt=step.prompt)
         data = await h.comfy.wait_for_output(
-            self.session, prompt_id, kind="image", timeout=config.JOB_TIMEOUT
+            self.session, prompt_id, kind="image", timeout=config.JOB_TIMEOUT,
+            queue_timeout=config.RENDER_QUEUE_TIMEOUT,
         )
         if not paste:
             return data

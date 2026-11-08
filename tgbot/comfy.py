@@ -22,6 +22,16 @@ class ComfyError(Exception):
     pass
 
 
+BUSY_MESSAGE = "busy: the render server is busy, try again in a few minutes"
+
+
+class ComfyBusy(ComfyError):
+    """The queue is full or never got to us: nothing rendered, try later."""
+
+    def __init__(self, message: str = BUSY_MESSAGE):
+        super().__init__(message)
+
+
 AILINEAGE_NODE = "AILineageSaveImage"
 AILINEAGE_RECHECK_S = 600
 
@@ -219,14 +229,85 @@ class ComfyClient:
                 raise ComfyError(f"/view HTTP {resp.status} for {filename}")
             return await resp.read()
 
+    async def get_queue(self, session: aiohttp.ClientSession) -> tuple[list[str], list[str]]:
+        """(running, pending) prompt ids from GET /queue."""
+        async with session.get(
+            f"{self.base_url}/queue",
+            headers=self.headers,
+            timeout=aiohttp.ClientTimeout(total=15),
+        ) as resp:
+            if resp.status != 200:
+                raise ComfyError(f"/queue HTTP {resp.status}")
+            data = await resp.json()
+
+        def ids(key: str) -> list[str]:
+            return [str(item[1]) for item in data.get(key) or [] if len(item) > 1]
+
+        return ids("queue_running"), ids("queue_pending")
+
+    async def pending_count(self, session: aiohttp.ClientSession) -> int:
+        """Prompts waiting in front of a new one; 0 when /queue cannot be read
+        (the render then fails or times out on its own)."""
+        try:
+            _, pending = await self.get_queue(session)
+        except (ComfyError, aiohttp.ClientError, asyncio.TimeoutError, ValueError):
+            return 0
+        return len(pending)
+
+    async def delete_pending(self, session: aiohttp.ClientSession, prompt_id: str) -> None:
+        async with session.post(
+            f"{self.base_url}/queue",
+            json={"delete": [prompt_id]},
+            headers=self.headers,
+            timeout=aiohttp.ClientTimeout(total=15),
+        ):
+            pass
+
+    async def wait_for_start(
+        self,
+        session: aiohttp.ClientSession,
+        prompt_id: str,
+        queue_timeout: float,
+        poll_interval: float = 2.0,
+    ) -> None:
+        """Returns once the prompt runs (or already finished). Still pending
+        after `queue_timeout`: it is taken off the queue, so it never renders
+        for nobody, and ComfyBusy is raised."""
+        loop = asyncio.get_event_loop()
+        deadline = loop.time() + queue_timeout
+        while True:
+            try:
+                running, pending = await self.get_queue(session)
+            except (ComfyError, aiohttp.ClientError, asyncio.TimeoutError, ValueError):
+                running, pending = None, None
+            if pending is not None and prompt_id not in pending:
+                return  # running, or done and in /history
+            if loop.time() > deadline:
+                if pending is None:
+                    return  # queue unreadable: let the render deadline decide
+                try:
+                    await self.delete_pending(session, prompt_id)
+                    running, pending = await self.get_queue(session)
+                except (ComfyError, aiohttp.ClientError, asyncio.TimeoutError, ValueError):
+                    pass
+                if prompt_id in (running or []):
+                    return  # started just now: wait for it after all
+                raise ComfyBusy()
+            await asyncio.sleep(poll_interval)
+
     async def wait_for_history(
         self,
         session: aiohttp.ClientSession,
         prompt_id: str,
         timeout: int = 300,
         poll_interval: float = 2.0,
+        queue_timeout: float | None = None,
     ) -> dict:
-        """Polls /history until the job has an entry; raises on a failed run."""
+        """Polls /history until the job has an entry; raises on a failed run.
+        With `queue_timeout` the `timeout` counts from the moment the prompt
+        starts, and the wait in the queue has a limit of its own."""
+        if queue_timeout is not None:
+            await self.wait_for_start(session, prompt_id, queue_timeout, poll_interval)
         deadline = asyncio.get_event_loop().time() + timeout
         while True:
             if asyncio.get_event_loop().time() > deadline:
@@ -260,10 +341,11 @@ class ComfyClient:
         kind: str = "image",
         timeout: int = 300,
         poll_interval: float = 2.0,
+        queue_timeout: float | None = None,
     ) -> bytes:
         """The first output of `kind` ("image" | "video"); a graph that saved
         only the other kind is a failure, never a PNG served as an mp4."""
-        hist = await self.wait_for_history(session, prompt_id, timeout, poll_interval)
+        hist = await self.wait_for_history(session, prompt_id, timeout, poll_interval, queue_timeout)
         refs = output_refs(hist, kind)
         if not refs:
             raise ComfyError(f"no output {kind}s in workflow result")

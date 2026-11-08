@@ -61,6 +61,13 @@ VIDEO_FREE_DAILY_LIMIT = _int_env("VIDEO_FREE_DAILY_LIMIT", 1)
 AUTH_MAX_AGE = _int_env("AUTH_MAX_AGE", 3600)
 MAX_PROMPT_CHARS = _int_env("MAX_PROMPT_CHARS", 4000)
 JOB_TIMEOUT = _int_env("JOB_TIMEOUT", 300)
+# Restyler image steps share SPARK's ComfyUI with other projects' batches, so
+# JOB_TIMEOUT counts from the moment the step starts rendering, and the wait
+# in the queue has its own limit. A queue already longer than RENDER_QUEUE_MAX,
+# or a step still waiting after RENDER_QUEUE_TIMEOUT, ends as "busy" (try
+# later) and is refunded instead of failing as a timeout.
+RENDER_QUEUE_TIMEOUT = _int_env("RENDER_QUEUE_TIMEOUT", 600)
+RENDER_QUEUE_MAX = _int_env("RENDER_QUEUE_MAX", 8)
 # Render deadline. One fixed value cannot fit both a 1-beat scene (~6 min) and
 # a 12-beat one (~40 min) on the single GPU worker, so the deadline is derived
 # per job from the estimate video-api returns on submit (minutes_est, which

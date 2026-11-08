@@ -6,6 +6,7 @@ import pytest
 
 import hairmask
 from comfy import (
+    ComfyBusy,
     ComfyClient,
     ComfyError,
     execution_error_message,
@@ -388,6 +389,80 @@ def test_wait_for_output_refuses_the_wrong_kind():
     hist = {"outputs": {"9": {"images": [{"filename": "a.png", "type": "output"}]}}}
     with pytest.raises(ComfyError, match="no output videos"):
         asyncio.run(_client_with_history(hist).wait_for_output(None, "p", "video", poll_interval=0))
+
+
+class _QueueClient(ComfyClient):
+    """ComfyUI that keeps `p` pending for `pending_polls` /queue reads, then
+    runs it for `running_polls` /history reads before it finishes."""
+
+    def __init__(self, pending_polls, running_polls=0, start_on_delete=False):
+        super().__init__("http://x", "id")
+        self.pending_polls = pending_polls
+        self.running_polls = running_polls
+        self.start_on_delete = start_on_delete
+        self.deleted = []
+        self.started = False
+
+    async def get_queue(self, session):
+        if self.pending_polls > 0 and not self.started:
+            self.pending_polls -= 1
+            return [], ["other", "p"]
+        self.started = True
+        return ["p"], []
+
+    async def delete_pending(self, session, prompt_id):
+        self.deleted.append(prompt_id)
+        if self.start_on_delete:
+            self.started = True
+
+    async def get_history(self, session, prompt_id):
+        if not self.started:
+            return None
+        if self.running_polls > 0:
+            self.running_polls -= 1
+            return None
+        return {"outputs": {"9": {"images": [{"filename": "a.png", "type": "output"}]}}}
+
+    async def view(self, session, filename, subfolder, type_):
+        return filename.encode()
+
+
+def test_render_timeout_counts_from_the_start_not_from_the_queue():
+    # 30 polls in the queue at 10 ms are far past a 0.1 s render timeout,
+    # but the render itself takes two polls: no timeout
+    client = _QueueClient(pending_polls=30, running_polls=2)
+    out = asyncio.run(client.wait_for_output(None, "p", timeout=0.1, poll_interval=0.01, queue_timeout=60))
+    assert out == b"a.png" and client.deleted == []
+
+
+def test_render_timeout_still_applies_once_running():
+    client = _QueueClient(pending_polls=0, running_polls=10_000)
+    with pytest.raises(ComfyError, match="timed out") as e:
+        asyncio.run(client.wait_for_output(None, "p", timeout=0.05, poll_interval=0.01, queue_timeout=60))
+    assert not isinstance(e.value, ComfyBusy)
+
+
+def test_prompt_stuck_in_the_queue_is_removed_and_busy():
+    client = _QueueClient(pending_polls=10_000)
+    with pytest.raises(ComfyBusy, match="^busy:"):
+        asyncio.run(client.wait_for_output(None, "p", timeout=60, poll_interval=0.01, queue_timeout=0.05))
+    assert client.deleted == ["p"]
+
+
+def test_prompt_that_starts_while_being_removed_is_waited_for():
+    client = _QueueClient(pending_polls=10_000, start_on_delete=True)
+    out = asyncio.run(client.wait_for_output(None, "p", timeout=60, poll_interval=0.01, queue_timeout=0.05))
+    assert out == b"a.png"
+
+
+def test_without_queue_timeout_the_queue_is_not_read():
+    client = _client_with_history({"outputs": {"9": {"images": [{"filename": "a.png", "type": "output"}]}}})
+
+    async def no_queue(session):
+        raise AssertionError("queue read")
+
+    client.get_queue = no_queue
+    assert asyncio.run(client.wait_for_output(None, "p", poll_interval=0)) == b"a.png"
 
 
 def test_sign_outputs_leaves_vhs_alone():

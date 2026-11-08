@@ -14,9 +14,10 @@ from fastapi.testclient import TestClient
 from PIL import Image
 
 import app as appmod
+import config
 import hairmask
 import render
-from comfy import ComfyError
+from comfy import BUSY_MESSAGE, ComfyBusy, ComfyError
 from db import Database
 from jobs import JobStore
 from video import VideoError, VideoJobGone
@@ -49,6 +50,12 @@ class FakeComfy:
         self.running = 0
         self.peak = 0
         self.delay = 0.0
+        self.pending = 0  # other projects' prompts waiting in the queue
+        self.busy_on: set[str] = set()  # prompt texts that never leave the queue
+        self.queue_timeouts: list = []
+
+    async def pending_count(self, session):
+        return self.pending
 
     async def upload_image(self, session, data, filename):
         if any(part in filename for part in self.fail_upload):
@@ -64,7 +71,11 @@ class FakeComfy:
         self.prompts.append({"wf": workflow, "prompt": prompt})
         return str(len(self.prompts) - 1), 1
 
-    async def wait_for_output(self, session, prompt_id, kind="image", timeout=300, poll_interval=2.0):
+    async def wait_for_output(self, session, prompt_id, kind="image", timeout=300, poll_interval=2.0,
+                              queue_timeout=None):
+        self.queue_timeouts.append(queue_timeout)
+        if self.prompts[int(prompt_id)]["prompt"] in self.busy_on:
+            raise ComfyBusy()
         self.running += 1
         self.peak = max(self.peak, self.running)
         await asyncio.sleep(self.delay)
@@ -273,6 +284,26 @@ def test_failed_edit_skips_dependents_and_refunds_them(env):
     assert "error" not in body["steps"]["s1"]
     assert len(comfy.prompts) == 3  # nothing rendered for the skipped ones
     assert spent() == 2
+
+
+def test_full_queue_ends_steps_as_busy_and_refunds_without_queueing(env):
+    client, comfy, _ = env
+    comfy.pending = config.RENDER_QUEUE_MAX + 1
+    body = finish(client, post(client, chain()).json()["job_id"])
+    assert body["status"] == "error" and body["done"] == 0
+    assert body["steps"]["beard"]["error"] == BUSY_MESSAGE
+    assert comfy.prompts == [] and spent() == 0
+
+
+def test_step_stuck_in_the_queue_is_busy_and_refunded(env):
+    client, comfy, _ = env
+    comfy.busy_on.add("s2")
+    body = finish(client, post(client, chain()).json()["job_id"])
+    assert body["status"] == "done"
+    assert body["steps"]["s2"]["error"] == BUSY_MESSAGE
+    assert spent() == 6
+    # every image step waits in the queue with its own limit
+    assert set(comfy.queue_timeouts) == {config.RENDER_QUEUE_TIMEOUT}
 
 
 def test_failed_style_refunds_one(env):
