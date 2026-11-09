@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart' show kIsWeb, Uint8List;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../l10n/l10n.dart';
 import '../../providers/api_provider.dart';
 import '../widgets/local_image.dart';
 
@@ -64,7 +65,7 @@ class _ResultScreenState extends ConsumerState<ResultScreen> {
     final path = _localPath;
     if (path == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('The image has not been downloaded yet')),
+        SnackBar(content: Text(context.l10n.notDownloaded)),
       );
       return;
     }
@@ -75,16 +76,16 @@ class _ResultScreenState extends ConsumerState<ResultScreen> {
       await imageService.saveToGallery(path);
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Saved to the gallery'),
-            duration: Duration(seconds: 2),
+          SnackBar(
+            content: Text(context.l10n.savedToGallery),
+            duration: const Duration(seconds: 2),
           ),
         );
       }
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Could not save: $e')),
+          SnackBar(content: Text(context.l10n.couldNotSave('$e'))),
         );
       }
     } finally {
@@ -96,7 +97,7 @@ class _ResultScreenState extends ConsumerState<ResultScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Result'),
+        title: Text(context.l10n.result),
         actions: [
           // On web the image also lands in the Telegram chat — that is the
           // "save" story there; the gallery needs local files (io only).
@@ -109,19 +110,19 @@ class _ResultScreenState extends ConsumerState<ResultScreen> {
                       child: CircularProgressIndicator(strokeWidth: 2),
                     )
                   : const Icon(Icons.save_alt),
-              tooltip: 'Save to gallery',
+              tooltip: context.l10n.saveToGallery,
               onPressed:
                   (_isSaving || _localPath == null) ? null : _saveToGallery,
             ),
           IconButton(
             icon: const Icon(Icons.copy),
-            tooltip: 'Copy prompt',
+            tooltip: context.l10n.copyPrompt,
             onPressed: () {
               Clipboard.setData(ClipboardData(text: widget.prompt));
               ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text('Prompt copied'),
-                  duration: Duration(seconds: 1),
+                SnackBar(
+                  content: Text(context.l10n.promptCopied),
+                  duration: const Duration(seconds: 1),
                 ),
               );
             },
@@ -148,7 +149,7 @@ class _ResultScreenState extends ConsumerState<ResultScreen> {
                         )
                       : widget.imageUrl.isNotEmpty
                           ? _networkImage()
-                          : _errorWidget('Image not available'),
+                          : _errorWidget(context.l10n.imageNotAvailable),
             ),
             if (_isDownloading)
               const Padding(
@@ -162,7 +163,7 @@ class _ResultScreenState extends ConsumerState<ResultScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Prompt used:',
+                    context.l10n.promptUsed,
                     style: Theme.of(context).textTheme.titleSmall,
                   ),
                   const SizedBox(height: 8),
@@ -184,7 +185,7 @@ class _ResultScreenState extends ConsumerState<ResultScreen> {
                   if (widget.revisedPrompt.isNotEmpty) ...[
                     const SizedBox(height: 16),
                     Text(
-                      'Revised prompt (Grok):',
+                      context.l10n.revisedPrompt,
                       style: Theme.of(context).textTheme.titleSmall,
                     ),
                     const SizedBox(height: 8),
@@ -229,7 +230,7 @@ class _ResultScreenState extends ConsumerState<ResultScreen> {
         );
       },
       errorBuilder: (_, error, __) =>
-          _errorWidget('Could not load: $error'),
+          _errorWidget(context.l10n.couldNotLoad('$error')),
     );
   }
 

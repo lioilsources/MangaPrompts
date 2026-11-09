@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../l10n/l10n.dart';
 import '../../platform/telegram_webapp.dart';
 import '../../providers/account_provider.dart';
 import '../../services/telegram_backend_service.dart';
@@ -30,6 +31,7 @@ class _PaywallSheetState extends ConsumerState<PaywallSheet> {
   Future<void> _buy(TgPackage package) async {
     setState(() => _buyingId = package.id);
     final messenger = ScaffoldMessenger.of(context);
+    final l = context.l10n;
     try {
       final link = await TelegramBackendService.createInvoiceLink(package.id);
       final status = await TelegramWebApp.openInvoice(link);
@@ -40,19 +42,19 @@ class _PaywallSheetState extends ConsumerState<PaywallSheet> {
         messenger.showSnackBar(
           SnackBar(
             content: Text(widget.video
-                ? '${package.credits} animation credit added 🎉'
-                : '${package.credits} credits added 🎉'),
+                ? l.paidVideo(package.credits)
+                : l.paidImages(package.credits)),
           ),
         );
       } else if (status == 'failed') {
         messenger.showSnackBar(
-          const SnackBar(content: Text('Payment failed, please try again')),
+          SnackBar(content: Text(l.paymentFailed)),
         );
       }
       // 'cancelled' / 'pending' → keep the sheet open without noise
     } catch (e) {
       if (mounted) {
-        messenger.showSnackBar(SnackBar(content: Text('Error: $e')));
+        messenger.showSnackBar(SnackBar(content: Text(l.errorDetail('$e'))));
       }
     } finally {
       if (mounted) setState(() => _buyingId = null);
@@ -62,6 +64,7 @@ class _PaywallSheetState extends ConsumerState<PaywallSheet> {
   @override
   Widget build(BuildContext context) {
     final account = ref.watch(accountProvider);
+    final l = context.l10n;
     return SafeArea(
       child: Padding(
         padding: const EdgeInsets.fromLTRB(16, 16, 16, 24),
@@ -73,11 +76,11 @@ class _PaywallSheetState extends ConsumerState<PaywallSheet> {
           error: (e, _) => Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Text('Could not load credits: $e'),
+              Text(l.creditsLoadFailed('$e')),
               const SizedBox(height: 12),
               OutlinedButton(
                 onPressed: () => ref.invalidate(accountProvider),
-                child: const Text('Try again'),
+                child: Text(l.tryAgain),
               ),
             ],
           ),
@@ -85,25 +88,24 @@ class _PaywallSheetState extends ConsumerState<PaywallSheet> {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(widget.video ? 'Animations' : 'Credits',
+              Text(widget.video ? l.animationsTitle : l.creditsTitle,
                   style: Theme.of(context).textTheme.titleLarge),
               const SizedBox(height: 4),
               Text(
                 widget.video
-                    ? '${a.videoFreeRemaining} of ${a.videoFreeLimit} free '
-                        'animation today · animation credits: '
-                        '${a.videoCredits}. 1 credit = 1 video, paid '
-                        'in Telegram Stars.'
-                    : '${a.freeRemaining} of ${a.freeLimit} free generations today · '
-                        'credits: ${a.credits}. 1 credit = 1 image, paid '
-                        'in Telegram Stars.',
+                    ? '${l.videoQuota(a.videoFreeRemaining, a.videoFreeLimit, a.videoCredits)}. '
+                        '${l.videoPriceNote}'
+                    : '${l.imageQuota(a.freeRemaining, a.freeLimit, a.credits)}. '
+                        '${l.imagePriceNote}',
                 style: Theme.of(context).textTheme.bodySmall,
               ),
               const SizedBox(height: 12),
               for (final p in widget.video ? a.videoPackages : a.packages)
                 ListTile(
                   contentPadding: EdgeInsets.zero,
-                  title: Text(p.label),
+                  title: Text(widget.video
+                      ? l.packageVideos(p.credits)
+                      : l.packageImages(p.credits)),
                   trailing: FilledButton(
                     onPressed: _buyingId == null ? () => _buy(p) : null,
                     child: _buyingId == p.id

@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 
+import '../../l10n/l10n.dart';
 import '../../providers/account_provider.dart';
 import '../../providers/video_scenes_provider.dart';
 import '../../services/telegram_backend_service.dart';
@@ -109,8 +110,7 @@ class _AnimateScreenState extends ConsumerState<AnimateScreen> {
       _pollFailures++;
       if (_pollFailures >= 6 && mounted) {
         _pollTimer?.cancel();
-        setState(() => _error =
-            'Connection lost — the bot will still deliver the video to your chat.');
+        setState(() => _error = context.l10n.connectionLostVideo);
       }
     }
   }
@@ -119,6 +119,7 @@ class _AnimateScreenState extends ConsumerState<AnimateScreen> {
   Widget build(BuildContext context) {
     final scenesAsync = ref.watch(videoScenesProvider);
     final account = ref.watch(accountProvider);
+    final l = context.l10n;
 
     return Scaffold(
       appBar: const TsumikiAppBar(screen: TsumikiScreen.animate),
@@ -127,7 +128,7 @@ class _AnimateScreenState extends ConsumerState<AnimateScreen> {
         error: (e, _) => Center(
           child: Padding(
             padding: const EdgeInsets.all(24),
-            child: Text('The video server is unavailable right now.\n$e',
+            child: Text(l.videoServerDown('$e'),
                 textAlign: TextAlign.center),
           ),
         ),
@@ -138,8 +139,11 @@ class _AnimateScreenState extends ConsumerState<AnimateScreen> {
               data: (a) => Padding(
                 padding: const EdgeInsets.only(bottom: 12),
                 child: Text(
-                  '${a.videoFreeRemaining} of ${a.videoFreeLimit} free '
-                  'animation today · animation credits: ${a.videoCredits}',
+                  l.videoQuota(
+                    a.videoFreeRemaining,
+                    a.videoFreeLimit,
+                    a.videoCredits,
+                  ),
                   style: Theme.of(context).textTheme.bodySmall,
                 ),
               ),
@@ -147,14 +151,14 @@ class _AnimateScreenState extends ConsumerState<AnimateScreen> {
             ),
             _photoCard(),
             const SizedBox(height: 16),
-            Text('Scene', style: Theme.of(context).textTheme.titleMedium),
+            Text(l.scene, style: Theme.of(context).textTheme.titleMedium),
             const SizedBox(height: 8),
             for (final scene in scenes) _sceneTile(scene),
             const SizedBox(height: 16),
             if (_job == null) ...[
               FilledButton.icon(
                 icon: const Icon(Icons.movie_creation_outlined),
-                label: Text(_submitting ? 'Uploading…' : 'Animate'),
+                label: Text(_submitting ? l.uploading : l.animate),
                 onPressed: _imageBytes != null &&
                         _sceneId != null &&
                         !_submitting
@@ -183,15 +187,15 @@ class _AnimateScreenState extends ConsumerState<AnimateScreen> {
       child: InkWell(
         onTap: _job == null ? _pickPhoto : null,
         child: bytes == null
-            ? const SizedBox(
+            ? SizedBox(
                 height: 160,
                 child: Center(
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Icon(Icons.add_photo_alternate_outlined, size: 40),
-                      SizedBox(height: 8),
-                      Text('Pick a photo'),
+                      const Icon(Icons.add_photo_alternate_outlined, size: 40),
+                      const SizedBox(height: 8),
+                      Text(context.l10n.pickPhoto),
                     ],
                   ),
                 ),
@@ -213,8 +217,8 @@ class _AnimateScreenState extends ConsumerState<AnimateScreen> {
       child: ListTile(
         title: Text(scene.label),
         subtitle: Text(
-          '${scene.desc}\n~${scene.seconds.round()} s clip · '
-          '~${scene.minutesEst} min render',
+          '${scene.desc}\n'
+          '${context.l10n.sceneInfo(scene.seconds.round(), scene.minutesEst)}',
         ),
         isThreeLine: scene.desc.isNotEmpty,
         selected: selected,
@@ -227,23 +231,27 @@ class _AnimateScreenState extends ConsumerState<AnimateScreen> {
 
   Widget _progressCard() {
     final status = _status;
+    final l = context.l10n;
     final (String label, bool busy) = switch (status?.status) {
       'queued' => (
           status?.position != null
-              ? 'In line · position ${status!.position! + 1}'
-              : 'In line…',
+              ? l.queuePosition(status!.position! + 1)
+              : l.queueWaiting,
           true
         ),
       'running' => (
           status!.phase != null && status.beat >= status.beats
-              ? 'Finishing (smoothing the motion)…'
-              : 'Beat ${status.beat + 1}/${status.beats} · '
-                  '~${((status.beats - status.beat) * 2.5).ceil()} min left',
+              ? l.finishing
+              : l.beatProgress(
+                  status.beat + 1,
+                  status.beats,
+                  ((status.beats - status.beat) * 2.5).ceil(),
+                ),
           true
         ),
-      'done' => ('Done! The video was sent to your Telegram chat 🎬', false),
-      'error' => ('Failed: ${status?.error ?? 'unknown error'}', false),
-      _ => ('Starting…', true),
+      'done' => (l.videoDone, false),
+      'error' => (l.failedDetail(status?.error ?? l.unknownError), false),
+      _ => (l.starting, true),
     };
     return Card(
       child: Padding(
@@ -278,7 +286,7 @@ class _AnimateScreenState extends ConsumerState<AnimateScreen> {
               Padding(
                 padding: const EdgeInsets.only(top: 8),
                 child: Text(
-                  'You can close the app — the video arrives in the chat.',
+                  l.canCloseApp,
                   style: Theme.of(context).textTheme.bodySmall,
                 ),
               ),
@@ -287,7 +295,7 @@ class _AnimateScreenState extends ConsumerState<AnimateScreen> {
               Padding(
                 padding: const EdgeInsets.only(top: 8),
                 child: Text(
-                  'Your free video / credit was not spent.',
+                  l.notCharged,
                   style: Theme.of(context).textTheme.bodySmall,
                 ),
               ),
@@ -300,7 +308,7 @@ class _AnimateScreenState extends ConsumerState<AnimateScreen> {
                     _status = null;
                     _error = null;
                   }),
-                  child: const Text('Animate another'),
+                  child: Text(l.animateAnother),
                 ),
               ),
           ],

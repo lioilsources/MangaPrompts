@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../providers/account_provider.dart';
 import '../../providers/video_scenes_provider.dart';
 import '../../config/hairstyles.dart';
+import '../../l10n/l10n.dart';
 import '../screens/animate_screen.dart';
 import '../screens/hair_screen.dart';
 import '../screens/home_screen.dart';
@@ -15,15 +16,21 @@ import 'paywall_sheet.dart';
 
 /// The Mini App's cards. Each is a full screen behind the shared title bar.
 enum TsumikiScreen {
-  builder('Prompt builder', Icons.auto_awesome),
-  restyle('Restyle a photo', Icons.face_retouching_natural),
-  hair('Try a haircut', Icons.content_cut),
-  animate('Animate a photo', Icons.movie_creation_outlined);
+  builder(Icons.auto_awesome),
+  restyle(Icons.face_retouching_natural),
+  hair(Icons.content_cut),
+  animate(Icons.movie_creation_outlined);
 
-  const TsumikiScreen(this.label, this.icon);
+  const TsumikiScreen(this.icon);
 
-  final String label;
   final IconData icon;
+
+  String label(AppLocalizations l) => switch (this) {
+    TsumikiScreen.builder => l.screenBuilder,
+    TsumikiScreen.restyle => l.screenRestyle,
+    TsumikiScreen.hair => l.screenHair,
+    TsumikiScreen.animate => l.screenAnimate,
+  };
 
   /// Which ledger the card spends: animations have their own credits,
   /// everything else is an image generation.
@@ -69,7 +76,7 @@ class TsumikiAppBar extends ConsumerWidget implements PreferredSizeWidget {
         ...extraActions,
         IconButton(
           icon: const Icon(Icons.settings),
-          tooltip: 'Settings',
+          tooltip: context.l10n.settings,
           onPressed: () => Navigator.push(
             context,
             MaterialPageRoute(builder: (_) => const SettingsScreen()),
@@ -105,8 +112,8 @@ class _ShopChip extends ConsumerWidget {
           label: Text(label),
           visualDensity: VisualDensity.compact,
           tooltip: video
-              ? 'Animation credits and packages'
-              : 'Credits and packages',
+              ? context.l10n.shopTooltipVideo
+              : context.l10n.shopTooltip,
           onPressed: () => PaywallSheet.show(context, video: video),
         ),
       ),
@@ -164,7 +171,7 @@ class _ScreenMenu extends ConsumerWidget {
     );
     return PopupMenuButton<TsumikiScreen>(
       icon: const Icon(Icons.apps),
-      tooltip: 'Switch card',
+      tooltip: context.l10n.switchCard,
       onSelected: (target) => _goTo(context, root, target),
       itemBuilder: (_) => [
         for (final s in TsumikiScreen.values)
@@ -179,7 +186,7 @@ class _ScreenMenu extends ConsumerWidget {
               child: ListTile(
                 contentPadding: EdgeInsets.zero,
                 leading: Icon(s.icon),
-                title: Text(s.label),
+                title: Text(s.label(context.l10n)),
                 trailing: s == current ? const Icon(Icons.check) : null,
               ),
             ),

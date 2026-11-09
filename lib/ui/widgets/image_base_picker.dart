@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
+import '../../l10n/l10n.dart';
 import '../../providers/api_provider.dart';
 import '../../providers/selection_provider.dart';
 import 'local_image.dart';
@@ -37,7 +38,7 @@ class ImageBasePicker extends ConsumerWidget {
               const SizedBox(width: 8),
               Expanded(
                 child: Text(
-                  'Base image selected',
+                  context.l10n.baseImageSelected,
                   style: Theme.of(context).textTheme.bodySmall?.copyWith(
                     color: Theme.of(context).colorScheme.onPrimaryContainer,
                   ),
@@ -60,7 +61,7 @@ class ImageBasePicker extends ConsumerWidget {
       child: OutlinedButton.icon(
         onPressed: () => _showOptions(context, ref),
         icon: const Icon(Icons.add_photo_alternate, size: 18),
-        label: const Text('Base image (optional)'),
+        label: Text(context.l10n.baseImageOptional),
         style: OutlinedButton.styleFrom(
           visualDensity: VisualDensity.compact,
         ),
@@ -77,7 +78,7 @@ class ImageBasePicker extends ConsumerWidget {
           children: [
             ListTile(
               leading: const Icon(Icons.photo_library),
-              title: const Text('Pick from gallery'),
+              title: Text(context.l10n.pickFromGallery),
               onTap: () {
                 Navigator.pop(ctx);
                 _pickImage(ref, ImageSource.gallery);
@@ -85,7 +86,7 @@ class ImageBasePicker extends ConsumerWidget {
             ),
             ListTile(
               leading: const Icon(Icons.camera_alt),
-              title: const Text('Take a photo'),
+              title: Text(context.l10n.takePhoto),
               onTap: () {
                 Navigator.pop(ctx);
                 _pickImage(ref, ImageSource.camera);
@@ -95,7 +96,7 @@ class ImageBasePicker extends ConsumerWidget {
               ListTile(
                 leading: Icon(Icons.delete,
                     color: Theme.of(context).colorScheme.error),
-                title: Text('Remove',
+                title: Text(context.l10n.remove,
                     style: TextStyle(
                         color: Theme.of(context).colorScheme.error)),
                 onTap: () {

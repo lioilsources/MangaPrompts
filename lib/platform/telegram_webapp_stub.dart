@@ -5,6 +5,9 @@ class TelegramWebApp {
   /// Raw signed init data from Telegram; empty outside a Mini App context.
   static String get initData => '';
 
+  /// The user's Telegram UI language; null outside a Mini App.
+  static String? get languageCode => null;
+
   static void ready() {}
 
   static void expand() {}

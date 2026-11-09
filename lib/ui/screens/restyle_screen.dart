@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 
 import '../../config/restyle_styles.dart';
+import '../../l10n/l10n.dart';
 import '../../providers/account_provider.dart';
 import '../../services/telegram_backend_service.dart';
 import '../widgets/paywall_sheet.dart';
@@ -17,6 +18,23 @@ import 'result_screen.dart';
 /// InstantID (face) on the uploaded photo; the app only composes the prompt
 /// from the medium toggle + style and shows the result. Priced like a
 /// generation from the prompt builder — same free quota, same credits.
+/// Localized button text of a [RestyleMedium].
+String restyleMediumLabel(AppLocalizations l, RestyleMedium m) => switch (m) {
+  RestyleMedium.photo => l.mediumPhoto,
+  RestyleMedium.illustration => l.mediumIllustration,
+};
+
+/// Localized heading of a restyle section; unknown sections keep their id.
+String restyleGroupLabel(AppLocalizations l, String group) => switch (group) {
+  kRestyleGroupPopular => l.groupPopular,
+  kRestyleGroupPainters => l.groupPainters,
+  kRestyleGroupAsia => l.groupAsia,
+  kRestyleGroupEurope => l.groupEurope,
+  kRestyleGroupAmericasOceania => l.groupAmericasOceania,
+  kRestyleGroupAfricaNearEast => l.groupAfricaNearEast,
+  _ => group,
+};
+
 class RestyleScreen extends ConsumerStatefulWidget {
   const RestyleScreen({super.key});
 
@@ -58,6 +76,7 @@ class _RestyleScreenState extends ConsumerState<RestyleScreen> {
       _error = null;
     });
     final medium = _medium;
+    final mediumLabel = restyleMediumLabel(context.l10n, medium);
     try {
       final result = await TelegramBackendService.restyleImage(
         imageBytes: bytes,
@@ -73,7 +92,7 @@ class _RestyleScreenState extends ConsumerState<RestyleScreen> {
         MaterialPageRoute(
           builder: (_) => ResultScreen(
             imageUrl: result.url,
-            prompt: '${style.label} · ${medium.label}',
+            prompt: '${style.label} · $mediumLabel',
             imageBytes: result.bytes,
           ),
         ),
@@ -95,6 +114,12 @@ class _RestyleScreenState extends ConsumerState<RestyleScreen> {
     final account = ref.watch(accountProvider);
     final theme = Theme.of(context);
     final canSubmit = _imageBytes != null && _styleId != null && !_busy;
+    final l = context.l10n;
+    final q = _query.trim().toLowerCase();
+    // The filter also matches the localized section name.
+    bool matches(RestyleStyle s) =>
+        restyleStyleMatchesQuery(s, _query) ||
+        restyleGroupLabel(l, s.group).toLowerCase().contains(q);
 
     return Scaffold(
       appBar: const TsumikiAppBar(screen: TsumikiScreen.restyle),
@@ -105,8 +130,7 @@ class _RestyleScreenState extends ConsumerState<RestyleScreen> {
             data: (a) => Padding(
               padding: const EdgeInsets.only(bottom: 12),
               child: Text(
-                '${a.freeRemaining} of ${a.freeLimit} free generations today · '
-                'credits: ${a.credits}',
+                l.imageQuota(a.freeRemaining, a.freeLimit, a.credits),
                 style: theme.textTheme.bodySmall,
               ),
             ),
@@ -116,20 +140,19 @@ class _RestyleScreenState extends ConsumerState<RestyleScreen> {
           Padding(
             padding: const EdgeInsets.only(top: 6),
             child: Text(
-              'Keeps your face and pose. Works best with a clear, '
-              'front-facing photo of one person.',
+              l.restyleHint,
               style: theme.textTheme.bodySmall,
             ),
           ),
           const SizedBox(height: 16),
-          Text('Medium', style: theme.textTheme.titleMedium),
+          Text(l.medium, style: theme.textTheme.titleMedium),
           const SizedBox(height: 8),
           SegmentedButton<RestyleMedium>(
             segments: [
               for (final m in RestyleMedium.values)
                 ButtonSegment(
                   value: m,
-                  label: Text(m.label),
+                  label: Text(restyleMediumLabel(l, m)),
                   icon: Icon(m == RestyleMedium.photo
                       ? Icons.photo_camera_outlined
                       : Icons.brush_outlined),
@@ -141,32 +164,34 @@ class _RestyleScreenState extends ConsumerState<RestyleScreen> {
                 : (s) => setState(() => _medium = s.first),
           ),
           const SizedBox(height: 16),
-          Text('Style', style: theme.textTheme.titleMedium),
+          Text(l.style, style: theme.textTheme.titleMedium),
           const SizedBox(height: 8),
           // 90 styles in six sections is a long scroll on a phone; the filter
           // matches labels and section names ("painters" lists that section).
           TextField(
-            decoration: const InputDecoration(
-              prefixIcon: Icon(Icons.search),
-              hintText: 'Filter styles',
+            decoration: InputDecoration(
+              prefixIcon: const Icon(Icons.search),
+              hintText: l.filterStyles,
               isDense: true,
-              border: OutlineInputBorder(),
+              border: const OutlineInputBorder(),
             ),
             onChanged: (v) => setState(() => _query = v),
           ),
           for (final group in kRestyleGroups)
-            if (restyleStylesIn(group)
-                .any((s) => restyleStyleMatchesQuery(s, _query))) ...[
+            if (restyleStylesIn(group).any(matches)) ...[
               Padding(
                 padding: const EdgeInsets.only(top: 12, bottom: 6),
-                child: Text(group, style: theme.textTheme.labelLarge),
+                child: Text(
+                  restyleGroupLabel(l, group),
+                  style: theme.textTheme.labelLarge,
+                ),
               ),
               Wrap(
                 spacing: 8,
                 runSpacing: 4,
                 children: [
                   for (final s in restyleStylesIn(group))
-                    if (restyleStyleMatchesQuery(s, _query))
+                    if (matches(s))
                       ChoiceChip(
                         label: Text(s.label),
                         selected: s.id == _styleId,
@@ -196,7 +221,7 @@ class _RestyleScreenState extends ConsumerState<RestyleScreen> {
                 child: CircularProgressIndicator(strokeWidth: 2),
               )
             : const Icon(Icons.face_retouching_natural),
-        label: Text(_busy ? 'Restyling…' : 'Restyle'),
+        label: Text(_busy ? l.restyling : l.restyle),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
     );
@@ -209,15 +234,15 @@ class _RestyleScreenState extends ConsumerState<RestyleScreen> {
       child: InkWell(
         onTap: _busy ? null : _pickPhoto,
         child: bytes == null
-            ? const SizedBox(
+            ? SizedBox(
                 height: 160,
                 child: Center(
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Icon(Icons.add_photo_alternate_outlined, size: 40),
-                      SizedBox(height: 8),
-                      Text('Pick a photo'),
+                      const Icon(Icons.add_photo_alternate_outlined, size: 40),
+                      const SizedBox(height: 8),
+                      Text(context.l10n.pickPhoto),
                     ],
                   ),
                 ),
@@ -233,14 +258,13 @@ class _RestyleScreenState extends ConsumerState<RestyleScreen> {
                     Container(
                       color: Colors.black45,
                       padding: const EdgeInsets.all(16),
-                      child: const Column(
+                      child: Column(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          CircularProgressIndicator(),
-                          SizedBox(height: 12),
+                          const CircularProgressIndicator(),
+                          const SizedBox(height: 12),
                           Text(
-                            'Restyling… about a minute.\n'
-                            'The image also arrives in your chat.',
+                            context.l10n.restyleBusy,
                             textAlign: TextAlign.center,
                           ),
                         ],

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../l10n/l10n.dart';
 import '../../providers/blocks_provider.dart';
 import '../../providers/selection_provider.dart';
 
@@ -11,10 +12,10 @@ class PresetsScreen extends ConsumerWidget {
     final presetsAsync = ref.watch(presetsProvider);
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Presets')),
+      appBar: AppBar(title: Text(context.l10n.presets)),
       body: presetsAsync.when(
         loading: () => const Center(child: CircularProgressIndicator()),
-        error: (e, _) => Center(child: Text('Error: $e')),
+        error: (e, _) => Center(child: Text(context.l10n.errorDetail('$e'))),
         data: (presets) => ListView.builder(
           padding: const EdgeInsets.all(8),
           itemCount: presets.length,
@@ -38,7 +39,7 @@ class PresetsScreen extends ConsumerWidget {
                   Navigator.pop(context);
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
-                      content: Text('Preset "${preset.label}" loaded'),
+                      content: Text(context.l10n.presetLoaded(preset.label)),
                       duration: const Duration(seconds: 1),
                     ),
                   );

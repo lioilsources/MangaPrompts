@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../l10n/l10n.dart';
 import '../../providers/api_provider.dart';
 import '../../providers/prompt_provider.dart';
 import '../../providers/selection_provider.dart';
@@ -40,7 +41,7 @@ class PromptPreview extends ConsumerWidget {
                 ),
                 const SizedBox(width: 6),
                 Text(
-                  'Prompt',
+                  context.l10n.prompt,
                   style: Theme.of(context).textTheme.labelMedium?.copyWith(
                     color: Theme.of(context).colorScheme.primary,
                   ),
@@ -50,9 +51,8 @@ class PromptPreview extends ConsumerWidget {
                 // visible, otherwise output quality looks random to the user.
                 Tooltip(
                   message: isAuto
-                      ? 'Model chosen automatically from the template.\n'
-                          'You can change it in Settings.'
-                      : 'Model chosen manually in Settings.',
+                      ? context.l10n.modelAutoTooltip
+                      : context.l10n.modelManualTooltip,
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
@@ -112,15 +112,15 @@ class PromptPreview extends ConsumerWidget {
                       ? () {
                           Clipboard.setData(ClipboardData(text: prompt));
                           ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text('Prompt copied'),
-                              duration: Duration(seconds: 1),
+                            SnackBar(
+                              content: Text(context.l10n.promptCopied),
+                              duration: const Duration(seconds: 1),
                             ),
                           );
                         }
                       : null,
                   visualDensity: VisualDensity.compact,
-                  tooltip: 'Copy prompt',
+                  tooltip: context.l10n.copyPrompt,
                 ),
               ],
             ),
@@ -129,7 +129,7 @@ class PromptPreview extends ConsumerWidget {
           Padding(
             padding: const EdgeInsets.fromLTRB(12, 4, 12, 12),
             child: Text(
-              prompt.isEmpty ? 'Pick blocks to assemble a prompt...' : prompt,
+              prompt.isEmpty ? context.l10n.pickBlocks : prompt,
               style: Theme.of(context).textTheme.bodySmall?.copyWith(
                 fontFamily: 'monospace',
                 color: prompt.isEmpty

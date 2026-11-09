@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 
 import '../../config/hairstyles.dart';
+import '../../l10n/l10n.dart';
 import '../../providers/account_provider.dart';
 import '../../services/telegram_backend_service.dart';
 import '../widgets/paywall_sheet.dart';
@@ -18,6 +19,21 @@ import 'result_screen.dart';
 /// then is the generation billed — same free quota and credits as the prompt
 /// builder. The face pixels sit outside the mask, so identity is kept by
 /// construction rather than by an adapter.
+/// Localized name of a hairstyle group or section; unknown ids stay as-is.
+String hairHeadingLabel(AppLocalizations l, String id) => switch (id) {
+  kHairGroupWomen => l.hairWomen,
+  kHairGroupMen => l.hairMen,
+  'Cuts' => l.hairCuts,
+  'Bangs' => l.hairBangs,
+  'Texture' => l.hairTexture,
+  'Short' => l.hairShort,
+  'Medium' => l.hairMedium,
+  'Long' => l.hairLong,
+  'Braids' => l.hairBraids,
+  'Updos' => l.hairUpdos,
+  _ => id,
+};
+
 class HairScreen extends ConsumerStatefulWidget {
   const HairScreen({
     super.key,
@@ -130,6 +146,7 @@ class _HairScreenState extends ConsumerState<HairScreen> {
     final groups = kHairGroups.where(
       (g) => widget.catalog.any((s) => s.group == g),
     );
+    final l = context.l10n;
 
     return Scaffold(
       appBar: const TsumikiAppBar(screen: TsumikiScreen.hair),
@@ -140,8 +157,7 @@ class _HairScreenState extends ConsumerState<HairScreen> {
             data: (a) => Padding(
               padding: const EdgeInsets.only(bottom: 12),
               child: Text(
-                '${a.freeRemaining} of ${a.freeLimit} free generations today · '
-                'credits: ${a.credits}',
+                l.imageQuota(a.freeRemaining, a.freeLimit, a.credits),
                 style: theme.textTheme.bodySmall,
               ),
             ),
@@ -151,27 +167,25 @@ class _HairScreenState extends ConsumerState<HairScreen> {
           Padding(
             padding: const EdgeInsets.only(top: 6),
             child: Text(
-              'Keeps your face, and your hair colour unless you pick a new '
-              'one. Works best with a front-facing portrait, hair fully '
-              'visible, no hat.',
+              l.hairHint,
               style: theme.textTheme.bodySmall,
             ),
           ),
           const SizedBox(height: 16),
           if (widget.catalog.isEmpty && widget.colours.isEmpty)
             Text(
-              'No hairstyles yet — check back soon.',
+              l.noHairstyles,
               style: theme.textTheme.bodyMedium,
             ),
           if (widget.colours.isNotEmpty) ...[
-            Text('Colour', style: theme.textTheme.titleMedium),
+            Text(l.colour, style: theme.textTheme.titleMedium),
             const SizedBox(height: 8),
             Wrap(
               spacing: 8,
               runSpacing: 4,
               children: [
                 ChoiceChip(
-                  label: const Text('Keep mine'),
+                  label: Text(l.keepMine),
                   selected: _colourId == null,
                   onSelected: _busy
                       ? null
@@ -194,13 +208,13 @@ class _HairScreenState extends ConsumerState<HairScreen> {
             const SizedBox(height: 16),
           ],
           if (widget.catalog.isNotEmpty) ...[
-            Text('Haircut', style: theme.textTheme.titleMedium),
+            Text(l.haircut, style: theme.textTheme.titleMedium),
             const SizedBox(height: 8),
             if (widget.colours.isNotEmpty)
               Align(
                 alignment: Alignment.centerLeft,
                 child: ChoiceChip(
-                  label: const Text('Keep my cut'),
+                  label: Text(l.keepMyCut),
                   selected: _styleId == null,
                   onSelected: _busy
                       ? null
@@ -211,7 +225,10 @@ class _HairScreenState extends ConsumerState<HairScreen> {
               SegmentedButton<String>(
                 segments: [
                   for (final g in groups)
-                    ButtonSegment(value: g, label: Text(g)),
+                    ButtonSegment(
+                      value: g,
+                      label: Text(hairHeadingLabel(l, g)),
+                    ),
                 ],
                 selected: {_group},
                 onSelectionChanged: _busy
@@ -222,7 +239,10 @@ class _HairScreenState extends ConsumerState<HairScreen> {
               if (hairstylesIn(_group, section, widget.catalog).isNotEmpty) ...[
                 Padding(
                   padding: const EdgeInsets.only(top: 12, bottom: 6),
-                  child: Text(section, style: theme.textTheme.labelLarge),
+                  child: Text(
+                    hairHeadingLabel(l, section),
+                    style: theme.textTheme.labelLarge,
+                  ),
                 ),
                 Wrap(
                   spacing: 8,
@@ -265,10 +285,10 @@ class _HairScreenState extends ConsumerState<HairScreen> {
             : const Icon(Icons.content_cut),
         label: Text(
           _busy
-              ? 'Working…'
+              ? l.working
               : (_style == null && _colour != null
-                    ? 'New colour'
-                    : 'New haircut'),
+                    ? l.newColour
+                    : l.newHaircut),
         ),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
@@ -282,15 +302,15 @@ class _HairScreenState extends ConsumerState<HairScreen> {
       child: InkWell(
         onTap: _busy ? null : _pickPhoto,
         child: bytes == null
-            ? const SizedBox(
+            ? SizedBox(
                 height: 160,
                 child: Center(
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Icon(Icons.add_photo_alternate_outlined, size: 40),
-                      SizedBox(height: 8),
-                      Text('Pick a portrait'),
+                      const Icon(Icons.add_photo_alternate_outlined, size: 40),
+                      const SizedBox(height: 8),
+                      Text(context.l10n.pickPortrait),
                     ],
                   ),
                 ),
@@ -306,14 +326,13 @@ class _HairScreenState extends ConsumerState<HairScreen> {
                     Container(
                       color: Colors.black45,
                       padding: const EdgeInsets.all(16),
-                      child: const Column(
+                      child: Column(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          CircularProgressIndicator(),
-                          SizedBox(height: 12),
+                          const CircularProgressIndicator(),
+                          const SizedBox(height: 12),
                           Text(
-                            'Working… about a minute.\n'
-                            'The photo also arrives in your chat.',
+                            context.l10n.hairBusy,
                             textAlign: TextAlign.center,
                           ),
                         ],

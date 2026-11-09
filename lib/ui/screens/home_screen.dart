@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../l10n/l10n.dart';
 import '../../providers/blocks_provider.dart';
 import '../../providers/selection_provider.dart';
 import '../../providers/prompt_provider.dart';
@@ -77,7 +78,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           if (!kIsWeb)
             IconButton(
               icon: const Icon(Icons.accessibility_new),
-              tooltip: 'Repose (face in a pose)',
+              tooltip: context.l10n.reposeTooltip,
               onPressed: () => Navigator.push(
                 context,
                 MaterialPageRoute(builder: (_) => const ReposeScreen()),
@@ -85,7 +86,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             ),
           IconButton(
             icon: const Icon(Icons.bookmarks),
-            tooltip: 'Presets',
+            tooltip: context.l10n.presets,
             onPressed: () => Navigator.push(
               context,
               MaterialPageRoute(builder: (_) => const PresetsScreen()),
@@ -95,7 +96,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       ),
       body: categoriesAsync.when(
         loading: () => const Center(child: CircularProgressIndicator()),
-        error: (e, _) => Center(child: Text('Error: $e')),
+        error: (e, _) => Center(child: Text(context.l10n.errorDetail('$e'))),
         data: (categories) => Column(
           children: [
             // Template selector
@@ -107,11 +108,11 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 ),
                 child: DropdownButtonFormField<String>(
                   initialValue: activeTemplateId,
-                  decoration: const InputDecoration(
-                    labelText: 'Template',
+                  decoration: InputDecoration(
+                    labelText: context.l10n.template,
                     isDense: true,
-                    border: OutlineInputBorder(),
-                    contentPadding: EdgeInsets.symmetric(
+                    border: const OutlineInputBorder(),
+                    contentPadding: const EdgeInsets.symmetric(
                       horizontal: 12,
                       vertical: 8,
                     ),
@@ -189,7 +190,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                         ignoring: !_showTopButton,
                         child: FloatingActionButton.small(
                           heroTag: 'scrollTop',
-                          tooltip: 'Back to top',
+                          tooltip: context.l10n.backToTop,
                           onPressed: _scrollToTop,
                           child: const Icon(Icons.keyboard_double_arrow_up),
                         ),
@@ -215,7 +216,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 child: CircularProgressIndicator(strokeWidth: 2),
               )
             : const Icon(Icons.auto_awesome),
-        label: Text(_isGenerating ? 'Generating…' : 'Generate'),
+        label: Text(
+          _isGenerating ? context.l10n.generating : context.l10n.generate,
+        ),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
     );
@@ -230,11 +233,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     if (apiService == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: const Text(
-            'Set an API key or credentials in Settings',
-          ),
+          content: Text(context.l10n.needCredentials),
           action: SnackBarAction(
-            label: 'Settings',
+            label: context.l10n.settings,
             onPressed: () => Navigator.push(
               context,
               MaterialPageRoute(builder: (_) => const SettingsScreen()),
@@ -307,7 +308,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       if (mounted) {
         ScaffoldMessenger.of(
           context,
-        ).showSnackBar(SnackBar(content: Text('Error: $e')));
+        ).showSnackBar(SnackBar(content: Text(context.l10n.errorDetail('$e'))));
       }
     } finally {
       if (mounted) {
