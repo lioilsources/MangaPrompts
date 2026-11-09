@@ -1,6 +1,6 @@
 # Kadeřník — měření účesů a gate do katalogu
 
-Měřeno na SPARKu (`http://192.168.88.66:8188`, ComfyUI 0.19.3, GB10) benchem
+Měřeno na SPARKu (`http://$SPARK_HOST:8188`, ComfyUI 0.19.3, GB10) benchem
 `tgbot/tools/bench` od 2026-09-13. Plán: `Prompts/04-PLAN-kadernik.md` §5.
 Box je sdílený s Ol1nLLM appkou, takže časy buněk obsahují čekání ve frontě.
 

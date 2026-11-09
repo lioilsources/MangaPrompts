@@ -10,7 +10,7 @@ whose inputs were renamed between versions, and a missing checkpoint or
 ControlNet — and it catches them in a second instead of after a queued job.
 
     python3 tools/check_workflow.py ../assets/comfyui/sdxl_restyle.api.json \
-        --url http://192.168.1.50:8188
+        --url http://$SPARK_HOST:8188
 
 Placeholders (__PROMPT__, __CKPT__, …) are ignored: they are substituted at
 request time. Pass --ckpt to check the checkpoint that will be substituted in.
