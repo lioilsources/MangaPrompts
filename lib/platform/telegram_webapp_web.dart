@@ -12,10 +12,20 @@ extension type _Telegram(JSObject _) implements JSObject {
 
 extension type _WebApp(JSObject _) implements JSObject {
   external String? get initData;
+  external _InitDataUnsafe? get initDataUnsafe;
   external void ready();
   external void expand();
   external void disableVerticalSwipes();
   external void openInvoice(String url, JSFunction callback);
+}
+
+extension type _InitDataUnsafe(JSObject _) implements JSObject {
+  external _WebAppUser? get user;
+}
+
+extension type _WebAppUser(JSObject _) implements JSObject {
+  @JS('language_code')
+  external String? get languageCode;
 }
 
 class TelegramWebApp {
@@ -30,6 +40,10 @@ class TelegramWebApp {
 
   /// Raw signed init data from Telegram; empty outside a Mini App context.
   static String get initData => _wa?.initData ?? '';
+
+  /// The user's Telegram UI language (IETF tag such as `en` or `pt-br`);
+  /// null outside a Mini App.
+  static String? get languageCode => _wa?.initDataUnsafe?.user?.languageCode;
 
   static void ready() => _wa?.ready();
 

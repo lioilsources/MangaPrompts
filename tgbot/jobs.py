@@ -39,6 +39,8 @@ class Job:
     # Seconds allowed for the render, sized from the scene's own estimate at
     # submit time; 0 means "fall back to the configured floor".
     timeout: float = 0.0
+    # Telegram language code of the owner (chat messages are localized).
+    lang: str = "en"
 
 
 class JobStore:

@@ -39,13 +39,15 @@ from aiogram.types import (
 )
 from fastapi import Depends, FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import FileResponse
+from fastapi.responses import FileResponse, JSONResponse
+from starlette.exceptions import HTTPException as StarletteHTTPException
 from pydantic import BaseModel, Field
 
 import config
 import haircolours
 import hairmask
 import hairprompt
+import i18n
 import payments
 from auth import InvalidInitData, validate_init_data
 from comfy import ComfyClient, ComfyError, prepare_workflow
@@ -114,25 +116,22 @@ async def _get_scenes() -> list[dict]:
 
 @dp.message(CommandStart())
 async def on_start(message: Message) -> None:
+    lang = message.from_user.language_code if message.from_user else None
     keyboard = InlineKeyboardMarkup(
         inline_keyboard=[
             [
                 InlineKeyboardButton(
-                    text="🎨 Open Tsumiki",
+                    text=i18n.t("open_app", lang),
                     web_app=WebAppInfo(url=config.MINIAPP_URL),
                 )
             ]
         ]
     )
     await message.answer(
-        "Hi! Snap a prompt together from building blocks and generate a manga image. "
-        "I'll send the finished image right here in the chat.\n\n"
-        f"You get {config.FREE_DAILY_LIMIT} free generations a day, "
-        "beyond that they cost Telegram Stars ⭐ right inside the app.\n\n"
-        "You can also restyle a photo 🖼 — same face, same pose, a new look — "
-        "try a new haircut on your own portrait 💇, "
-        "or animate a photo into a short video 🎬 "
-        f"({config.VIDEO_FREE_DAILY_LIMIT} free per day).",
+        i18n.t(
+            "start", lang,
+            free=config.FREE_DAILY_LIMIT, video_free=config.VIDEO_FREE_DAILY_LIMIT,
+        ),
         reply_markup=keyboard,
     )
 
@@ -140,16 +139,15 @@ async def on_start(message: Message) -> None:
 @dp.message(Command("paysupport"))
 async def on_paysupport(message: Message) -> None:
     await message.answer(
-        "Payment trouble? Send the transaction id here (Settings → "
-        "Telegram Stars → Transactions) and describe what happened — I'll get back to you shortly. "
-        "Refunds are handled within 48 hours."
+        i18n.t("paysupport", message.from_user.language_code if message.from_user else None)
     )
 
 
 @dp.pre_checkout_query()
 async def on_pre_checkout(query: PreCheckoutQuery) -> None:
     error = payments.validate_pre_checkout(
-        query.invoice_payload, query.from_user.id, query.total_amount
+        query.invoice_payload, query.from_user.id, query.total_amount,
+        lang=query.from_user.language_code,
     )
     if error is None:
         await query.answer(ok=True)
@@ -187,15 +185,13 @@ async def on_successful_payment(message: Message) -> None:
         sp.telegram_payment_charge_id, user_id, package["credits"],
         "video credits" if is_video else "credits", sp.total_amount, balance,
     )
-    if is_video:
-        await message.answer(
-            f"Thanks! {package['credits']} animation credit added. "
-            f"Animation credits: {balance}."
+    lang = message.from_user.language_code if message.from_user else None
+    await message.answer(
+        i18n.t(
+            "thanks_video" if is_video else "thanks_credits", lang,
+            credits=package["credits"], balance=balance,
         )
-    else:
-        await message.answer(
-            f"Thanks! {package['credits']} credits added. Current balance: {balance}."
-        )
+    )
 
 
 @dp.message(Command("refund"))
@@ -277,6 +273,24 @@ def current_user_id(request: Request) -> int:
     if scheme == "dev" and config.DEV_TOKEN and value == config.DEV_TOKEN:
         return 0  # dev user: no chat delivery
     raise HTTPException(status_code=401, detail="missing or invalid Authorization")
+
+
+def current_lang(request: Request) -> str:
+    """Language of the Mini App user (Telegram language_code / Accept-Language)."""
+    return i18n.request_lang(
+        request.headers.get("Authorization"), request.headers.get("Accept-Language")
+    )
+
+
+@app.exception_handler(StarletteHTTPException)
+async def localized_http_exception(request: Request, exc: StarletteHTTPException):
+    """Same body as FastAPI's default handler, with known user-facing errors
+    translated into the caller's language."""
+    return JSONResponse(
+        {"detail": i18n.translate_detail(exc.detail, current_lang(request))},
+        status_code=exc.status_code,
+        headers=getattr(exc, "headers", None),
+    )
 
 
 class GenerateRequest(BaseModel):
@@ -404,15 +418,13 @@ async def me(user_id: int = Depends(current_user_id)):
 
 
 @app.post("/api/invoice")
-async def create_invoice(req: InvoiceRequest, user_id: int = Depends(current_user_id)):
+async def create_invoice(
+    req: InvoiceRequest, user_id: int = Depends(current_user_id), lang: str = Depends(current_lang)
+):
     package = config.PACKAGES.get(req.package)
     if package is None:
         raise HTTPException(status_code=400, detail="unknown package")
-    description = (
-        "One photo animation in Tsumiki."
-        if package.get("video")
-        else "Credits for generating images in Tsumiki."
-    )
+    description = i18n.t("invoice_video" if package.get("video") else "invoice_credits", lang)
     link = await bot.create_invoice_link(
         title=package["label"],
         description=description,
@@ -424,7 +436,9 @@ async def create_invoice(req: InvoiceRequest, user_id: int = Depends(current_use
 
 
 @app.post("/api/generate")
-async def generate(req: GenerateRequest, user_id: int = Depends(current_user_id)):
+async def generate(
+    req: GenerateRequest, user_id: int = Depends(current_user_id), lang: str = Depends(current_lang)
+):
     if jobs.active_count(user_id, "image") >= 1:
         raise HTTPException(status_code=429, detail="wait for your previous generation to finish")
 
@@ -439,7 +453,7 @@ async def generate(req: GenerateRequest, user_id: int = Depends(current_user_id)
     template = _load_template(req.workflow)
     wf = prepare_workflow(template, prompt=req.prompt, negative=req.negative_prompt, batch=1)
 
-    job = Job(user_id=user_id, prompt=req.prompt, workflow=req.workflow)
+    job = Job(user_id=user_id, prompt=req.prompt, workflow=req.workflow, lang=lang)
     async with aiohttp.ClientSession() as session:
         try:
             prompt_id, queue_number = await comfy.queue_prompt(session, wf, prompt=req.prompt)
@@ -456,7 +470,9 @@ async def generate(req: GenerateRequest, user_id: int = Depends(current_user_id)
 
 
 @app.post("/api/restyle")
-async def restyle(req: RestyleRequest, user_id: int = Depends(current_user_id)):
+async def restyle(
+    req: RestyleRequest, user_id: int = Depends(current_user_id), lang: str = Depends(current_lang)
+):
     """Photo → same person, same pose, new style. Priced exactly like
     /api/generate (same free quota, same credits, same one-at-a-time rule):
     it is one image job, the model just gets a photo to hold on to."""
@@ -480,7 +496,7 @@ async def restyle(req: RestyleRequest, user_id: int = Depends(current_user_id)):
     template = _load_template_file(f"restyle_{engine}", config.RESTYLE_WORKFLOW_FILES[engine])
     job = Job(
         user_id=user_id, prompt=req.prompt, workflow=f"restyle-{engine}",
-        caption=restyle_caption(req.style, req.medium),
+        caption=restyle_caption(req.style, req.medium), lang=lang,
     )
     async with aiohttp.ClientSession() as session:
         try:
@@ -519,7 +535,9 @@ _hair_analysing: set[int] = set()
 
 
 @app.post("/api/hair")
-async def hair(req: HairRequest, user_id: int = Depends(current_user_id)):
+async def hair(
+    req: HairRequest, user_id: int = Depends(current_user_id), lang: str = Depends(current_lang)
+):
     """Portrait + hairstyle → the same photo with a new cut.
 
     Two ComfyUI prompts. The analysis (face parsing, no diffusion, seconds)
@@ -577,7 +595,10 @@ async def hair(req: HairRequest, user_id: int = Depends(current_user_id)):
             prompt = hairprompt.prompt(
                 req.block, req.style_id, req.shape.model_dump(), colour, engine, new_colour=req.colour
             )
-            job = Job(user_id=user_id, prompt=prompt, workflow=f"hair-{engine}", caption=hair_caption(req.style, req.colour))
+            job = Job(
+                user_id=user_id, prompt=prompt, workflow=f"hair-{engine}",
+                caption=hair_caption(req.style, req.colour), lang=lang,
+            )
             try:
                 mask_name = await comfy.upload_image(session, mask_png, f"tsumiki_hair_mask_{job.id}.png")
                 wf = prepare_workflow(
@@ -654,7 +675,9 @@ def _video_timeout(submit_resp: dict) -> float:
 
 
 @app.post("/api/animate")
-async def animate(req: AnimateRequest, user_id: int = Depends(current_user_id)):
+async def animate(
+    req: AnimateRequest, user_id: int = Depends(current_user_id), lang: str = Depends(current_lang)
+):
     if jobs.active_count(user_id, "video") >= 1:
         raise HTTPException(status_code=429, detail="wait for your previous animation to finish")
 
@@ -688,7 +711,7 @@ async def animate(req: AnimateRequest, user_id: int = Depends(current_user_id)):
         user_id=user_id, prompt="", workflow="video",
         kind="video", scene_label=scene["label"],
         remote_id=resp["job_id"], beats=int(resp.get("beats", 0)),
-        timeout=_video_timeout(resp),
+        timeout=_video_timeout(resp), lang=lang,
     )
     jobs.add(job)
     db.video_job_add(
@@ -731,7 +754,7 @@ async def _watch_job(job: Job, usage_id: int) -> None:
         return
     except Exception as e:  # noqa: BLE001 — watcher must never crash silently
         job.status = "error"
-        job.error = "internal error"
+        job.error = i18n.t("err_internal", job.lang)
         db.undo_usage(usage_id)
         log.exception("job %s crashed: %s", job.id, e)
         return
@@ -755,7 +778,7 @@ async def _watch_job(job: Job, usage_id: int) -> None:
             log.warning("job %s: send_photo failed: %s", job.id, e)
 
 
-async def _fail_video_job(job: Job, usage_id: int, message: str) -> None:
+async def _fail_video_job(job: Job, usage_id: int, key: str, **kwargs: object) -> None:
     """Single terminal-failure path so the refund can never run twice.
 
     A render can outlive the Mini App session by half an hour, so job.error
@@ -763,15 +786,14 @@ async def _fail_video_job(job: Job, usage_id: int, message: str) -> None:
     still watching."""
     if job.status == "error":
         return
+    message = i18n.t(key, job.lang, **kwargs)
     job.status = "error"
     job.error = message
     db.undo_usage(usage_id)  # a failed render must not cost anything
     db.video_job_delete(job.id)
-    log.error("video job %s failed: %s", job.id, message)
+    log.error("video job %s failed: %s %s", job.id, key, kwargs)
     await _tell_user(
-        job,
-        f"🎬 {job.scene_label}: the animation failed — {message}. "
-        "Nothing was charged for it.",
+        job, i18n.t("video_failed", job.lang, scene=job.scene_label, reason=message)
     )
 
 
@@ -798,19 +820,17 @@ async def _watch_video_job(job: Job, usage_id: int) -> None:
             while True:
                 await asyncio.sleep(5)
                 if time.time() > deadline:
-                    await _fail_video_job(job, usage_id, "the render timed out, please try again")
+                    await _fail_video_job(job, usage_id, "err_render")
                     return
                 try:
                     st = await video.status(session, job.remote_id)
                 except VideoJobGone:
-                    await _fail_video_job(
-                        job, usage_id, "the render server restarted, please try again"
-                    )
+                    await _fail_video_job(job, usage_id, "err_render")
                     return
                 except (VideoError, aiohttp.ClientError, asyncio.TimeoutError) as e:
                     failures += 1
                     if failures >= 6:
-                        await _fail_video_job(job, usage_id, "lost contact with the render server")
+                        await _fail_video_job(job, usage_id, "err_render")
                         return
                     log.warning("video job %s poll failed (%d/6): %s", job.id, failures, e)
                     continue
@@ -828,9 +848,7 @@ async def _watch_video_job(job: Job, usage_id: int) -> None:
                     # video-api reports a raw traceback line; that belongs in
                     # the log, not in the user's chat.
                     log.error("video job %s: video-api said %s", job.id, st.get("error"))
-                    await _fail_video_job(
-                        job, usage_id, "the render server could not finish it, please try again"
-                    )
+                    await _fail_video_job(job, usage_id, "err_render")
                     return
                 elif status == "done":
                     break
@@ -838,11 +856,11 @@ async def _watch_video_job(job: Job, usage_id: int) -> None:
             try:
                 mp4 = await video.download(session, job.remote_id)
             except (VideoError, aiohttp.ClientError, asyncio.TimeoutError) as e:
-                await _fail_video_job(job, usage_id, f"downloading the video failed: {e}")
+                await _fail_video_job(job, usage_id, "err_download", error=e)
                 return
     except Exception as e:  # noqa: BLE001 — watcher must never crash silently
         log.exception("video job %s crashed: %s", job.id, e)
-        await _fail_video_job(job, usage_id, "internal error")
+        await _fail_video_job(job, usage_id, "err_internal")
         return
 
     path = config.DATA_DIR / "outputs" / f"{job.id}.mp4"
@@ -862,8 +880,10 @@ async def _watch_video_job(job: Job, usage_id: int) -> None:
             )
             await _tell_user(
                 job,
-                f"🎬 {job.scene_label} is ready, but at {len(mp4) // (1024 * 1024)} MB "
-                "it is too large for chat — open Tsumiki to download it.",
+                i18n.t(
+                    "video_too_large", job.lang,
+                    scene=job.scene_label, mb=len(mp4) // (1024 * 1024),
+                ),
             )
             return
         try:
@@ -874,7 +894,7 @@ async def _watch_video_job(job: Job, usage_id: int) -> None:
             # Unlike images, the chat is the video's only delivery channel —
             # nothing was delivered, so the spend is reverted.
             job.status = "error"
-            job.error = "open the bot chat and press Start so I can send you the video"
+            job.error = i18n.t("err_press_start", job.lang)
             db.undo_usage(usage_id)
             log.info("video job %s: user %s has not started the bot", job.id, job.user_id)
         except Exception as e:  # noqa: BLE001

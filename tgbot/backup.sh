@@ -12,7 +12,7 @@
 # The R2 step is skipped with a log line if the remote is not configured, so a
 # half-finished setup degrades to the two local copies rather than failing.
 #
-#   crontab -e:   0 4 * * *  /home/oli/MangaPrompts/tgbot/backup.sh
+#   crontab -e:   0 4 * * *  $HOME/MangaPrompts/tgbot/backup.sh
 set -eu
 
 # cron runs with PATH=/usr/bin:/bin, which on this NAS does not contain docker
@@ -25,9 +25,9 @@ export PATH
 KEEP_LOCAL=14
 KEEP_MIRROR=30
 KEEP_R2_DAYS=90
-SRC_DIR=/home/oli/MangaPrompts/tgbot/data/backup
+SRC_DIR="${SRC_DIR:-$HOME/MangaPrompts/tgbot/data/backup}"
 MIRROR_DIR=/pool/Backup/tsumiki
-RCLONE=/home/oli/bin/rclone
+RCLONE="${RCLONE:-$HOME/bin/rclone}"
 R2_REMOTE=r2:tsumiki-backups
 
 # --- 1. snapshot, taken inside the container ---------------------------------

@@ -4,6 +4,7 @@ import 'package:flutter/services.dart' show rootBundle;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 
+import '../../l10n/l10n.dart';
 import '../../providers/api_provider.dart';
 import '../../providers/repose_provider.dart';
 import '../../services/image_generation_service.dart';
@@ -48,34 +49,35 @@ class _ReposeScreenState extends ConsumerState<ReposeScreen> {
     final poseAsset = ref.watch(reposePoseAssetProvider);
     final canGenerate =
         facePath != null && poseAsset != null && !_isGenerating;
+    final l = context.l10n;
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Repose — face in a pose')),
+      appBar: AppBar(title: Text(l.reposeScreenTitle)),
       body: ListView(
         padding: const EdgeInsets.fromLTRB(16, 16, 16, 96),
         children: [
-          _sectionTitle(context, 'Model'),
+          _sectionTitle(context, l.model),
           _modelDropdown(context),
           const SizedBox(height: 24),
-          _sectionTitle(context, '1. Face'),
+          _sectionTitle(context, l.stepFace),
           _facePicker(context, facePath),
           const SizedBox(height: 24),
-          _sectionTitle(context, '2. Póza'),
+          _sectionTitle(context, l.stepPose),
           _poseGrid(context, poseAsset),
           const SizedBox(height: 24),
-          _sectionTitle(context, '3. Prompt'),
+          _sectionTitle(context, l.stepPrompt),
           TextField(
             controller: _promptCtl,
             minLines: 2,
             maxLines: 4,
             onChanged: (v) => ref.read(reposePromptProvider.notifier).state = v,
-            decoration: const InputDecoration(
-              border: OutlineInputBorder(),
-              hintText: 'photo of a woman, full body, natural light…',
+            decoration: InputDecoration(
+              border: const OutlineInputBorder(),
+              hintText: l.reposePromptHint,
             ),
           ),
           const SizedBox(height: 16),
-          _sectionTitle(context, 'NEGATIVE'),
+          _sectionTitle(context, l.negative),
           TextField(
             controller: _negCtl,
             minLines: 2,
@@ -97,7 +99,7 @@ class _ReposeScreenState extends ConsumerState<ReposeScreen> {
                 child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
               )
             : const Icon(Icons.auto_awesome),
-        label: Text(_isGenerating ? 'Generating…' : 'Generate'),
+        label: Text(_isGenerating ? l.generating : l.generate),
       ),
     );
   }
@@ -113,12 +115,12 @@ class _ReposeScreenState extends ConsumerState<ReposeScreen> {
     return async.when(
       loading: () => const LinearProgressIndicator(),
       error: (e, _) => Text(
-        'Could not load models: $e',
+        context.l10n.couldNotLoadModels('$e'),
         style: TextStyle(color: Theme.of(context).colorScheme.error),
       ),
       data: (list) {
         if (list.isEmpty) {
-          return const Text('No models (check the CF credentials in Settings).');
+          return Text(context.l10n.noModels);
         }
         final value = list.contains(selected) ? selected : list.first;
         if (value != selected) {
@@ -151,7 +153,7 @@ class _ReposeScreenState extends ConsumerState<ReposeScreen> {
       return OutlinedButton.icon(
         onPressed: () => _showFaceOptions(context),
         icon: const Icon(Icons.add_a_photo),
-        label: const Text('Upload a face'),
+        label: Text(context.l10n.uploadFace),
       );
     }
     return Row(
@@ -166,7 +168,7 @@ class _ReposeScreenState extends ConsumerState<ReposeScreen> {
           child: OutlinedButton.icon(
             onPressed: () => _showFaceOptions(context),
             icon: const Icon(Icons.swap_horiz, size: 18),
-            label: const Text('Change face'),
+            label: Text(context.l10n.changeFace),
           ),
         ),
       ],
@@ -232,7 +234,7 @@ class _ReposeScreenState extends ConsumerState<ReposeScreen> {
           children: [
             ListTile(
               leading: const Icon(Icons.photo_library),
-              title: const Text('Pick from gallery'),
+              title: Text(context.l10n.pickFromGallery),
               onTap: () {
                 Navigator.pop(ctx);
                 _pickFace(ImageSource.gallery);
@@ -240,7 +242,7 @@ class _ReposeScreenState extends ConsumerState<ReposeScreen> {
             ),
             ListTile(
               leading: const Icon(Icons.camera_alt),
-              title: const Text('Take a photo'),
+              title: Text(context.l10n.takePhoto),
               onTap: () {
                 Navigator.pop(ctx);
                 _pickFace(ImageSource.camera);
@@ -265,9 +267,9 @@ class _ReposeScreenState extends ConsumerState<ReposeScreen> {
     if (service == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: const Text('Set the Cloudflare Access credentials in Settings'),
+          content: Text(context.l10n.needCfCredentials),
           action: SnackBarAction(
-            label: 'Settings',
+            label: context.l10n.settings,
             onPressed: () => Navigator.push(
               context,
               MaterialPageRoute(builder: (_) => const SettingsScreen()),
@@ -313,7 +315,7 @@ class _ReposeScreenState extends ConsumerState<ReposeScreen> {
       debugPrint('[Repose] Exception: $e\n$stack');
       if (mounted) {
         ScaffoldMessenger.of(context)
-            .showSnackBar(SnackBar(content: Text('Error: $e')));
+            .showSnackBar(SnackBar(content: Text(context.l10n.errorDetail('$e'))));
       }
     } finally {
       if (mounted) setState(() => _isGenerating = false);

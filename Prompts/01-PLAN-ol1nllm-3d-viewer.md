@@ -21,7 +21,7 @@ a výsledek zobrazit **přímo v appce jako 3D model s 360° otáčením**
 
 - **Server pipeline funguje end-to-end**: Trellis2 (TRELLIS.2-4B, 16 GB)
   na SPARKu; ukázkové workflow
-  `/home/ol1n/Code/ComfyUI/user/default/workflows/img2print-anime.json`
+  `~/Code/ComfyUI/user/default/workflows/img2print-anime.json`
   (UI formát) + otestovaný **API formát** v scratchpadu session
   (znovu vygenerovatelný — graf je popsán níže)
 - Ověřený výstup: watertight STL, 300k faces, `target_height_mm=100`,

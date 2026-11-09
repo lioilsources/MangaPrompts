@@ -8,6 +8,7 @@ import json
 import uuid
 
 import config
+import i18n
 
 
 def build_payload(user_id: int, package_id: str) -> str:
@@ -33,14 +34,16 @@ def parse_payload(raw: str) -> tuple[int, str] | None:
     return user_id, package_id
 
 
-def validate_pre_checkout(raw_payload: str, payer_id: int, total_amount: int) -> str | None:
+def validate_pre_checkout(
+    raw_payload: str, payer_id: int, total_amount: int, lang: str | None = "en"
+) -> str | None:
     """Returns an error message for answerPreCheckoutQuery, or None when OK."""
     parsed = parse_payload(raw_payload)
     if parsed is None:
-        return "Invalid order, please try again from the app."
+        return i18n.t("order_invalid", lang)
     user_id, package_id = parsed
     if user_id != payer_id:
-        return "This order belongs to a different account."
+        return i18n.t("order_other_account", lang)
     if config.PACKAGES[package_id]["stars"] != total_amount:
-        return "The order price does not match, please try again."
+        return i18n.t("order_price_mismatch", lang)
     return None
