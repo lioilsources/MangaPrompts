@@ -45,7 +45,8 @@ package `v1` = 10⭐/animation, VIDEO_FREE_DAILY_LIMIT=1/day free).
 The third card, **Restyle a photo** (`restyle_screen.dart`, `POST /api/restyle`),
 keeps the face and pose (depth ControlNet) of an uploaded photo and renders it
 in a picked style (`lib/config/restyle_styles.dart`: popular looks, 42 measured
-painters from Ol1nLLM's style matrix, art traditions; medium toggle
+painters from Ol1nLLM's style matrix, art traditions, and the 228 lab
+wave-7 artists, cultures and media (bench `out/lab7-sdxl`); medium toggle
 photo/illustration); it is billed as an ordinary image generation. The medium
 picks the **engine** (`RESTYLE_ENGINES` in `tgbot/config.py`): photo runs
 `flux_restyle.api.json` (FLUX.1-dev + PuLID + InstantX depth), illustration
