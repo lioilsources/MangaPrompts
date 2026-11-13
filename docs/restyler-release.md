@@ -16,8 +16,11 @@ openssl rand -hex 32   # do APP_TOKEN; pod 32 znaků služba nenastartuje
 ## Start
 
 ```bash
-docker compose --profile restyler up -d --build restyler-api
+docker compose -p restyler --profile restyler up -d --build restyler-api
 ```
+
+Na JODĚ běží kontejner v compose projektu `restyler`. Bez `-p restyler` compose
+narazí na obsazené jméno kontejneru.
 
 Služba je za profilem, aby `docker compose up -d` pro bota nepotřeboval
 `restyler.env`. Ověřeno `docker compose config`; samotný build ani start
@@ -45,7 +48,7 @@ Appka po ztrátě jobu dostane 404 a nabídne „Spustit znovu".
 TestFlight/APK; `APP_TOKEN` a CF Access pár jdou do `--dart-define` z `.env.local`
 (viz Makefile Ol1nLLM).
 
-Rotace: nový `APP_TOKEN` do `restyler.env`, `docker compose --profile restyler up
+Rotace: nový `APP_TOKEN` do `restyler.env`, `docker compose -p restyler --profile restyler up
 -d restyler-api`, nový build appky. Stará verze dostane 401, jeden token na
 instanci, souběh dvou tokenů backend neumí. CF service token se rotuje zvlášť
 v Zero Trust.
