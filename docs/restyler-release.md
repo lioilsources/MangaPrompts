@@ -61,6 +61,16 @@ v Pythonu: jen tam, kde se render s originálem shoduje. Grafové vkládání ne
 při posunutém obličeji šmouhy a dvojité obočí (bench kolo 3, 13 ze 104 vlasů).
 Log kroku hlásí `drift`, podíl chráněné plochy, kde zůstal render.
 
+## Kontrola nahoty
+
+Každý obrázek z kroku projde `nsfw.findings` (NudeNet, ONNX na CPU, model je
+v pip balíčku). Odhalená prsa, genitálie nebo zadek se skóre od `NSFW_THRESHOLD`
+(0.35) krok shodí s chybou `nsfw: …`: výstup se neuloží, generace se vrátí
+a kroky, které z něj vycházejí, se přeskočí. Detektor, který neběží, krok taky
+shodí. Důvod: FLUX nečte negativní prompt a styl `davinci-chalk` nakreslil
+z oblečeného selfie akt (11/2026). Vypnout jde jen `NSFW_CHECK=off` pro testy.
+Kopie výstupu v `ComfyUI/output` na GPU serveru zůstává, kontrola ji nemaže.
+
 ## Plná fronta ComfyUI
 
 ComfyUI na SPARKu sdílí Restyler s dávkami jiných projektů. U obrázkových kroků

@@ -4,3 +4,4 @@ aiogram>=3.13
 aiohttp>=3.9
 numpy>=1.26
 pillow>=10.0
+nudenet>=3.4

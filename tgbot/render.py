@@ -38,6 +38,7 @@ from pydantic import BaseModel, Field
 import composite
 import config
 import hairmask
+import nsfw
 from comfy import ComfyBusy, ComfyError, prepare_workflow
 from imagesize import image_size, snap_to_sdxl_bucket
 from jobs import Job
@@ -396,14 +397,25 @@ class _RenderRun:
             self.session, prompt_id, kind="image", timeout=config.JOB_TIMEOUT,
             queue_timeout=config.RENDER_QUEUE_TIMEOUT,
         )
-        if not paste:
-            return data
-        res = await asyncio.to_thread(
-            composite.paste_back, self.outputs[step.input], data, self.plan.masks[step.id]
-        )
-        log.info("render %s/%s: drift %.2f, %s", self.job.id, step.id, res.drift,
-                 "pasted" if res.pasted else "kept as drawn")
-        return res.png
+        if paste:
+            res = await asyncio.to_thread(
+                composite.paste_back, self.outputs[step.input], data, self.plan.masks[step.id]
+            )
+            log.info("render %s/%s: drift %.2f, %s", self.job.id, step.id, res.drift,
+                     "pasted" if res.pasted else "kept as drawn")
+            data = res.png
+        await self._check_nudity(step, data)
+        return data
+
+    async def _check_nudity(self, step: RenderStep, data: bytes) -> None:
+        """Fails the step (refunded, never stored) when the image shows
+        nudity; nsfw.py says why the prompt alone cannot prevent it."""
+        if not config.NSFW_CHECK:
+            return
+        found = await asyncio.to_thread(nsfw.findings, data)
+        if found:
+            log.warning("render %s/%s: nudity %s, result discarded", self.job.id, step.id, found)
+            raise _StepFailed(nsfw.MESSAGE)
 
     async def _live_portrait(self, step: RenderStep) -> bytes:
         h = _host

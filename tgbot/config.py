@@ -68,6 +68,10 @@ JOB_TIMEOUT = _int_env("JOB_TIMEOUT", 300)
 # later) and is refunded instead of failing as a timeout.
 RENDER_QUEUE_TIMEOUT = _int_env("RENDER_QUEUE_TIMEOUT", 600)
 RENDER_QUEUE_MAX = _int_env("RENDER_QUEUE_MAX", 8)
+# Every image a render step returns goes through nsfw.findings; a part found
+# at this NudeNet score or above fails the step (nsfw.py). Off only for tests.
+NSFW_CHECK = os.environ.get("NSFW_CHECK", "on").strip().lower() != "off"
+NSFW_THRESHOLD = float(os.environ.get("NSFW_THRESHOLD", "0.35"))
 # Render deadline. One fixed value cannot fit both a 1-beat scene (~6 min) and
 # a 12-beat one (~40 min) on the single GPU worker, so the deadline is derived
 # per job from the estimate video-api returns on submit (minutes_est, which

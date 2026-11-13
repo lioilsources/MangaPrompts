@@ -148,6 +148,14 @@ def env(tmp_path, monkeypatch):
     monkeypatch.setattr(appmod, "db", Database(tmp_path / "t.db"))
     monkeypatch.setattr(appmod, "jobs", JobStore())
     comfy, video = FakeComfy(), FakeVideo()
+    # The detector itself is tested in test_nsfw.py; here a stand-in that
+    # flags the outputs listed in comfy.nude (by prompt text).
+    def fake_findings(png):
+        prompt = next((p for p, d in comfy.outputs.items() if d == png), None)
+        return [("FEMALE_BREAST_EXPOSED", 0.9)] if prompt in comfy.nude else []
+
+    comfy.nude = set()
+    monkeypatch.setattr(render.nsfw, "findings", fake_findings)
     monkeypatch.setattr(appmod, "comfy", comfy)
     monkeypatch.setattr(appmod, "video", video)
     appmod._workflow_cache.clear()
@@ -284,6 +292,28 @@ def test_failed_edit_skips_dependents_and_refunds_them(env):
     assert "error" not in body["steps"]["s1"]
     assert len(comfy.prompts) == 3  # nothing rendered for the skipped ones
     assert spent() == 2
+
+
+def test_nude_style_result_is_discarded_and_refunded(env, tmp_path):
+    client, comfy, _ = env
+    comfy.nude.add("s2")
+    body = finish(client, post(client, chain()).json()["job_id"])
+    assert body["status"] == "done"
+    assert body["steps"]["s2"]["status"] == "error"
+    assert body["steps"]["s2"]["error"] == render.nsfw.MESSAGE
+    assert not list((tmp_path / "outputs").glob("*_s2.png"))  # never stored
+    assert spent() == 6
+
+
+def test_a_detector_that_cannot_run_fails_the_step(env, monkeypatch):
+    client, comfy, _ = env
+
+    def broken(png):
+        raise RuntimeError("onnxruntime missing")
+
+    monkeypatch.setattr(render.nsfw, "findings", broken)
+    body = finish(client, post(client, [style("s1", "source")]).json()["job_id"])
+    assert body["status"] == "error" and spent() == 0
 
 
 def test_full_queue_ends_steps_as_busy_and_refunds_without_queueing(env):
