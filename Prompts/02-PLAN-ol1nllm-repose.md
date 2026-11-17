@@ -257,7 +257,7 @@ steps/cfg/sampler/scheduler z presetu, `denoise: 1.0`.
   stejné póze (depth ControlNet)` → `chore: bump v1.5.0` (nová kapitola,
   jako 1.3.0 pro 3D a 1.4.0 pro nové modely; teď 1.4.4).
 - Volitelně (zvyk z 3D vieweru): kopii tohoto plánu uložit do
-  `/Volumes/YOTTA/Dev/MangaPrompts/Prompts/02-PLAN-ol1nllm-repose.md`.
+  `$DEV_ROOT/MangaPrompts/Prompts/02-PLAN-ol1nllm-repose.md`.
 
 ---
 

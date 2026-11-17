@@ -8,8 +8,8 @@ původního handoff plánu; tady je jen ta část, která se dělá na železe.
 
 Předpoklady z posledního měření
 ([`restyle-rollout-results.md`](restyle-rollout-results.md)): ComfyUI
-v `/home/ol1n/Code/ComfyUI`, běží ručně (`python main.py --listen
---reserve-vram 8`), LAN `http://192.168.88.66:8188`. Na boxu už jsou KJNodes,
+v `~/Code/ComfyUI`, běží ručně (`python main.py --listen
+--reserve-vram 8`), LAN `http://$SPARK_HOST:8188`. Na boxu už jsou KJNodes,
 controlnet_aux, Impact Pack, InstantID a **antelopev2**.
 
 ---
@@ -50,7 +50,7 @@ experimentu v §6, který může celou dvouprůchodovou cestu zrušit.
 ## 2. S0 — inventura, než se cokoli stáhne
 
 ```bash
-CU=/home/ol1n/Code/ComfyUI
+CU=$HOME/Code/ComfyUI
 df -h $CU/models                     # potřeba ~50 GB volných, viz §8
 cat $CU/extra_model_paths.yaml 2>/dev/null   # modely můžou žít jinde
 cd $CU && git log --oneline -1 && git describe --tags 2>/dev/null
@@ -98,7 +98,7 @@ Kdyby int8 dělal problém, alternativa pro **WanVideoWrapper** cestu je
 Nativní uzel má ale masku i background video, takže wrapper ber až jako záložní.
 
 ```bash
-CU=/home/ol1n/Code/ComfyUI; TMP=/tmp/wandl; mkdir -p $TMP
+CU=$HOME/Code/ComfyUI; TMP=/tmp/wandl; mkdir -p $TMP
 # starší instalace mají místo `hf` příkaz `huggingface-cli`
 hf download Comfy-Org/Wan_2.2_ComfyUI_Repackaged \
   split_files/diffusion_models/wan2.2_animate_14B_int8_convrot.safetensors \
@@ -190,7 +190,7 @@ na dvojici zkolabuje na jednoho člověka. Test je ale levný a výhra velká, t
 ať proběhne dřív, než se doladí S3.
 
 ```bash
-CU=/home/ol1n/Code/ComfyUI; TMP=/tmp/wandl2; mkdir -p $TMP
+CU=$HOME/Code/ComfyUI; TMP=/tmp/wandl2; mkdir -p $TMP
 hf download Comfy-Org/Wan-Animate-2 \
   diffusion_models/wan_animate_2_distill_int8_convrot.safetensors \
   vae/Wan2_1_VAE_bf16.safetensors --local-dir $TMP

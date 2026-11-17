@@ -1,7 +1,7 @@
 # PLAN — Restyle: malířské styly + FLUX pro fotografické médium
 
 > Pro Opuse. Repo `lioilsources/MangaPrompts` (Tsumiki), backend `tgbot/`,
-> ComfyUI na SPARKu (`ol1n@spark`, `~/Code/ComfyUI`, LAN `http://192.168.88.66:8188`).
+> ComfyUI na SPARKu (`ol1n@spark`, `~/Code/ComfyUI`, LAN `http://$SPARK_HOST:8188`).
 > Navazuje na `docs/restyle-rollout.md` + `docs/restyle-rollout-results.md`
 > (naměřeno 2026-09-09). Sourozenecké plány: `04-PLAN-kadernik.md`
 > (sdílí bench z §5) a `05-PLAN-ol1nllm-kadernik.md`.
@@ -177,7 +177,7 @@ cuda/cpu mismatch — naměřená past) + `ApplyPulidFlux` weight 1.2 +
 `positive` = FluxGuidance promptu **bez** ControlNetu — detailer pracuje
 s výřezem, celoobrazový hint na něj nesedí) → `SaveImage`.
 
-Ověření bez GPU: `python3 tgbot/tools/check_workflow.py assets/comfyui/flux_restyle.api.json --url http://192.168.88.66:8188`
+Ověření bez GPU: `python3 tgbot/tools/check_workflow.py assets/comfyui/flux_restyle.api.json --url http://$SPARK_HOST:8188`
 (očekávat `OK … (19 nodes)`; `vae` je u `ControlNetApplyAdvanced` volitelný
 vstup — skript ho musí tolerovat, viz `test_check_workflow.py`).
 

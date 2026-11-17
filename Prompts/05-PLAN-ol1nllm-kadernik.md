@@ -1,6 +1,6 @@
 # PLAN — Ol1nLLM: Kadeřník v Image Studiu (dlaždice → účes → tatáž fotka)
 
-> Pro Opuse. Repo `/Volumes/YOTTA/Dev/Ol1nLLM` (Flutter, v1.16.0, branch
+> Pro Opuse. Repo `$DEV_ROOT/Ol1nLLM` (Flutter, v1.16.0, branch
 > `main`), ComfyUI na SPARKu. **Předpokládá hotový gate z
 > `04-PLAN-kadernik.md` §5** — registr účesů se plní jen přeživšími; do té
 > doby jde implementovat všechno kromě obsahu `kHairstyles` (a lab flow

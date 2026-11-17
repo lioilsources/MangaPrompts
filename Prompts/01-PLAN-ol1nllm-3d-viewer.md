@@ -7,7 +7,7 @@
 > `3D/app/<meshId>` — followMesh nejdřív zkusí stáhnout hotové soubory);
 > mesh soubory se jmenují podle node id; unload modelu zatím ručně
 > (restart služby), auto-unload odloženo.
-> Týká se repa `/Volumes/YOTTA/Dev/Ol1nLLM` (Flutter appka, v1.2.4)
+> Týká se repa `$DEV_ROOT/Ol1nLLM` (Flutter appka, v1.2.4)
 > a ComfyUI na SPARKu. Uloženo sem do Prompts/ na přání — k tématu se
 > vracíme později.
 
@@ -21,7 +21,7 @@ a výsledek zobrazit **přímo v appce jako 3D model s 360° otáčením**
 
 - **Server pipeline funguje end-to-end**: Trellis2 (TRELLIS.2-4B, 16 GB)
   na SPARKu; ukázkové workflow
-  `/home/ol1n/Code/ComfyUI/user/default/workflows/img2print-anime.json`
+  `~/Code/ComfyUI/user/default/workflows/img2print-anime.json`
   (UI formát) + otestovaný **API formát** v scratchpadu session
   (znovu vygenerovatelný — graf je popsán níže)
 - Ověřený výstup: watertight STL, 300k faces, `target_height_mm=100`,

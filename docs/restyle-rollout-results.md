@@ -1,7 +1,7 @@
 # Restyle fotky — výsledky kroků 1–3
 
-Měřeno 2026-09-09 proti ComfyUI na SPARKu (`http://192.168.88.66:8188`,
-`/home/ol1n/Code/ComfyUI`, ruční běh, ne systemd). Postup podle
+Měřeno 2026-09-09 proti ComfyUI na SPARKu (`http://$SPARK_HOST:8188`,
+`~/Code/ComfyUI`, ruční běh, ne systemd). Postup podle
 [`restyle-rollout.md`](restyle-rollout.md); tenhle soubor je odpověď na jeho
 kapitolu 6. Kroky 4–5 (web do Telegramu, E2E scénáře) zatím **neproběhly**.
 
@@ -13,7 +13,7 @@ kapitolu 6. Kroky 4–5 (web do Telegramu, E2E scénáře) zatím **neproběhly*
 | Produkční bot | `@tsumikimanga_bot` (id 8996021002), `has_main_web_app: false` |
 | Dev bot | **neexistuje** — v `mangabot.env` je jediný `BOT_TOKEN` |
 | `ALLOWED_ORIGINS` | `https://app.ol1n.com,https://tsumiki-7t0.pages.dev` |
-| `COMFY_URL` | `http://192.168.88.66:8188` (LAN, CF varianta zakomentovaná) |
+| `COMFY_URL` | `http://$SPARK_HOST:8188` (LAN, CF varianta zakomentovaná) |
 | `FREE_DAILY_LIMIT` | 3 · `VIDEO_FREE_DAILY_LIMIT` 1 · `JOB_TIMEOUT` nenastaven → default 300 s |
 | `https://tg.ol1n.com/healthz` | `{"status":"ok"}` |
 
@@ -35,7 +35,7 @@ Původní běh nahlásil na **všech** workflow s `LoadImage` (tedy i na čtyře
 které v produkci normálně jedou):
 
 ```
-1 problem(s) with ../assets/comfyui/sdxl_restyle.api.json on http://192.168.88.66:8188:
+1 problem(s) with ../assets/comfyui/sdxl_restyle.api.json on http://$SPARK_HOST:8188:
   • node 2 (LoadImage): unknown input 'upload' (node version drift?)
 ```
 
@@ -46,7 +46,7 @@ klíč, který `INPUT_TYPES` nezná. Falešný poplach, opraveno v 09aa2cf
 existuje, zůstává. Po opravě:
 
 ```
-OK — http://192.168.88.66:8188 can run ../assets/comfyui/sdxl_restyle.api.json (19 nodes)
+OK — http://$SPARK_HOST:8188 can run ../assets/comfyui/sdxl_restyle.api.json (19 nodes)
 ```
 
 a čistě projde i zbylých sedm workflow v `assets/comfyui/`.

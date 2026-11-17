@@ -34,7 +34,8 @@ ios/Flutter/ephemeral/
 
 # Misc
 *.log
-.claude/
+.claude/*
+!.claude/settings.json
 
 # tgbot (Python backend)
 tgbot/venv/
@@ -43,3 +44,14 @@ tgbot/data/
 tgbot/**/__pycache__/
 tgbot/.pytest_cache/
 tgbot/mangabot.env
+# devconv:start
+.env.*
+!.env.example
+*.p8
+*.p12
+*.jks
+key.properties
+.claude/settings.local.json
+CLAUDE.local.md
+lib/**/secrets.dart
+# devconv:end
