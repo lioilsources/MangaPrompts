@@ -53,7 +53,7 @@ Viz `tgbot/README.md` (Docker Compose, `mangabot.env`, testy).
       veřejné a ten token obchází initData (generuje jako `user_id=0`).
       Nechat ho tam smí jen dev instance, ne produkce.
 - [x] Denní záloha `tgbot/data/mangabot.db` (kredity + platby!) — `tgbot/backup.sh`
-      běží z cronu na JODĚ ve 4:00, log v `/home/oli/mangabot-backup.log`,
+      běží z cronu na JODĚ ve 4:00, log v `~/mangabot-backup.log`,
       drží 14 posledních denních.
 - [x] Záloha na jiném disku — `backup.sh` zrcadlí denní snapshot na
       `/pool/Backup/tsumiki` (raidz1 přes tři disky), zatímco databáze leží na
